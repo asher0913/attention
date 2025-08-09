@@ -1621,7 +1621,6 @@ class MIA_train: # main class for every thing
                 if avg_accu > best_avg_accu:
                     self.save_model(epoch, is_best=True)
                     best_avg_accu = avg_accu
-                    best_rob_loss= train_loss_mean
                 if epoch==40 or epoch==250 :
                     best_avg_accu=0
                 
