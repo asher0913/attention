@@ -1,0 +1,3238 @@
+{\rtf1\ansi\ansicpg936\cocoartf2822
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\froman\fcharset0 Times-Roman;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red255\green255\blue255;\red13\green50\blue144;
+}
+{\*\expandedcolortbl;;\cssrgb\c0\c0\c0\c87059;\cssrgb\c100000\c100000\c100000;\cssrgb\c5098\c27843\c63137;
+}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720\partightenfactor0
+
+\f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 2025-08-09 15:20:24.759340: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:477] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered\
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR\
+E0000 00:00:1754752824.956235     111 cuda_dnn.cc:8310] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered\
+E0000 00:00:1754752825.018740     111 cuda_blas.cc:1418] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered\
+Split Learning Scheme: Overall Cutting_layer 4/13\
+100%|\uc0\u9608 \u9608 \u9608 \u9608 \u9608 \u9608 \u9608 \u9608 \u9608 \u9608 \u9608 \u9608 \u9608 \u9608 \u9608 \u9608 \u9608 \u9608 \u9608 \u9608 \u9608 \u9608 \u9608 \u9608 \u9608 \u9608 \u9608 \u9608 \u9608 \u9608 \u9608 \u9608 \u9608 \u9608 \u9608 \u9608 \u9608 \u9608 \u9608 \u9608 | 170M/170M [00:07<00:00, 23.4MB/s]\
+/usr/local/lib/python3.11/dist-packages/torch/utils/data/dataloader.py:624: UserWarning: This DataLoader will create 8 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.\
+  warnings.warn(\
+Total number of batches per epoch for each client is  391\
+original channel size of smashed-data is 128\
+added bottleneck, new channel size of smashed-data is 8\
+local:\
+Sequential(\
+  (0): Conv2d(3, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\
+  (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)\
+  (2): ReLU(inplace=True)\
+  (3): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)\
+  (4): Conv2d(64, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\
+  (5): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)\
+  (6): ReLU(inplace=True)\
+  (7): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)\
+  (8): Conv2d(128, 8, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\
+  (9): Sigmoid()\
+)\
+cloud:\
+Sequential(\
+  (0): Conv2d(8, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\
+  (1): Conv2d(128, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\
+  (2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)\
+  (3): ReLU(inplace=True)\
+  (4): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\
+  (5): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)\
+  (6): ReLU(inplace=True)\
+  (7): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)\
+  (8): Conv2d(256, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\
+  (9): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)\
+  (10): ReLU(inplace=True)\
+  (11): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\
+  (12): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)\
+  (13): ReLU(inplace=True)\
+  (14): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)\
+  (15): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\
+  (16): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)\
+  (17): ReLU(inplace=True)\
+  (18): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\
+  (19): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)\
+  (20): ReLU(inplace=True)\
+  (21): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)\
+)\
+classifier:\
+Sequential(\
+  (0): Dropout(p=0.5, inplace=False)\
+  (1): Linear(in_features=512, out_features=512, bias=True)\
+  (2): ReLU(inplace=True)\
+  (3): Dropout(p=0.5, inplace=False)\
+  (4): Linear(in_features=512, out_features=512, bias=True)\
+  (5): ReLU(inplace=True)\
+  (6): Linear(in_features=512, out_features=10, bias=True)\
+)\
+Namespace(arch='vgg11_bn_sgm', cutlayer=4, batch_size=128, filename='pretrain_False_lambd_0_noise_0.01_epoch_240_bottleneck_noRELU_C8S1_log_1_ATstrength_0.3_lr_0.05_varthres_0.125_attention', folder='saves/cifar10/SCA_new_infocons_sgm_lg1_thre0.125', num_client=1, num_epochs=240, learning_rate=0.05, lambd=0.0, dataset_portion=1.0, client_sample_ratio=1.0, noniid=1.0, local_lr=-1.0, dataset='cifar10', scheme='V2_epoch', regularization='Gaussian_kl', regularization_strength=0.01, var_threshold=0.125, AT_regularization='SCA_new', AT_regularization_strength=0.3, log_entropy=1.0, ssim_threshold=0.5, gan_AE_type='res_normN4C64', gan_loss_type='SSIM', bottleneck_option='noRELU_C8S1', optimize_computation=1, decoder_sync=False, load_from_checkpoint=False, load_from_checkpoint_server=False, transfer_source_task='cifar100', finetune_freeze_bn=False, save_more_checkpoints=False, initialize_different=False, use_attention_classifier=True, num_slots=8, attention_heads=8, attention_dropout=0.1, random_seed=125)\
+Model's smashed-data size is torch.Size([1, 8, 8, 8])\
+Real Train Phase: done by all clients, for total 240 epochs\
+GAN training interval N (once every N step) is set to 1!\
+Train in V2_epoch style\
+/kaggle/working/attention/model_training_attention.py:1457: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).\
+  train_loss_list.append(torch.tensor(train_loss))\
+log--[1/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 2.3259\
+log--[1/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 2.3118\
+train_one_ep_time:13.105428695678711 s\
+feature_infer_one_ep_time:10.458882570266724 s\
+randomized selected centroids\
+randomized selected centroids\
+randomized selected centroids\
+randomized selected centroids\
+randomized selected centroids\
+randomized selected centroids\
+randomized selected centroids\
+randomized selected centroids\
+randomized selected centroids\
+randomized selected centroids\
+feature_clst_one_ep_time:0.9969892501831055 s\
+the mean of mutal infor is:(-4.996), the est mean of mutal infor is:(-4.091)\
+./saves/cifar10/SCA_new_infocons_sgm_lg1_thre0.125/pretrain_False_lambd_0_noise_0.01_epoch_240_bottleneck_noRELU_C8S1_log_1_ATstrength_0.3_lr_0.05_varthres_0.125_attention//visualize/1.png\
+/usr/local/lib/python3.11/dist-packages/torch/utils/data/dataloader.py:624: UserWarning: This DataLoader will create 8 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.\
+  warnings.warn(\
+Epoch 0	Test (client-0):	Loss 2.3041 (2.3041)	Prec@1 7.812 (7.812)\
+Epoch 50	Test (client-0):	Loss 2.3246 (2.3129)	Prec@1 7.031 (9.697)\
+ * Prec@1 9.870  MSE 0.090187\
+lambd value is: 0.0 learning rate is: 0.05\
+/usr/local/lib/python3.11/dist-packages/torch/optim/lr_scheduler.py:243: UserWarning: The epoch parameter in `scheduler.step()` was not necessary and is being deprecated where possible. Please use `scheduler.step()` to step the scheduler. During the deprecation, if epoch is different from None, the closed form is used instead of the new chainable form, where available. Please open an issue if you are unable to replicate your use case: {\field{\*\fldinst{HYPERLINK "https://github.com/pytorch/pytorch/issues/new/choose"}}{\fldrslt \cf4 \strokec4 https://github.com/pytorch/pytorch/issues/new/choose}}.\
+  warnings.warn(EPOCH_DEPRECATION_WARNING, UserWarning)\
+Train in V2_epoch style\
+/kaggle/working/attention/model_training_attention.py:1457: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).\
+  train_loss_list.append(torch.tensor(train_loss))\
+log--[2/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 2.2967\
+log--[2/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 2.0073\
+train_one_ep_time:13.465863466262817 s\
+feature_infer_one_ep_time:9.918755769729614 s\
+feature_clst_one_ep_time:0.7658641338348389 s\
+the mean of mutal infor is:(-5.334), the est mean of mutal infor is:(-3.887)\
+Epoch 0	Test (client-0):	Loss 1.8950 (1.8950)	Prec@1 28.906 (28.906)\
+Epoch 50	Test (client-0):	Loss 1.8999 (1.9606)	Prec@1 22.656 (22.503)\
+ * Prec@1 22.280  MSE 0.085149\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[3/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.9321\
+log--[3/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.8425\
+train_one_ep_time:12.98276662826538 s\
+feature_infer_one_ep_time:10.173672914505005 s\
+feature_clst_one_ep_time:0.7931675910949707 s\
+the mean of mutal infor is:(-5.332), the est mean of mutal infor is:(-4.102)\
+Epoch 0	Test (client-0):	Loss 1.8777 (1.8777)	Prec@1 32.031 (32.031)\
+Epoch 50	Test (client-0):	Loss 1.9632 (1.8968)	Prec@1 25.781 (26.869)\
+ * Prec@1 26.640  MSE 0.081616\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[4/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.8002\
+log--[4/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.7600\
+train_one_ep_time:13.054898500442505 s\
+feature_infer_one_ep_time:10.751903533935547 s\
+feature_clst_one_ep_time:0.7246477603912354 s\
+the mean of mutal infor is:(-5.524), the est mean of mutal infor is:(-4.320)\
+Epoch 0	Test (client-0):	Loss 1.6472 (1.6472)	Prec@1 37.500 (37.500)\
+Epoch 50	Test (client-0):	Loss 1.7993 (1.7072)	Prec@1 32.031 (33.150)\
+ * Prec@1 32.610  MSE 0.076783\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[5/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.6939\
+log--[5/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.7011\
+train_one_ep_time:12.81917405128479 s\
+feature_infer_one_ep_time:10.178133010864258 s\
+feature_clst_one_ep_time:0.5810410976409912 s\
+the mean of mutal infor is:(-5.654), the est mean of mutal infor is:(-4.498)\
+Epoch 0	Test (client-0):	Loss 1.5865 (1.5865)	Prec@1 37.500 (37.500)\
+Epoch 50	Test (client-0):	Loss 1.6417 (1.6616)	Prec@1 34.375 (34.467)\
+ * Prec@1 34.490  MSE 0.075468\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[6/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.6489\
+log--[6/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.6661\
+train_one_ep_time:12.952946901321411 s\
+feature_infer_one_ep_time:10.137187004089355 s\
+feature_clst_one_ep_time:0.6183931827545166 s\
+the mean of mutal infor is:(-5.388), the est mean of mutal infor is:(-4.093)\
+Epoch 0	Test (client-0):	Loss 1.5064 (1.5064)	Prec@1 40.625 (40.625)\
+Epoch 50	Test (client-0):	Loss 1.6780 (1.5937)	Prec@1 35.156 (36.596)\
+ * Prec@1 36.170  MSE 0.073340\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[7/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.7355\
+log--[7/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.6202\
+train_one_ep_time:13.187557220458984 s\
+feature_infer_one_ep_time:9.887614488601685 s\
+feature_clst_one_ep_time:0.8119540214538574 s\
+the mean of mutal infor is:(-5.610), the est mean of mutal infor is:(-4.266)\
+Epoch 0	Test (client-0):	Loss 1.4966 (1.4966)	Prec@1 39.062 (39.062)\
+Epoch 50	Test (client-0):	Loss 1.6705 (1.5418)	Prec@1 34.375 (39.476)\
+ * Prec@1 39.340  MSE 0.071197\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[8/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.5890\
+log--[8/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.5687\
+train_one_ep_time:12.829094409942627 s\
+feature_infer_one_ep_time:10.210673332214355 s\
+feature_clst_one_ep_time:0.686100959777832 s\
+the mean of mutal infor is:(-5.682), the est mean of mutal infor is:(-4.295)\
+Epoch 0	Test (client-0):	Loss 1.4008 (1.4008)	Prec@1 42.188 (42.188)\
+Epoch 50	Test (client-0):	Loss 1.5404 (1.5201)	Prec@1 42.188 (41.575)\
+ * Prec@1 41.550  MSE 0.070356\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[9/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.4893\
+log--[9/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.5305\
+train_one_ep_time:12.888406991958618 s\
+feature_infer_one_ep_time:10.77043628692627 s\
+feature_clst_one_ep_time:0.6213235855102539 s\
+the mean of mutal infor is:(-5.779), the est mean of mutal infor is:(-4.502)\
+Epoch 0	Test (client-0):	Loss 1.4599 (1.4599)	Prec@1 41.406 (41.406)\
+Epoch 50	Test (client-0):	Loss 1.4843 (1.5377)	Prec@1 39.062 (42.785)\
+ * Prec@1 42.600  MSE 0.070387\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[10/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.2839\
+log--[10/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.4840\
+train_one_ep_time:12.720965147018433 s\
+feature_infer_one_ep_time:10.309849262237549 s\
+feature_clst_one_ep_time:0.7255167961120605 s\
+the mean of mutal infor is:(-5.923), the est mean of mutal infor is:(-4.727)\
+Epoch 0	Test (client-0):	Loss 1.3806 (1.3806)	Prec@1 49.219 (49.219)\
+Epoch 50	Test (client-0):	Loss 1.5801 (1.4006)	Prec@1 40.625 (47.273)\
+ * Prec@1 47.140  MSE 0.065278\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[11/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.5034\
+log--[11/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.4511\
+train_one_ep_time:13.002207517623901 s\
+feature_infer_one_ep_time:10.040075302124023 s\
+feature_clst_one_ep_time:0.7847588062286377 s\
+the mean of mutal infor is:(-5.844), the est mean of mutal infor is:(-4.629)\
+Epoch 0	Test (client-0):	Loss 1.4870 (1.4870)	Prec@1 45.312 (45.312)\
+Epoch 50	Test (client-0):	Loss 1.5130 (1.4976)	Prec@1 43.750 (45.358)\
+ * Prec@1 45.540  MSE 0.068321\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[12/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.4867\
+log--[12/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.4197\
+train_one_ep_time:13.104402303695679 s\
+feature_infer_one_ep_time:9.895855903625488 s\
+feature_clst_one_ep_time:0.7551858425140381 s\
+the mean of mutal infor is:(-5.886), the est mean of mutal infor is:(-4.690)\
+Epoch 0	Test (client-0):	Loss 1.4164 (1.4164)	Prec@1 43.750 (43.750)\
+Epoch 50	Test (client-0):	Loss 1.4559 (1.4555)	Prec@1 49.219 (46.002)\
+ * Prec@1 46.550  MSE 0.066846\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[13/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.3961\
+log--[13/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.3942\
+train_one_ep_time:12.646882772445679 s\
+feature_infer_one_ep_time:10.26863694190979 s\
+feature_clst_one_ep_time:0.7981138229370117 s\
+the mean of mutal infor is:(-5.805), the est mean of mutal infor is:(-4.590)\
+Epoch 0	Test (client-0):	Loss 1.4607 (1.4607)	Prec@1 45.312 (45.312)\
+Epoch 50	Test (client-0):	Loss 1.8752 (1.5237)	Prec@1 32.031 (44.715)\
+ * Prec@1 44.770  MSE 0.069009\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[14/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.4584\
+log--[14/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.3824\
+train_one_ep_time:12.485533952713013 s\
+feature_infer_one_ep_time:10.256462097167969 s\
+feature_clst_one_ep_time:0.7343518733978271 s\
+the mean of mutal infor is:(-5.827), the est mean of mutal infor is:(-4.636)\
+Epoch 0	Test (client-0):	Loss 1.2409 (1.2409)	Prec@1 53.906 (53.906)\
+Epoch 50	Test (client-0):	Loss 1.4766 (1.3222)	Prec@1 46.094 (51.486)\
+ * Prec@1 51.170  MSE 0.061831\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[15/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.2695\
+log--[15/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.3498\
+train_one_ep_time:12.437004327774048 s\
+feature_infer_one_ep_time:9.854324340820312 s\
+feature_clst_one_ep_time:0.7274794578552246 s\
+the mean of mutal infor is:(-5.763), the est mean of mutal infor is:(-4.612)\
+Epoch 0	Test (client-0):	Loss 1.3281 (1.3281)	Prec@1 49.219 (49.219)\
+Epoch 50	Test (client-0):	Loss 1.3104 (1.2602)	Prec@1 53.125 (52.803)\
+ * Prec@1 52.850  MSE 0.059790\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[16/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.4007\
+log--[16/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.3344\
+train_one_ep_time:13.077598333358765 s\
+feature_infer_one_ep_time:9.722696542739868 s\
+feature_clst_one_ep_time:0.8316738605499268 s\
+the mean of mutal infor is:(-5.778), the est mean of mutal infor is:(-4.667)\
+Epoch 0	Test (client-0):	Loss 1.2202 (1.2202)	Prec@1 53.125 (53.125)\
+Epoch 50	Test (client-0):	Loss 1.3021 (1.2506)	Prec@1 46.094 (53.707)\
+ * Prec@1 53.230  MSE 0.059492\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[17/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.3263\
+log--[17/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.2935\
+train_one_ep_time:12.754922151565552 s\
+feature_infer_one_ep_time:9.71610951423645 s\
+feature_clst_one_ep_time:0.5967473983764648 s\
+the mean of mutal infor is:(-6.036), the est mean of mutal infor is:(-4.963)\
+Epoch 0	Test (client-0):	Loss 1.2214 (1.2214)	Prec@1 56.250 (56.250)\
+Epoch 50	Test (client-0):	Loss 1.2971 (1.2618)	Prec@1 48.438 (52.298)\
+ * Prec@1 52.580  MSE 0.060644\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[18/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.1589\
+log--[18/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.2798\
+train_one_ep_time:12.409720182418823 s\
+feature_infer_one_ep_time:10.253122806549072 s\
+feature_clst_one_ep_time:0.6275472640991211 s\
+the mean of mutal infor is:(-5.962), the est mean of mutal infor is:(-4.876)\
+Epoch 0	Test (client-0):	Loss 1.3599 (1.3599)	Prec@1 46.094 (46.094)\
+Epoch 50	Test (client-0):	Loss 1.4129 (1.3447)	Prec@1 45.312 (49.877)\
+ * Prec@1 49.570  MSE 0.063459\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[19/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.3383\
+log--[19/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.2760\
+train_one_ep_time:12.408790588378906 s\
+feature_infer_one_ep_time:9.773229122161865 s\
+feature_clst_one_ep_time:0.6392197608947754 s\
+the mean of mutal infor is:(-5.973), the est mean of mutal infor is:(-4.929)\
+Epoch 0	Test (client-0):	Loss 1.1811 (1.1811)	Prec@1 53.906 (53.906)\
+Epoch 50	Test (client-0):	Loss 1.3555 (1.1913)	Prec@1 52.344 (56.281)\
+ * Prec@1 56.020  MSE 0.056745\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[20/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.2593\
+log--[20/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.2616\
+train_one_ep_time:12.71220064163208 s\
+feature_infer_one_ep_time:9.820471286773682 s\
+feature_clst_one_ep_time:0.6079766750335693 s\
+the mean of mutal infor is:(-6.014), the est mean of mutal infor is:(-4.972)\
+Epoch 0	Test (client-0):	Loss 1.1414 (1.1414)	Prec@1 59.375 (59.375)\
+Epoch 50	Test (client-0):	Loss 1.2176 (1.1957)	Prec@1 57.812 (56.020)\
+ * Prec@1 56.160  MSE 0.057101\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[21/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.1545\
+log--[21/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.2366\
+train_one_ep_time:12.967708110809326 s\
+feature_infer_one_ep_time:9.743726015090942 s\
+feature_clst_one_ep_time:0.6543316841125488 s\
+the mean of mutal infor is:(-5.991), the est mean of mutal infor is:(-4.953)\
+Epoch 0	Test (client-0):	Loss 1.2111 (1.2111)	Prec@1 51.562 (51.562)\
+Epoch 50	Test (client-0):	Loss 1.4510 (1.2110)	Prec@1 37.500 (56.909)\
+ * Prec@1 56.610  MSE 0.056578\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[22/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.1980\
+log--[22/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.2497\
+train_one_ep_time:12.36778473854065 s\
+feature_infer_one_ep_time:10.292222261428833 s\
+feature_clst_one_ep_time:0.5990796089172363 s\
+the mean of mutal infor is:(-6.003), the est mean of mutal infor is:(-4.996)\
+Epoch 0	Test (client-0):	Loss 1.1644 (1.1644)	Prec@1 59.375 (59.375)\
+Epoch 50	Test (client-0):	Loss 1.3298 (1.1660)	Prec@1 49.219 (57.399)\
+ * Prec@1 57.100  MSE 0.055564\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[23/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.3165\
+log--[23/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.2244\
+train_one_ep_time:12.541899919509888 s\
+feature_infer_one_ep_time:10.195746183395386 s\
+feature_clst_one_ep_time:0.6684613227844238 s\
+the mean of mutal infor is:(-6.045), the est mean of mutal infor is:(-4.980)\
+Epoch 0	Test (client-0):	Loss 1.3761 (1.3761)	Prec@1 52.344 (52.344)\
+Epoch 50	Test (client-0):	Loss 1.3638 (1.3256)	Prec@1 50.000 (52.819)\
+ * Prec@1 52.820  MSE 0.061848\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[24/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.4028\
+log--[24/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.1956\
+train_one_ep_time:12.385356187820435 s\
+feature_infer_one_ep_time:9.74847674369812 s\
+feature_clst_one_ep_time:0.6868562698364258 s\
+the mean of mutal infor is:(-6.193), the est mean of mutal infor is:(-5.199)\
+Epoch 0	Test (client-0):	Loss 1.0749 (1.0749)	Prec@1 59.375 (59.375)\
+Epoch 50	Test (client-0):	Loss 1.4079 (1.1560)	Prec@1 50.000 (59.053)\
+ * Prec@1 58.600  MSE 0.053983\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[25/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.1098\
+log--[25/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.1910\
+train_one_ep_time:12.943730115890503 s\
+feature_infer_one_ep_time:9.817430019378662 s\
+feature_clst_one_ep_time:0.6663355827331543 s\
+the mean of mutal infor is:(-6.134), the est mean of mutal infor is:(-5.143)\
+Epoch 0	Test (client-0):	Loss 1.0241 (1.0241)	Prec@1 60.156 (60.156)\
+Epoch 50	Test (client-0):	Loss 1.4358 (1.1649)	Prec@1 50.781 (58.563)\
+ * Prec@1 58.680  MSE 0.054058\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[26/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.1850\
+log--[26/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.1733\
+train_one_ep_time:13.028850555419922 s\
+feature_infer_one_ep_time:9.99868130683899 s\
+feature_clst_one_ep_time:0.611217737197876 s\
+the mean of mutal infor is:(-6.230), the est mean of mutal infor is:(-5.252)\
+Epoch 0	Test (client-0):	Loss 1.2119 (1.2119)	Prec@1 52.344 (52.344)\
+Epoch 50	Test (client-0):	Loss 1.2137 (1.2429)	Prec@1 57.812 (56.281)\
+ * Prec@1 56.330  MSE 0.057219\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[27/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.3237\
+log--[27/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.1668\
+train_one_ep_time:12.626901865005493 s\
+feature_infer_one_ep_time:10.417713165283203 s\
+feature_clst_one_ep_time:0.6282186508178711 s\
+the mean of mutal infor is:(-6.055), the est mean of mutal infor is:(-4.974)\
+Epoch 0	Test (client-0):	Loss 1.0095 (1.0095)	Prec@1 62.500 (62.500)\
+Epoch 50	Test (client-0):	Loss 1.2449 (1.1178)	Prec@1 59.375 (60.080)\
+ * Prec@1 60.220  MSE 0.052433\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[28/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.0704\
+log--[28/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.1539\
+train_one_ep_time:12.484634160995483 s\
+feature_infer_one_ep_time:9.823675632476807 s\
+feature_clst_one_ep_time:0.5966389179229736 s\
+the mean of mutal infor is:(-6.191), the est mean of mutal infor is:(-5.216)\
+Epoch 0	Test (client-0):	Loss 1.1087 (1.1087)	Prec@1 56.250 (56.250)\
+Epoch 50	Test (client-0):	Loss 1.2896 (1.1227)	Prec@1 55.469 (59.681)\
+ * Prec@1 59.840  MSE 0.052772\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[29/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.1429\
+log--[29/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.1425\
+train_one_ep_time:12.896256923675537 s\
+feature_infer_one_ep_time:9.857068538665771 s\
+feature_clst_one_ep_time:0.5877809524536133 s\
+the mean of mutal infor is:(-6.313), the est mean of mutal infor is:(-5.331)\
+Epoch 0	Test (client-0):	Loss 1.2598 (1.2598)	Prec@1 53.906 (53.906)\
+Epoch 50	Test (client-0):	Loss 1.5128 (1.4070)	Prec@1 53.125 (53.707)\
+ * Prec@1 53.600  MSE 0.063883\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[30/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.1820\
+log--[30/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.1313\
+train_one_ep_time:13.143393993377686 s\
+feature_infer_one_ep_time:9.812298774719238 s\
+feature_clst_one_ep_time:0.6126179695129395 s\
+the mean of mutal infor is:(-6.300), the est mean of mutal infor is:(-5.352)\
+Epoch 0	Test (client-0):	Loss 1.0710 (1.0710)	Prec@1 61.719 (61.719)\
+Epoch 50	Test (client-0):	Loss 1.2779 (1.0985)	Prec@1 53.906 (61.489)\
+ * Prec@1 61.350  MSE 0.051632\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[31/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.3827\
+log--[31/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.1198\
+train_one_ep_time:12.510113954544067 s\
+feature_infer_one_ep_time:10.33181643486023 s\
+feature_clst_one_ep_time:0.6854903697967529 s\
+the mean of mutal infor is:(-6.333), the est mean of mutal infor is:(-5.402)\
+Epoch 0	Test (client-0):	Loss 1.1163 (1.1163)	Prec@1 64.062 (64.062)\
+Epoch 50	Test (client-0):	Loss 1.2407 (1.1318)	Prec@1 56.250 (59.436)\
+ * Prec@1 59.360  MSE 0.053709\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[32/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.1829\
+log--[32/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.1344\
+train_one_ep_time:12.562316417694092 s\
+feature_infer_one_ep_time:10.171401977539062 s\
+feature_clst_one_ep_time:0.6042065620422363 s\
+the mean of mutal infor is:(-6.307), the est mean of mutal infor is:(-5.381)\
+Epoch 0	Test (client-0):	Loss 1.1215 (1.1215)	Prec@1 56.250 (56.250)\
+Epoch 50	Test (client-0):	Loss 1.5620 (1.1381)	Prec@1 48.438 (60.953)\
+ * Prec@1 60.810  MSE 0.051625\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[33/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.0520\
+log--[33/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.1247\
+train_one_ep_time:12.639630556106567 s\
+feature_infer_one_ep_time:9.843244075775146 s\
+feature_clst_one_ep_time:0.5947010517120361 s\
+the mean of mutal infor is:(-6.183), the est mean of mutal infor is:(-5.160)\
+Epoch 0	Test (client-0):	Loss 1.0122 (1.0122)	Prec@1 61.719 (61.719)\
+Epoch 50	Test (client-0):	Loss 1.1909 (1.1000)	Prec@1 57.812 (60.539)\
+ * Prec@1 61.000  MSE 0.051759\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[34/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.1610\
+log--[34/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.1179\
+train_one_ep_time:12.756994485855103 s\
+feature_infer_one_ep_time:9.917325019836426 s\
+feature_clst_one_ep_time:0.593764066696167 s\
+the mean of mutal infor is:(-6.352), the est mean of mutal infor is:(-5.419)\
+Epoch 0	Test (client-0):	Loss 1.1565 (1.1565)	Prec@1 53.125 (53.125)\
+Epoch 50	Test (client-0):	Loss 1.3433 (1.1070)	Prec@1 53.125 (60.325)\
+ * Prec@1 60.190  MSE 0.052702\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[35/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.2194\
+log--[35/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.1167\
+train_one_ep_time:12.860101699829102 s\
+feature_infer_one_ep_time:10.102843761444092 s\
+feature_clst_one_ep_time:0.46481871604919434 s\
+the mean of mutal infor is:(-6.335), the est mean of mutal infor is:(-5.358)\
+Epoch 0	Test (client-0):	Loss 0.9131 (0.9131)	Prec@1 62.500 (62.500)\
+Epoch 50	Test (client-0):	Loss 1.1177 (1.0246)	Prec@1 60.938 (63.542)\
+ * Prec@1 63.440  MSE 0.048767\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[36/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8593\
+log--[36/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.0996\
+train_one_ep_time:12.485723972320557 s\
+feature_infer_one_ep_time:10.147446870803833 s\
+feature_clst_one_ep_time:0.5903346538543701 s\
+the mean of mutal infor is:(-6.330), the est mean of mutal infor is:(-5.344)\
+Epoch 0	Test (client-0):	Loss 1.1510 (1.1510)	Prec@1 57.812 (57.812)\
+Epoch 50	Test (client-0):	Loss 1.3154 (1.1146)	Prec@1 50.000 (59.773)\
+ * Prec@1 60.030  MSE 0.052240\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[37/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.1888\
+log--[37/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.0983\
+train_one_ep_time:12.727460861206055 s\
+feature_infer_one_ep_time:10.068363666534424 s\
+feature_clst_one_ep_time:0.6804506778717041 s\
+the mean of mutal infor is:(-6.233), the est mean of mutal infor is:(-5.207)\
+Epoch 0	Test (client-0):	Loss 1.3001 (1.3001)	Prec@1 53.125 (53.125)\
+Epoch 50	Test (client-0):	Loss 1.3108 (1.1856)	Prec@1 59.375 (59.881)\
+ * Prec@1 59.780  MSE 0.054527\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[38/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.1132\
+log--[38/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.1052\
+train_one_ep_time:13.252665996551514 s\
+feature_infer_one_ep_time:10.061803817749023 s\
+feature_clst_one_ep_time:0.5661561489105225 s\
+the mean of mutal infor is:(-6.256), the est mean of mutal infor is:(-5.254)\
+Epoch 0	Test (client-0):	Loss 1.0203 (1.0203)	Prec@1 61.719 (61.719)\
+Epoch 50	Test (client-0):	Loss 1.2546 (1.0685)	Prec@1 54.688 (62.209)\
+ * Prec@1 62.450  MSE 0.050341\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[39/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.0648\
+log--[39/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.0908\
+train_one_ep_time:13.047703742980957 s\
+feature_infer_one_ep_time:10.05307650566101 s\
+feature_clst_one_ep_time:0.6264951229095459 s\
+the mean of mutal infor is:(-6.284), the est mean of mutal infor is:(-5.281)\
+Epoch 0	Test (client-0):	Loss 1.0458 (1.0458)	Prec@1 64.062 (64.062)\
+Epoch 50	Test (client-0):	Loss 1.3005 (1.0735)	Prec@1 48.438 (62.010)\
+ * Prec@1 61.980  MSE 0.050455\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[40/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.1178\
+log--[40/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.0987\
+train_one_ep_time:12.755014181137085 s\
+feature_infer_one_ep_time:10.540210008621216 s\
+feature_clst_one_ep_time:0.5380997657775879 s\
+the mean of mutal infor is:(-6.345), the est mean of mutal infor is:(-5.351)\
+Epoch 0	Test (client-0):	Loss 0.9639 (0.9639)	Prec@1 63.281 (63.281)\
+Epoch 50	Test (client-0):	Loss 1.1920 (1.0462)	Prec@1 60.156 (62.806)\
+ * Prec@1 62.770  MSE 0.049295\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[41/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.1178\
+log--[41/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.0925\
+train_one_ep_time:12.658108949661255 s\
+feature_infer_one_ep_time:10.367319822311401 s\
+feature_clst_one_ep_time:0.6653451919555664 s\
+the mean of mutal infor is:(-6.370), the est mean of mutal infor is:(-5.398)\
+./saves/cifar10/SCA_new_infocons_sgm_lg1_thre0.125/pretrain_False_lambd_0_noise_0.01_epoch_240_bottleneck_noRELU_C8S1_log_1_ATstrength_0.3_lr_0.05_varthres_0.125_attention//visualize/41.png\
+/usr/local/lib/python3.11/dist-packages/torch/utils/data/dataloader.py:624: UserWarning: This DataLoader will create 8 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.\
+  warnings.warn(\
+Epoch 0	Test (client-0):	Loss 0.9859 (0.9859)	Prec@1 61.719 (61.719)\
+Epoch 50	Test (client-0):	Loss 1.1554 (1.0485)	Prec@1 55.469 (61.949)\
+ * Prec@1 61.920  MSE 0.050548\
+lambd value is: 0.0 learning rate is: 0.05\
+/usr/local/lib/python3.11/dist-packages/torch/optim/lr_scheduler.py:243: UserWarning: The epoch parameter in `scheduler.step()` was not necessary and is being deprecated where possible. Please use `scheduler.step()` to step the scheduler. During the deprecation, if epoch is different from None, the closed form is used instead of the new chainable form, where available. Please open an issue if you are unable to replicate your use case: {\field{\*\fldinst{HYPERLINK "https://github.com/pytorch/pytorch/issues/new/choose"}}{\fldrslt \cf4 \strokec4 https://github.com/pytorch/pytorch/issues/new/choose}}.\
+  warnings.warn(EPOCH_DEPRECATION_WARNING, UserWarning)\
+Train in V2_epoch style\
+/kaggle/working/attention/model_training_attention.py:1457: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).\
+  train_loss_list.append(torch.tensor(train_loss))\
+log--[42/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.0664\
+log--[42/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.0805\
+train_one_ep_time:12.899464130401611 s\
+feature_infer_one_ep_time:10.465137958526611 s\
+feature_clst_one_ep_time:0.470456600189209 s\
+the mean of mutal infor is:(-6.276), the est mean of mutal infor is:(-5.280)\
+Epoch 0	Test (client-0):	Loss 1.0503 (1.0503)	Prec@1 59.375 (59.375)\
+Epoch 50	Test (client-0):	Loss 1.0257 (1.0126)	Prec@1 62.500 (63.986)\
+ * Prec@1 64.000  MSE 0.047635\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[43/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.0915\
+log--[43/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.0843\
+train_one_ep_time:12.716394901275635 s\
+feature_infer_one_ep_time:10.411720991134644 s\
+feature_clst_one_ep_time:0.5949809551239014 s\
+the mean of mutal infor is:(-6.358), the est mean of mutal infor is:(-5.399)\
+Epoch 0	Test (client-0):	Loss 1.0238 (1.0238)	Prec@1 59.375 (59.375)\
+Epoch 50	Test (client-0):	Loss 1.1792 (1.0571)	Prec@1 55.469 (61.213)\
+ * Prec@1 61.610  MSE 0.050378\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[44/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.0858\
+log--[44/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.0835\
+train_one_ep_time:12.738430261611938 s\
+feature_infer_one_ep_time:9.849829196929932 s\
+feature_clst_one_ep_time:0.5982096195220947 s\
+the mean of mutal infor is:(-6.310), the est mean of mutal infor is:(-5.310)\
+Epoch 0	Test (client-0):	Loss 1.0114 (1.0114)	Prec@1 63.281 (63.281)\
+Epoch 50	Test (client-0):	Loss 1.0677 (1.0418)	Prec@1 66.406 (64.476)\
+ * Prec@1 64.220  MSE 0.048928\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[45/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.0096\
+log--[45/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.0761\
+train_one_ep_time:13.076582908630371 s\
+feature_infer_one_ep_time:9.991323471069336 s\
+feature_clst_one_ep_time:0.5025715827941895 s\
+the mean of mutal infor is:(-6.213), the est mean of mutal infor is:(-5.201)\
+Epoch 0	Test (client-0):	Loss 1.0343 (1.0343)	Prec@1 63.281 (63.281)\
+Epoch 50	Test (client-0):	Loss 1.2955 (1.0205)	Prec@1 51.562 (63.802)\
+ * Prec@1 64.150  MSE 0.047790\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[46/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.1366\
+log--[46/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.0585\
+train_one_ep_time:12.975687503814697 s\
+feature_infer_one_ep_time:9.951200246810913 s\
+feature_clst_one_ep_time:0.696556806564331 s\
+the mean of mutal infor is:(-6.304), the est mean of mutal infor is:(-5.322)\
+Epoch 0	Test (client-0):	Loss 0.9911 (0.9911)	Prec@1 60.938 (60.938)\
+Epoch 50	Test (client-0):	Loss 1.0193 (1.0183)	Prec@1 66.406 (64.752)\
+ * Prec@1 64.810  MSE 0.047189\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[47/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.9524\
+log--[47/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.0796\
+train_one_ep_time:12.756548404693604 s\
+feature_infer_one_ep_time:10.417526960372925 s\
+feature_clst_one_ep_time:0.5443406105041504 s\
+the mean of mutal infor is:(-6.105), the est mean of mutal infor is:(-5.111)\
+Epoch 0	Test (client-0):	Loss 1.0462 (1.0462)	Prec@1 63.281 (63.281)\
+Epoch 50	Test (client-0):	Loss 1.2804 (1.0425)	Prec@1 59.375 (63.909)\
+ * Prec@1 63.520  MSE 0.049040\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[48/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.1518\
+log--[48/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.0874\
+train_one_ep_time:12.768268585205078 s\
+feature_infer_one_ep_time:10.197957277297974 s\
+feature_clst_one_ep_time:0.7895069122314453 s\
+the mean of mutal infor is:(-6.280), the est mean of mutal infor is:(-5.354)\
+Epoch 0	Test (client-0):	Loss 1.0485 (1.0485)	Prec@1 55.469 (55.469)\
+Epoch 50	Test (client-0):	Loss 1.1027 (1.0649)	Prec@1 51.562 (61.428)\
+ * Prec@1 61.900  MSE 0.050093\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[49/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.0924\
+log--[49/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.0787\
+train_one_ep_time:13.187390089035034 s\
+feature_infer_one_ep_time:9.963248252868652 s\
+feature_clst_one_ep_time:0.6355869770050049 s\
+the mean of mutal infor is:(-6.408), the est mean of mutal infor is:(-5.483)\
+Epoch 0	Test (client-0):	Loss 0.9760 (0.9760)	Prec@1 64.062 (64.062)\
+Epoch 50	Test (client-0):	Loss 1.1458 (1.0590)	Prec@1 57.031 (61.412)\
+ * Prec@1 61.620  MSE 0.050412\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[50/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.9713\
+log--[50/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.0715\
+train_one_ep_time:12.947696208953857 s\
+feature_infer_one_ep_time:9.819145202636719 s\
+feature_clst_one_ep_time:0.544189453125 s\
+the mean of mutal infor is:(-6.206), the est mean of mutal infor is:(-5.220)\
+Epoch 0	Test (client-0):	Loss 1.1042 (1.1042)	Prec@1 53.906 (53.906)\
+Epoch 50	Test (client-0):	Loss 1.2270 (1.1147)	Prec@1 53.906 (60.034)\
+ * Prec@1 59.800  MSE 0.052633\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[51/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.9523\
+log--[51/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.0787\
+train_one_ep_time:13.027431726455688 s\
+feature_infer_one_ep_time:9.820106506347656 s\
+feature_clst_one_ep_time:0.5433318614959717 s\
+the mean of mutal infor is:(-6.192), the est mean of mutal infor is:(-5.245)\
+Epoch 0	Test (client-0):	Loss 1.1315 (1.1315)	Prec@1 58.594 (58.594)\
+Epoch 50	Test (client-0):	Loss 1.2377 (1.0743)	Prec@1 56.250 (61.060)\
+ * Prec@1 60.950  MSE 0.051656\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[52/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.0863\
+log--[52/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.0667\
+train_one_ep_time:12.478092908859253 s\
+feature_infer_one_ep_time:10.179074048995972 s\
+feature_clst_one_ep_time:0.6212038993835449 s\
+the mean of mutal infor is:(-6.234), the est mean of mutal infor is:(-5.276)\
+Epoch 0	Test (client-0):	Loss 1.0163 (1.0163)	Prec@1 56.250 (56.250)\
+Epoch 50	Test (client-0):	Loss 1.1250 (1.0208)	Prec@1 57.812 (63.909)\
+ * Prec@1 63.950  MSE 0.047625\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[53/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.1022\
+log--[53/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.0679\
+train_one_ep_time:12.586274862289429 s\
+feature_infer_one_ep_time:9.920173645019531 s\
+feature_clst_one_ep_time:0.4568898677825928 s\
+the mean of mutal infor is:(-6.286), the est mean of mutal infor is:(-5.329)\
+Epoch 0	Test (client-0):	Loss 1.0735 (1.0735)	Prec@1 56.250 (56.250)\
+Epoch 50	Test (client-0):	Loss 1.1999 (1.1086)	Prec@1 60.938 (60.248)\
+ * Prec@1 60.510  MSE 0.052559\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[54/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.0318\
+log--[54/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.0817\
+train_one_ep_time:13.109055757522583 s\
+feature_infer_one_ep_time:9.921088933944702 s\
+feature_clst_one_ep_time:0.5844025611877441 s\
+the mean of mutal infor is:(-6.239), the est mean of mutal infor is:(-5.276)\
+Epoch 0	Test (client-0):	Loss 0.9543 (0.9543)	Prec@1 61.719 (61.719)\
+Epoch 50	Test (client-0):	Loss 1.1072 (1.0146)	Prec@1 62.500 (63.695)\
+ * Prec@1 63.760  MSE 0.048121\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[55/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.0137\
+log--[55/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.0634\
+train_one_ep_time:12.800615549087524 s\
+feature_infer_one_ep_time:9.971519231796265 s\
+feature_clst_one_ep_time:0.5379452705383301 s\
+the mean of mutal infor is:(-6.416), the est mean of mutal infor is:(-5.534)\
+Epoch 0	Test (client-0):	Loss 1.0447 (1.0447)	Prec@1 63.281 (63.281)\
+Epoch 50	Test (client-0):	Loss 1.1610 (1.0421)	Prec@1 60.156 (63.189)\
+ * Prec@1 63.080  MSE 0.048701\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[56/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.1688\
+log--[56/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.0745\
+train_one_ep_time:12.603466987609863 s\
+feature_infer_one_ep_time:10.581258535385132 s\
+feature_clst_one_ep_time:0.513709545135498 s\
+the mean of mutal infor is:(-6.168), the est mean of mutal infor is:(-5.203)\
+Epoch 0	Test (client-0):	Loss 1.0690 (1.0690)	Prec@1 60.156 (60.156)\
+Epoch 50	Test (client-0):	Loss 1.0314 (1.0570)	Prec@1 60.156 (62.056)\
+ * Prec@1 62.100  MSE 0.050144\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[57/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.2282\
+log--[57/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.0646\
+train_one_ep_time:12.589465618133545 s\
+feature_infer_one_ep_time:10.19904088973999 s\
+feature_clst_one_ep_time:0.43666529655456543 s\
+the mean of mutal infor is:(-6.249), the est mean of mutal infor is:(-5.330)\
+Epoch 0	Test (client-0):	Loss 1.0758 (1.0758)	Prec@1 61.719 (61.719)\
+Epoch 50	Test (client-0):	Loss 1.2058 (1.1058)	Prec@1 62.500 (61.887)\
+ * Prec@1 62.250  MSE 0.050276\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[58/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.9656\
+log--[58/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.0718\
+train_one_ep_time:12.706964254379272 s\
+feature_infer_one_ep_time:9.919110536575317 s\
+feature_clst_one_ep_time:0.49064159393310547 s\
+the mean of mutal infor is:(-6.381), the est mean of mutal infor is:(-5.501)\
+Epoch 0	Test (client-0):	Loss 1.0738 (1.0738)	Prec@1 66.406 (66.406)\
+Epoch 50	Test (client-0):	Loss 1.0395 (1.0906)	Prec@1 67.188 (62.347)\
+ * Prec@1 62.420  MSE 0.050756\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[59/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.3228\
+log--[59/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.0769\
+train_one_ep_time:13.225311756134033 s\
+feature_infer_one_ep_time:9.96505856513977 s\
+feature_clst_one_ep_time:0.4458928108215332 s\
+the mean of mutal infor is:(-6.177), the est mean of mutal infor is:(-5.226)\
+Epoch 0	Test (client-0):	Loss 1.1484 (1.1484)	Prec@1 58.594 (58.594)\
+Epoch 50	Test (client-0):	Loss 1.4223 (1.1892)	Prec@1 53.125 (57.920)\
+ * Prec@1 57.650  MSE 0.055286\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[60/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.1604\
+log--[60/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8895\
+train_one_ep_time:13.163620710372925 s\
+feature_infer_one_ep_time:9.715967655181885 s\
+feature_clst_one_ep_time:0.6164469718933105 s\
+the mean of mutal infor is:(-6.444), the est mean of mutal infor is:(-5.578)\
+Epoch 0	Test (client-0):	Loss 0.8252 (0.8252)	Prec@1 69.531 (69.531)\
+Epoch 50	Test (client-0):	Loss 0.9939 (0.8550)	Prec@1 64.844 (69.301)\
+ * Prec@1 69.630  MSE 0.040965\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+Train in V2_epoch style\
+log--[61/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8630\
+log--[61/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8519\
+train_one_ep_time:12.591277837753296 s\
+feature_infer_one_ep_time:10.249090671539307 s\
+feature_clst_one_ep_time:0.5072581768035889 s\
+the mean of mutal infor is:(-6.516), the est mean of mutal infor is:(-5.657)\
+Epoch 0	Test (client-0):	Loss 0.7275 (0.7275)	Prec@1 75.781 (75.781)\
+Epoch 50	Test (client-0):	Loss 0.8931 (0.8256)	Prec@1 68.750 (70.650)\
+ * Prec@1 70.730  MSE 0.039583\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+Train in V2_epoch style\
+log--[62/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.9537\
+log--[62/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8341\
+train_one_ep_time:12.49499225616455 s\
+feature_infer_one_ep_time:9.82183027267456 s\
+feature_clst_one_ep_time:0.44731593132019043 s\
+the mean of mutal infor is:(-6.525), the est mean of mutal infor is:(-5.648)\
+Epoch 0	Test (client-0):	Loss 0.7253 (0.7253)	Prec@1 74.219 (74.219)\
+Epoch 50	Test (client-0):	Loss 0.9003 (0.8036)	Prec@1 67.188 (71.829)\
+ * Prec@1 71.930  MSE 0.038369\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+Train in V2_epoch style\
+log--[63/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8797\
+log--[63/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8293\
+train_one_ep_time:12.91732907295227 s\
+feature_infer_one_ep_time:9.789008617401123 s\
+feature_clst_one_ep_time:0.5667965412139893 s\
+the mean of mutal infor is:(-6.521), the est mean of mutal infor is:(-5.628)\
+Epoch 0	Test (client-0):	Loss 0.6998 (0.6998)	Prec@1 74.219 (74.219)\
+Epoch 50	Test (client-0):	Loss 0.8496 (0.7782)	Prec@1 71.875 (72.411)\
+ * Prec@1 72.490  MSE 0.037612\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+Train in V2_epoch style\
+log--[64/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8351\
+log--[64/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8207\
+train_one_ep_time:12.984132289886475 s\
+feature_infer_one_ep_time:9.880555152893066 s\
+feature_clst_one_ep_time:0.4915425777435303 s\
+the mean of mutal infor is:(-6.572), the est mean of mutal infor is:(-5.683)\
+Epoch 0	Test (client-0):	Loss 0.7228 (0.7228)	Prec@1 75.000 (75.000)\
+Epoch 50	Test (client-0):	Loss 0.9282 (0.8221)	Prec@1 69.531 (71.431)\
+ * Prec@1 71.320  MSE 0.039348\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+Train in V2_epoch style\
+log--[65/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.9015\
+log--[65/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8237\
+train_one_ep_time:12.551337480545044 s\
+feature_infer_one_ep_time:10.288053035736084 s\
+feature_clst_one_ep_time:0.49468517303466797 s\
+the mean of mutal infor is:(-6.529), the est mean of mutal infor is:(-5.591)\
+Epoch 0	Test (client-0):	Loss 0.6982 (0.6982)	Prec@1 72.656 (72.656)\
+Epoch 50	Test (client-0):	Loss 0.8703 (0.7881)	Prec@1 71.094 (71.798)\
+ * Prec@1 72.100  MSE 0.037657\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+Train in V2_epoch style\
+log--[66/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8499\
+log--[66/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8268\
+train_one_ep_time:12.581983804702759 s\
+feature_infer_one_ep_time:9.69459867477417 s\
+feature_clst_one_ep_time:0.43412160873413086 s\
+the mean of mutal infor is:(-6.560), the est mean of mutal infor is:(-5.637)\
+Epoch 0	Test (client-0):	Loss 0.7483 (0.7483)	Prec@1 73.438 (73.438)\
+Epoch 50	Test (client-0):	Loss 0.9487 (0.8045)	Prec@1 65.625 (71.967)\
+ * Prec@1 72.050  MSE 0.038525\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+Train in V2_epoch style\
+log--[67/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8657\
+log--[67/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8236\
+train_one_ep_time:12.356420516967773 s\
+feature_infer_one_ep_time:9.720200061798096 s\
+feature_clst_one_ep_time:0.4522535800933838 s\
+the mean of mutal infor is:(-6.639), the est mean of mutal infor is:(-5.741)\
+Epoch 0	Test (client-0):	Loss 0.6957 (0.6957)	Prec@1 79.688 (79.688)\
+Epoch 50	Test (client-0):	Loss 0.9096 (0.7997)	Prec@1 66.406 (71.431)\
+ * Prec@1 71.700  MSE 0.038360\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+Train in V2_epoch style\
+log--[68/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8334\
+log--[68/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8201\
+train_one_ep_time:12.688525199890137 s\
+feature_infer_one_ep_time:9.689993381500244 s\
+feature_clst_one_ep_time:0.3864414691925049 s\
+the mean of mutal infor is:(-6.591), the est mean of mutal infor is:(-5.638)\
+Epoch 0	Test (client-0):	Loss 0.7216 (0.7216)	Prec@1 71.875 (71.875)\
+Epoch 50	Test (client-0):	Loss 0.8110 (0.7931)	Prec@1 75.000 (71.952)\
+ * Prec@1 72.280  MSE 0.037837\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+Train in V2_epoch style\
+log--[69/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8523\
+log--[69/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8162\
+train_one_ep_time:12.336562395095825 s\
+feature_infer_one_ep_time:10.212347507476807 s\
+feature_clst_one_ep_time:0.3226475715637207 s\
+the mean of mutal infor is:(-6.529), the est mean of mutal infor is:(-5.567)\
+Epoch 0	Test (client-0):	Loss 0.8036 (0.8036)	Prec@1 70.312 (70.312)\
+Epoch 50	Test (client-0):	Loss 0.9151 (0.8442)	Prec@1 68.750 (70.420)\
+ * Prec@1 70.720  MSE 0.040077\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+Train in V2_epoch style\
+log--[70/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7436\
+log--[70/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8257\
+train_one_ep_time:12.28119444847107 s\
+feature_infer_one_ep_time:9.95090651512146 s\
+feature_clst_one_ep_time:0.4359769821166992 s\
+the mean of mutal infor is:(-6.509), the est mean of mutal infor is:(-5.560)\
+Epoch 0	Test (client-0):	Loss 0.7428 (0.7428)	Prec@1 72.656 (72.656)\
+Epoch 50	Test (client-0):	Loss 0.9281 (0.8171)	Prec@1 71.094 (70.849)\
+ * Prec@1 71.130  MSE 0.038911\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+Train in V2_epoch style\
+log--[71/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6564\
+log--[71/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8078\
+train_one_ep_time:12.315454244613647 s\
+feature_infer_one_ep_time:9.70792269706726 s\
+feature_clst_one_ep_time:0.5222678184509277 s\
+the mean of mutal infor is:(-6.609), the est mean of mutal infor is:(-5.682)\
+Epoch 0	Test (client-0):	Loss 0.7667 (0.7667)	Prec@1 68.750 (68.750)\
+Epoch 50	Test (client-0):	Loss 0.8152 (0.7904)	Prec@1 71.875 (71.369)\
+ * Prec@1 72.020  MSE 0.037838\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+Train in V2_epoch style\
+log--[72/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7889\
+log--[72/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8212\
+train_one_ep_time:12.878796339035034 s\
+feature_infer_one_ep_time:9.565870761871338 s\
+feature_clst_one_ep_time:0.47011494636535645 s\
+the mean of mutal infor is:(-6.618), the est mean of mutal infor is:(-5.662)\
+Epoch 0	Test (client-0):	Loss 0.7398 (0.7398)	Prec@1 73.438 (73.438)\
+Epoch 50	Test (client-0):	Loss 0.8533 (0.7938)	Prec@1 71.875 (72.794)\
+ * Prec@1 72.560  MSE 0.038068\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[73/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7884\
+log--[73/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8153\
+train_one_ep_time:12.324341058731079 s\
+feature_infer_one_ep_time:9.969349145889282 s\
+feature_clst_one_ep_time:0.5732042789459229 s\
+the mean of mutal infor is:(-6.628), the est mean of mutal infor is:(-5.685)\
+Epoch 0	Test (client-0):	Loss 0.8051 (0.8051)	Prec@1 72.656 (72.656)\
+Epoch 50	Test (client-0):	Loss 0.9690 (0.8601)	Prec@1 66.406 (69.822)\
+ * Prec@1 69.810  MSE 0.041132\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[74/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7084\
+log--[74/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8094\
+train_one_ep_time:12.276121377944946 s\
+feature_infer_one_ep_time:10.44934606552124 s\
+feature_clst_one_ep_time:0.3831174373626709 s\
+the mean of mutal infor is:(-6.622), the est mean of mutal infor is:(-5.658)\
+Epoch 0	Test (client-0):	Loss 0.7120 (0.7120)	Prec@1 72.656 (72.656)\
+Epoch 50	Test (client-0):	Loss 0.9758 (0.8430)	Prec@1 71.094 (70.205)\
+ * Prec@1 70.400  MSE 0.040400\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[75/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8423\
+log--[75/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8148\
+train_one_ep_time:12.569087028503418 s\
+feature_infer_one_ep_time:9.763864517211914 s\
+feature_clst_one_ep_time:0.5046365261077881 s\
+the mean of mutal infor is:(-6.601), the est mean of mutal infor is:(-5.630)\
+Epoch 0	Test (client-0):	Loss 0.7907 (0.7907)	Prec@1 71.094 (71.094)\
+Epoch 50	Test (client-0):	Loss 0.9894 (0.8300)	Prec@1 65.625 (70.221)\
+ * Prec@1 70.430  MSE 0.039713\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[76/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7234\
+log--[76/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8069\
+train_one_ep_time:13.01325273513794 s\
+feature_infer_one_ep_time:9.70772647857666 s\
+feature_clst_one_ep_time:0.47664332389831543 s\
+the mean of mutal infor is:(-6.657), the est mean of mutal infor is:(-5.710)\
+Epoch 0	Test (client-0):	Loss 0.9524 (0.9524)	Prec@1 68.750 (68.750)\
+Epoch 50	Test (client-0):	Loss 1.0137 (1.0018)	Prec@1 67.969 (66.759)\
+ * Prec@1 66.980  MSE 0.045562\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[77/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8753\
+log--[77/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8173\
+train_one_ep_time:13.16695499420166 s\
+feature_infer_one_ep_time:9.780647993087769 s\
+feature_clst_one_ep_time:0.42544054985046387 s\
+the mean of mutal infor is:(-6.633), the est mean of mutal infor is:(-5.691)\
+Epoch 0	Test (client-0):	Loss 0.7343 (0.7343)	Prec@1 72.656 (72.656)\
+Epoch 50	Test (client-0):	Loss 0.8999 (0.8177)	Prec@1 70.312 (70.971)\
+ * Prec@1 71.120  MSE 0.039148\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[78/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7795\
+feature_infer_one_ep_time:10.170233249664307 s\
+feature_clst_one_ep_time:0.49022436141967773 s\
+the mean of mutal infor is:(-6.627), the est mean of mutal infor is:(-5.684)\
+Epoch 0	Test (client-0):	Loss 0.7107 (0.7107)	Prec@1 77.344 (77.344)\
+Epoch 50	Test (client-0):	Loss 0.9725 (0.8000)	Prec@1 68.750 (71.584)\
+ * Prec@1 71.910  MSE 0.038453\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[79/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8545\
+log--[79/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8195\
+train_one_ep_time:12.36264443397522 s\
+feature_infer_one_ep_time:9.860087871551514 s\
+feature_clst_one_ep_time:0.4354701042175293 s\
+the mean of mutal infor is:(-6.574), the est mean of mutal infor is:(-5.592)\
+Epoch 0	Test (client-0):	Loss 0.7170 (0.7170)	Prec@1 72.656 (72.656)\
+Epoch 50	Test (client-0):	Loss 0.8627 (0.7906)	Prec@1 69.531 (71.737)\
+ * Prec@1 71.980  MSE 0.038020\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[80/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6715\
+log--[80/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8134\
+train_one_ep_time:12.99103569984436 s\
+feature_infer_one_ep_time:9.831714153289795 s\
+feature_clst_one_ep_time:0.5427260398864746 s\
+the mean of mutal infor is:(-6.621), the est mean of mutal infor is:(-5.666)\
+Epoch 0	Test (client-0):	Loss 0.6903 (0.6903)	Prec@1 75.781 (75.781)\
+Epoch 50	Test (client-0):	Loss 0.8816 (0.7623)	Prec@1 72.656 (72.947)\
+ * Prec@1 73.070  MSE 0.036670\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[81/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8524\
+log--[81/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8027\
+train_one_ep_time:13.028037071228027 s\
+feature_infer_one_ep_time:9.65451169013977 s\
+feature_clst_one_ep_time:0.5105009078979492 s\
+the mean of mutal infor is:(-6.607), the est mean of mutal infor is:(-5.652)\
+./saves/cifar10/SCA_new_infocons_sgm_lg1_thre0.125/pretrain_False_lambd_0_noise_0.01_epoch_240_bottleneck_noRELU_C8S1_log_1_ATstrength_0.3_lr_0.05_varthres_0.125_attention//visualize/81.png\
+/usr/local/lib/python3.11/dist-packages/torch/utils/data/dataloader.py:624: UserWarning: This DataLoader will create 8 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.\
+  warnings.warn(\
+Epoch 0	Test (client-0):	Loss 0.8308 (0.8308)	Prec@1 67.188 (67.188)\
+Epoch 50	Test (client-0):	Loss 0.9265 (0.8829)	Prec@1 67.969 (69.056)\
+ * Prec@1 69.290  MSE 0.041672\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+/usr/local/lib/python3.11/dist-packages/torch/optim/lr_scheduler.py:243: UserWarning: The epoch parameter in `scheduler.step()` was not necessary and is being deprecated where possible. Please use `scheduler.step()` to step the scheduler. During the deprecation, if epoch is different from None, the closed form is used instead of the new chainable form, where available. Please open an issue if you are unable to replicate your use case: {\field{\*\fldinst{HYPERLINK "https://github.com/pytorch/pytorch/issues/new/choose"}}{\fldrslt \cf4 \strokec4 https://github.com/pytorch/pytorch/issues/new/choose}}.\
+  warnings.warn(EPOCH_DEPRECATION_WARNING, UserWarning)\
+start to adding noise\
+Train in V2_epoch style\
+/kaggle/working/attention/model_training_attention.py:1457: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).\
+  train_loss_list.append(torch.tensor(train_loss))\
+log--[82/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7488\
+log--[82/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8132\
+train_one_ep_time:12.926397323608398 s\
+feature_infer_one_ep_time:9.809995651245117 s\
+feature_clst_one_ep_time:0.4909992218017578 s\
+the mean of mutal infor is:(-6.639), the est mean of mutal infor is:(-5.665)\
+Epoch 0	Test (client-0):	Loss 0.7362 (0.7362)	Prec@1 75.000 (75.000)\
+Epoch 50	Test (client-0):	Loss 0.9048 (0.8482)	Prec@1 71.094 (70.711)\
+ * Prec@1 70.850  MSE 0.039762\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[83/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7994\
+log--[83/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8058\
+train_one_ep_time:12.997228860855103 s\
+feature_infer_one_ep_time:9.694294452667236 s\
+feature_clst_one_ep_time:0.5267243385314941 s\
+the mean of mutal infor is:(-6.618), the est mean of mutal infor is:(-5.617)\
+Epoch 0	Test (client-0):	Loss 0.8112 (0.8112)	Prec@1 73.438 (73.438)\
+Epoch 50	Test (client-0):	Loss 0.8678 (0.8541)	Prec@1 71.094 (70.496)\
+ * Prec@1 70.430  MSE 0.040467\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[84/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7271\
+log--[84/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8157\
+train_one_ep_time:12.594135761260986 s\
+feature_infer_one_ep_time:10.238267183303833 s\
+feature_clst_one_ep_time:0.45327091217041016 s\
+the mean of mutal infor is:(-6.640), the est mean of mutal infor is:(-5.667)\
+Epoch 0	Test (client-0):	Loss 0.6976 (0.6976)	Prec@1 77.344 (77.344)\
+Epoch 50	Test (client-0):	Loss 0.8640 (0.7898)	Prec@1 70.312 (72.319)\
+ * Prec@1 72.600  MSE 0.037873\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[85/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8287\
+log--[85/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8191\
+train_one_ep_time:12.435060501098633 s\
+feature_infer_one_ep_time:9.85316777229309 s\
+feature_clst_one_ep_time:0.41737866401672363 s\
+the mean of mutal infor is:(-6.668), the est mean of mutal infor is:(-5.716)\
+Epoch 0	Test (client-0):	Loss 0.6493 (0.6493)	Prec@1 75.781 (75.781)\
+Epoch 50	Test (client-0):	Loss 0.8331 (0.7591)	Prec@1 68.750 (73.376)\
+ * Prec@1 73.420  MSE 0.036640\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[86/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.9340\
+log--[86/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8114\
+train_one_ep_time:12.646838665008545 s\
+feature_infer_one_ep_time:10.068215131759644 s\
+feature_clst_one_ep_time:0.44605040550231934 s\
+the mean of mutal infor is:(-6.507), the est mean of mutal infor is:(-5.487)\
+Epoch 0	Test (client-0):	Loss 0.8016 (0.8016)	Prec@1 70.312 (70.312)\
+Epoch 50	Test (client-0):	Loss 1.0710 (0.8860)	Prec@1 65.625 (68.888)\
+ * Prec@1 68.940  MSE 0.041904\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[87/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7886\
+log--[87/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8135\
+train_one_ep_time:12.994373083114624 s\
+feature_infer_one_ep_time:9.853591680526733 s\
+feature_clst_one_ep_time:0.48061156272888184 s\
+the mean of mutal infor is:(-6.629), the est mean of mutal infor is:(-5.645)\
+Epoch 0	Test (client-0):	Loss 0.6977 (0.6977)	Prec@1 73.438 (73.438)\
+Epoch 50	Test (client-0):	Loss 0.8980 (0.7644)	Prec@1 70.312 (72.763)\
+ * Prec@1 72.840  MSE 0.036896\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[88/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7815\
+log--[88/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8086\
+train_one_ep_time:12.622968196868896 s\
+feature_infer_one_ep_time:10.41532826423645 s\
+feature_clst_one_ep_time:0.505002498626709 s\
+the mean of mutal infor is:(-6.638), the est mean of mutal infor is:(-5.668)\
+Epoch 0	Test (client-0):	Loss 0.6653 (0.6653)	Prec@1 77.344 (77.344)\
+Epoch 50	Test (client-0):	Loss 0.9697 (0.8064)	Prec@1 67.188 (71.354)\
+ * Prec@1 71.570  MSE 0.038264\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[89/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8531\
+log--[89/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8020\
+train_one_ep_time:12.796391487121582 s\
+feature_infer_one_ep_time:10.39800763130188 s\
+feature_clst_one_ep_time:0.5372622013092041 s\
+the mean of mutal infor is:(-6.639), the est mean of mutal infor is:(-5.621)\
+Epoch 0	Test (client-0):	Loss 0.7346 (0.7346)	Prec@1 76.562 (76.562)\
+Epoch 50	Test (client-0):	Loss 0.8205 (0.7924)	Prec@1 72.656 (72.350)\
+ * Prec@1 72.270  MSE 0.038225\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[90/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6423\
+log--[90/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8043\
+train_one_ep_time:12.448575973510742 s\
+feature_infer_one_ep_time:9.755523204803467 s\
+feature_clst_one_ep_time:0.4646766185760498 s\
+the mean of mutal infor is:(-6.602), the est mean of mutal infor is:(-5.597)\
+Epoch 0	Test (client-0):	Loss 0.7103 (0.7103)	Prec@1 77.344 (77.344)\
+Epoch 50	Test (client-0):	Loss 0.7974 (0.7926)	Prec@1 71.875 (72.319)\
+ * Prec@1 72.560  MSE 0.037655\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[91/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7123\
+log--[91/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8095\
+train_one_ep_time:12.870444297790527 s\
+feature_infer_one_ep_time:9.727109670639038 s\
+feature_clst_one_ep_time:0.4026312828063965 s\
+the mean of mutal infor is:(-6.687), the est mean of mutal infor is:(-5.731)\
+Epoch 0	Test (client-0):	Loss 0.6420 (0.6420)	Prec@1 77.344 (77.344)\
+Epoch 50	Test (client-0):	Loss 0.8489 (0.7827)	Prec@1 71.875 (72.794)\
+ * Prec@1 72.390  MSE 0.037734\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[92/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.9180\
+log--[92/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7970\
+train_one_ep_time:12.805001497268677 s\
+feature_infer_one_ep_time:9.657105922698975 s\
+feature_clst_one_ep_time:0.47002077102661133 s\
+the mean of mutal infor is:(-6.591), the est mean of mutal infor is:(-5.592)\
+Epoch 0	Test (client-0):	Loss 0.8046 (0.8046)	Prec@1 73.438 (73.438)\
+Epoch 50	Test (client-0):	Loss 0.8712 (0.8433)	Prec@1 72.656 (70.803)\
+ * Prec@1 70.990  MSE 0.039736\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[93/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.9125\
+log--[93/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8041\
+train_one_ep_time:12.519037246704102 s\
+feature_infer_one_ep_time:10.18923282623291 s\
+feature_clst_one_ep_time:0.34293651580810547 s\
+the mean of mutal infor is:(-6.699), the est mean of mutal infor is:(-5.740)\
+Epoch 0	Test (client-0):	Loss 0.6544 (0.6544)	Prec@1 73.438 (73.438)\
+Epoch 50	Test (client-0):	Loss 0.9240 (0.7870)	Prec@1 68.750 (71.890)\
+ * Prec@1 71.860  MSE 0.038192\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[94/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6980\
+log--[94/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8191\
+train_one_ep_time:12.155129432678223 s\
+feature_infer_one_ep_time:9.617498874664307 s\
+feature_clst_one_ep_time:0.36945533752441406 s\
+the mean of mutal infor is:(-6.633), the est mean of mutal infor is:(-5.654)\
+Epoch 0	Test (client-0):	Loss 0.7358 (0.7358)	Prec@1 74.219 (74.219)\
+Epoch 50	Test (client-0):	Loss 0.8893 (0.7800)	Prec@1 68.750 (72.794)\
+ * Prec@1 73.010  MSE 0.037406\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[95/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7520\
+log--[95/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7990\
+train_one_ep_time:12.674484014511108 s\
+feature_infer_one_ep_time:9.671143293380737 s\
+feature_clst_one_ep_time:0.4341878890991211 s\
+the mean of mutal infor is:(-6.575), the est mean of mutal infor is:(-5.577)\
+Epoch 0	Test (client-0):	Loss 0.6999 (0.6999)	Prec@1 74.219 (74.219)\
+Epoch 50	Test (client-0):	Loss 0.8893 (0.7780)	Prec@1 66.406 (72.044)\
+ * Prec@1 72.260  MSE 0.037503\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[96/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8366\
+log--[96/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8071\
+train_one_ep_time:12.997509479522705 s\
+feature_infer_one_ep_time:9.936647415161133 s\
+feature_clst_one_ep_time:0.5024683475494385 s\
+the mean of mutal infor is:(-6.591), the est mean of mutal infor is:(-5.599)\
+Epoch 0	Test (client-0):	Loss 0.7277 (0.7277)	Prec@1 72.656 (72.656)\
+Epoch 50	Test (client-0):	Loss 0.8772 (0.8551)	Prec@1 69.531 (69.868)\
+ * Prec@1 70.010  MSE 0.040788\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[97/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6734\
+log--[97/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7999\
+train_one_ep_time:12.614972591400146 s\
+feature_infer_one_ep_time:10.28041124343872 s\
+feature_clst_one_ep_time:0.5136394500732422 s\
+the mean of mutal infor is:(-6.616), the est mean of mutal infor is:(-5.630)\
+Epoch 0	Test (client-0):	Loss 0.7957 (0.7957)	Prec@1 70.312 (70.312)\
+Epoch 50	Test (client-0):	Loss 1.0309 (0.8803)	Prec@1 64.062 (68.949)\
+ * Prec@1 68.840  MSE 0.042446\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[98/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8466\
+log--[98/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8046\
+train_one_ep_time:12.64475417137146 s\
+feature_infer_one_ep_time:9.792873859405518 s\
+feature_clst_one_ep_time:0.4871385097503662 s\
+the mean of mutal infor is:(-6.639), the est mean of mutal infor is:(-5.679)\
+Epoch 0	Test (client-0):	Loss 0.7551 (0.7551)	Prec@1 75.000 (75.000)\
+Epoch 50	Test (client-0):	Loss 0.8241 (0.7830)	Prec@1 73.438 (72.794)\
+ * Prec@1 72.940  MSE 0.037142\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[99/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7477\
+log--[99/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8087\
+train_one_ep_time:13.105633020401001 s\
+feature_infer_one_ep_time:10.049682855606079 s\
+feature_clst_one_ep_time:0.3833432197570801 s\
+the mean of mutal infor is:(-6.693), the est mean of mutal infor is:(-5.734)\
+Epoch 0	Test (client-0):	Loss 0.7374 (0.7374)	Prec@1 75.781 (75.781)\
+Epoch 50	Test (client-0):	Loss 0.9490 (0.8208)	Prec@1 67.969 (70.741)\
+ * Prec@1 70.890  MSE 0.039174\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[100/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7481\
+log--[100/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8056\
+train_one_ep_time:13.010387897491455 s\
+feature_infer_one_ep_time:9.75432562828064 s\
+feature_clst_one_ep_time:0.41736388206481934 s\
+the mean of mutal infor is:(-6.660), the est mean of mutal infor is:(-5.692)\
+Epoch 0	Test (client-0):	Loss 0.6850 (0.6850)	Prec@1 79.688 (79.688)\
+Epoch 50	Test (client-0):	Loss 0.9746 (0.8099)	Prec@1 66.406 (71.584)\
+ * Prec@1 71.330  MSE 0.039114\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[101/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6806\
+log--[101/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8038\
+train_one_ep_time:12.594735622406006 s\
+feature_infer_one_ep_time:10.268541812896729 s\
+feature_clst_one_ep_time:0.49781155586242676 s\
+the mean of mutal infor is:(-6.681), the est mean of mutal infor is:(-5.736)\
+Epoch 0	Test (client-0):	Loss 0.6819 (0.6819)	Prec@1 78.125 (78.125)\
+Epoch 50	Test (client-0):	Loss 1.0109 (0.8215)	Prec@1 62.500 (70.818)\
+ * Prec@1 70.900  MSE 0.039427\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[102/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7304\
+log--[102/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7956\
+train_one_ep_time:12.440479278564453 s\
+feature_infer_one_ep_time:9.80582880973816 s\
+feature_clst_one_ep_time:0.5431833267211914 s\
+the mean of mutal infor is:(-6.649), the est mean of mutal infor is:(-5.663)\
+Epoch 0	Test (client-0):	Loss 0.7489 (0.7489)	Prec@1 71.875 (71.875)\
+Epoch 50	Test (client-0):	Loss 0.8037 (0.7992)	Prec@1 72.656 (71.890)\
+ * Prec@1 71.900  MSE 0.038711\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[103/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7370\
+log--[103/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8082\
+train_one_ep_time:12.369240283966064 s\
+feature_infer_one_ep_time:9.7406587600708 s\
+feature_clst_one_ep_time:0.4929025173187256 s\
+the mean of mutal infor is:(-6.585), the est mean of mutal infor is:(-5.605)\
+Epoch 0	Test (client-0):	Loss 0.7036 (0.7036)	Prec@1 73.438 (73.438)\
+Epoch 50	Test (client-0):	Loss 0.9347 (0.7993)	Prec@1 65.625 (71.431)\
+ * Prec@1 71.360  MSE 0.038786\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[104/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7122\
+log--[104/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7913\
+train_one_ep_time:12.77167272567749 s\
+feature_infer_one_ep_time:9.718120336532593 s\
+feature_clst_one_ep_time:0.4379546642303467 s\
+the mean of mutal infor is:(-6.630), the est mean of mutal infor is:(-5.655)\
+Epoch 0	Test (client-0):	Loss 0.7214 (0.7214)	Prec@1 76.562 (76.562)\
+Epoch 50	Test (client-0):	Loss 0.9554 (0.7743)	Prec@1 67.188 (72.963)\
+ * Prec@1 73.030  MSE 0.037153\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[105/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8176\
+log--[105/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8058\
+train_one_ep_time:12.32007908821106 s\
+feature_infer_one_ep_time:10.223878860473633 s\
+feature_clst_one_ep_time:0.4624159336090088 s\
+the mean of mutal infor is:(-6.658), the est mean of mutal infor is:(-5.670)\
+Epoch 0	Test (client-0):	Loss 0.6402 (0.6402)	Prec@1 79.688 (79.688)\
+Epoch 50	Test (client-0):	Loss 0.8821 (0.7779)	Prec@1 70.312 (72.886)\
+ * Prec@1 72.800  MSE 0.037258\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[106/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8380\
+log--[106/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7982\
+train_one_ep_time:12.570883512496948 s\
+feature_infer_one_ep_time:10.205010652542114 s\
+feature_clst_one_ep_time:0.29980993270874023 s\
+the mean of mutal infor is:(-6.671), the est mean of mutal infor is:(-5.712)\
+Epoch 0	Test (client-0):	Loss 0.7641 (0.7641)	Prec@1 73.438 (73.438)\
+Epoch 50	Test (client-0):	Loss 0.9476 (0.8320)	Prec@1 66.406 (70.542)\
+ * Prec@1 70.930  MSE 0.039897\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[107/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7281\
+log--[107/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8036\
+train_one_ep_time:12.412754774093628 s\
+feature_infer_one_ep_time:9.512603044509888 s\
+feature_clst_one_ep_time:0.4507744312286377 s\
+the mean of mutal infor is:(-6.591), the est mean of mutal infor is:(-5.603)\
+Epoch 0	Test (client-0):	Loss 0.6521 (0.6521)	Prec@1 75.781 (75.781)\
+Epoch 50	Test (client-0):	Loss 0.8839 (0.7595)	Prec@1 71.875 (73.361)\
+ * Prec@1 73.370  MSE 0.036688\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[108/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8008\
+log--[108/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7867\
+train_one_ep_time:12.68544340133667 s\
+feature_infer_one_ep_time:9.658669710159302 s\
+feature_clst_one_ep_time:0.5110142230987549 s\
+the mean of mutal infor is:(-6.724), the est mean of mutal infor is:(-5.795)\
+Epoch 0	Test (client-0):	Loss 0.7233 (0.7233)	Prec@1 73.438 (73.438)\
+Epoch 50	Test (client-0):	Loss 0.9092 (0.8163)	Prec@1 71.094 (72.273)\
+ * Prec@1 71.850  MSE 0.038788\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[109/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.9275\
+log--[109/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7943\
+train_one_ep_time:12.847809791564941 s\
+feature_infer_one_ep_time:10.161348819732666 s\
+feature_clst_one_ep_time:0.38256072998046875 s\
+the mean of mutal infor is:(-6.680), the est mean of mutal infor is:(-5.735)\
+Epoch 0	Test (client-0):	Loss 0.6879 (0.6879)	Prec@1 75.781 (75.781)\
+Epoch 50	Test (client-0):	Loss 0.8152 (0.7770)	Prec@1 75.781 (73.009)\
+ * Prec@1 72.610  MSE 0.037294\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[110/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8286\
+log--[110/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7918\
+train_one_ep_time:12.730828285217285 s\
+feature_infer_one_ep_time:10.242681980133057 s\
+feature_clst_one_ep_time:0.30773472785949707 s\
+the mean of mutal infor is:(-6.658), the est mean of mutal infor is:(-5.644)\
+Epoch 0	Test (client-0):	Loss 0.6116 (0.6116)	Prec@1 79.688 (79.688)\
+Epoch 50	Test (client-0):	Loss 0.9051 (0.7764)	Prec@1 70.312 (72.641)\
+ * Prec@1 73.210  MSE 0.036784\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[111/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7003\
+log--[111/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7993\
+train_one_ep_time:12.307793855667114 s\
+feature_infer_one_ep_time:9.661419868469238 s\
+feature_clst_one_ep_time:0.4882950782775879 s\
+the mean of mutal infor is:(-6.666), the est mean of mutal infor is:(-5.670)\
+Epoch 0	Test (client-0):	Loss 0.7585 (0.7585)	Prec@1 74.219 (74.219)\
+Epoch 50	Test (client-0):	Loss 0.9769 (0.8362)	Prec@1 74.219 (70.726)\
+ * Prec@1 71.080  MSE 0.039538\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[112/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8788\
+log--[112/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7916\
+train_one_ep_time:12.86964726448059 s\
+feature_infer_one_ep_time:9.778521299362183 s\
+feature_clst_one_ep_time:0.46874475479125977 s\
+the mean of mutal infor is:(-6.604), the est mean of mutal infor is:(-5.632)\
+Epoch 0	Test (client-0):	Loss 0.6635 (0.6635)	Prec@1 72.656 (72.656)\
+Epoch 50	Test (client-0):	Loss 0.9177 (0.7975)	Prec@1 70.312 (71.752)\
+ * Prec@1 72.050  MSE 0.038365\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[113/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6101\
+log--[113/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7950\
+train_one_ep_time:13.124762773513794 s\
+feature_infer_one_ep_time:9.931329488754272 s\
+feature_clst_one_ep_time:0.46601223945617676 s\
+the mean of mutal infor is:(-6.676), the est mean of mutal infor is:(-5.683)\
+Epoch 0	Test (client-0):	Loss 0.7463 (0.7463)	Prec@1 68.750 (68.750)\
+Epoch 50	Test (client-0):	Loss 1.0198 (0.8237)	Prec@1 66.406 (70.542)\
+ * Prec@1 70.920  MSE 0.039008\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[114/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7942\
+log--[114/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8011\
+train_one_ep_time:12.472917556762695 s\
+feature_infer_one_ep_time:10.19967269897461 s\
+feature_clst_one_ep_time:0.46721935272216797 s\
+the mean of mutal infor is:(-6.634), the est mean of mutal infor is:(-5.635)\
+Epoch 0	Test (client-0):	Loss 0.8088 (0.8088)	Prec@1 70.312 (70.312)\
+Epoch 50	Test (client-0):	Loss 0.8412 (0.8397)	Prec@1 71.094 (70.818)\
+ * Prec@1 71.010  MSE 0.040537\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[115/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7507\
+log--[115/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7912\
+train_one_ep_time:12.488022327423096 s\
+feature_infer_one_ep_time:9.745296716690063 s\
+feature_clst_one_ep_time:0.48008251190185547 s\
+the mean of mutal infor is:(-6.651), the est mean of mutal infor is:(-5.684)\
+Epoch 0	Test (client-0):	Loss 0.6733 (0.6733)	Prec@1 78.125 (78.125)\
+Epoch 50	Test (client-0):	Loss 0.8455 (0.7616)	Prec@1 74.219 (73.070)\
+ * Prec@1 73.100  MSE 0.036855\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[116/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7293\
+log--[116/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7876\
+train_one_ep_time:13.059569597244263 s\
+feature_infer_one_ep_time:9.749285221099854 s\
+feature_clst_one_ep_time:0.4476494789123535 s\
+the mean of mutal infor is:(-6.593), the est mean of mutal infor is:(-5.608)\
+Epoch 0	Test (client-0):	Loss 0.7683 (0.7683)	Prec@1 75.000 (75.000)\
+Epoch 50	Test (client-0):	Loss 0.8862 (0.8290)	Prec@1 70.312 (71.170)\
+ * Prec@1 71.370  MSE 0.039182\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[117/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7406\
+log--[117/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7932\
+train_one_ep_time:12.788654565811157 s\
+feature_infer_one_ep_time:9.638150691986084 s\
+feature_clst_one_ep_time:0.5310747623443604 s\
+the mean of mutal infor is:(-6.635), the est mean of mutal infor is:(-5.648)\
+Epoch 0	Test (client-0):	Loss 0.7212 (0.7212)	Prec@1 72.656 (72.656)\
+Epoch 50	Test (client-0):	Loss 0.8612 (0.8255)	Prec@1 71.875 (71.155)\
+ * Prec@1 71.280  MSE 0.039537\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[118/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8768\
+log--[118/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8020\
+train_one_ep_time:12.396998882293701 s\
+feature_infer_one_ep_time:10.069990158081055 s\
+feature_clst_one_ep_time:0.43462061882019043 s\
+the mean of mutal infor is:(-6.654), the est mean of mutal infor is:(-5.685)\
+Epoch 0	Test (client-0):	Loss 0.6974 (0.6974)	Prec@1 77.344 (77.344)\
+Epoch 50	Test (client-0):	Loss 0.8189 (0.7953)	Prec@1 71.094 (72.457)\
+ * Prec@1 72.130  MSE 0.038009\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[119/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7510\
+log--[119/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7929\
+train_one_ep_time:12.510844230651855 s\
+feature_infer_one_ep_time:9.697721481323242 s\
+feature_clst_one_ep_time:0.41994714736938477 s\
+the mean of mutal infor is:(-6.706), the est mean of mutal infor is:(-5.758)\
+Epoch 0	Test (client-0):	Loss 0.9014 (0.9014)	Prec@1 70.312 (70.312)\
+Epoch 50	Test (client-0):	Loss 0.9934 (0.9260)	Prec@1 69.531 (67.433)\
+ * Prec@1 67.860  MSE 0.043380\
+lambd value is: 0.0 learning rate is: 0.010000000000000002\
+start to adding noise\
+Train in V2_epoch style\
+log--[120/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.9209\
+log--[120/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7013\
+train_one_ep_time:12.487365245819092 s\
+feature_infer_one_ep_time:9.870035886764526 s\
+feature_clst_one_ep_time:0.45019054412841797 s\
+the mean of mutal infor is:(-6.698), the est mean of mutal infor is:(-5.772)\
+Epoch 0	Test (client-0):	Loss 0.6222 (0.6222)	Prec@1 76.562 (76.562)\
+Epoch 50	Test (client-0):	Loss 0.7496 (0.7066)	Prec@1 73.438 (74.954)\
+ * Prec@1 75.460  MSE 0.033791\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[121/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6491\
+log--[121/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6834\
+train_one_ep_time:13.055516958236694 s\
+feature_infer_one_ep_time:9.969616889953613 s\
+feature_clst_one_ep_time:0.3601043224334717 s\
+the mean of mutal infor is:(-6.755), the est mean of mutal infor is:(-5.841)\
+./saves/cifar10/SCA_new_infocons_sgm_lg1_thre0.125/pretrain_False_lambd_0_noise_0.01_epoch_240_bottleneck_noRELU_C8S1_log_1_ATstrength_0.3_lr_0.05_varthres_0.125_attention//visualize/121.png\
+/usr/local/lib/python3.11/dist-packages/torch/utils/data/dataloader.py:624: UserWarning: This DataLoader will create 8 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.\
+  warnings.warn(\
+Epoch 0	Test (client-0):	Loss 0.5694 (0.5694)	Prec@1 78.125 (78.125)\
+Epoch 50	Test (client-0):	Loss 0.8033 (0.6832)	Prec@1 77.344 (76.011)\
+ * Prec@1 76.350  MSE 0.032656\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+/usr/local/lib/python3.11/dist-packages/torch/optim/lr_scheduler.py:243: UserWarning: The epoch parameter in `scheduler.step()` was not necessary and is being deprecated where possible. Please use `scheduler.step()` to step the scheduler. During the deprecation, if epoch is different from None, the closed form is used instead of the new chainable form, where available. Please open an issue if you are unable to replicate your use case: {\field{\*\fldinst{HYPERLINK "https://github.com/pytorch/pytorch/issues/new/choose"}}{\fldrslt \cf4 \strokec4 https://github.com/pytorch/pytorch/issues/new/choose}}.\
+  warnings.warn(EPOCH_DEPRECATION_WARNING, UserWarning)\
+start to adding noise\
+Train in V2_epoch style\
+/kaggle/working/attention/model_training_attention.py:1457: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).\
+  train_loss_list.append(torch.tensor(train_loss))\
+log--[122/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6697\
+log--[122/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6762\
+train_one_ep_time:12.504910945892334 s\
+feature_infer_one_ep_time:9.896955966949463 s\
+feature_clst_one_ep_time:0.40791940689086914 s\
+the mean of mutal infor is:(-6.771), the est mean of mutal infor is:(-5.855)\
+Epoch 0	Test (client-0):	Loss 0.6240 (0.6240)	Prec@1 80.469 (80.469)\
+Epoch 50	Test (client-0):	Loss 0.8220 (0.7190)	Prec@1 75.781 (75.260)\
+ * Prec@1 75.330  MSE 0.034272\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[123/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6613\
+log--[123/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6678\
+train_one_ep_time:12.936588287353516 s\
+feature_infer_one_ep_time:9.63899850845337 s\
+feature_clst_one_ep_time:0.45070719718933105 s\
+the mean of mutal infor is:(-6.782), the est mean of mutal infor is:(-5.874)\
+Epoch 0	Test (client-0):	Loss 0.5959 (0.5959)	Prec@1 78.906 (78.906)\
+Epoch 50	Test (client-0):	Loss 0.7957 (0.6893)	Prec@1 74.219 (75.766)\
+ * Prec@1 75.920  MSE 0.033117\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[124/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6553\
+log--[124/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6679\
+train_one_ep_time:12.529038906097412 s\
+feature_infer_one_ep_time:10.280674457550049 s\
+feature_clst_one_ep_time:0.40681958198547363 s\
+the mean of mutal infor is:(-6.798), the est mean of mutal infor is:(-5.890)\
+Epoch 0	Test (client-0):	Loss 0.5358 (0.5358)	Prec@1 78.906 (78.906)\
+Epoch 50	Test (client-0):	Loss 0.7519 (0.6812)	Prec@1 75.781 (76.103)\
+ * Prec@1 76.360  MSE 0.032529\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[125/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6575\
+log--[125/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6654\
+train_one_ep_time:12.730309009552002 s\
+feature_infer_one_ep_time:10.354930639266968 s\
+feature_clst_one_ep_time:0.3990809917449951 s\
+the mean of mutal infor is:(-6.798), the est mean of mutal infor is:(-5.892)\
+Epoch 0	Test (client-0):	Loss 0.5159 (0.5159)	Prec@1 78.906 (78.906)\
+Epoch 50	Test (client-0):	Loss 0.7523 (0.6696)	Prec@1 76.562 (76.777)\
+ * Prec@1 76.610  MSE 0.032315\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[126/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7010\
+log--[126/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6659\
+train_one_ep_time:12.543603420257568 s\
+feature_infer_one_ep_time:9.912851810455322 s\
+feature_clst_one_ep_time:0.35936832427978516 s\
+the mean of mutal infor is:(-6.822), the est mean of mutal infor is:(-5.909)\
+Epoch 0	Test (client-0):	Loss 0.5843 (0.5843)	Prec@1 77.344 (77.344)\
+Epoch 50	Test (client-0):	Loss 0.8197 (0.7118)	Prec@1 76.562 (75.689)\
+ * Prec@1 75.630  MSE 0.033899\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[127/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7205\
+log--[127/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6672\
+train_one_ep_time:12.983404159545898 s\
+feature_infer_one_ep_time:9.719690084457397 s\
+feature_clst_one_ep_time:0.39705967903137207 s\
+the mean of mutal infor is:(-6.810), the est mean of mutal infor is:(-5.897)\
+Epoch 0	Test (client-0):	Loss 0.5364 (0.5364)	Prec@1 81.250 (81.250)\
+Epoch 50	Test (client-0):	Loss 0.7847 (0.6608)	Prec@1 75.000 (77.114)\
+ * Prec@1 76.970  MSE 0.031867\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[128/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7166\
+log--[128/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6556\
+train_one_ep_time:12.778706073760986 s\
+feature_infer_one_ep_time:9.753394365310669 s\
+feature_clst_one_ep_time:0.3931751251220703 s\
+the mean of mutal infor is:(-6.829), the est mean of mutal infor is:(-5.925)\
+Epoch 0	Test (client-0):	Loss 0.5522 (0.5522)	Prec@1 79.688 (79.688)\
+Epoch 50	Test (client-0):	Loss 0.7694 (0.6676)	Prec@1 75.000 (76.869)\
+ * Prec@1 76.740  MSE 0.032026\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[129/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6556\
+log--[129/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6590\
+train_one_ep_time:12.408368349075317 s\
+feature_infer_one_ep_time:10.262432098388672 s\
+feature_clst_one_ep_time:0.35549330711364746 s\
+the mean of mutal infor is:(-6.818), the est mean of mutal infor is:(-5.908)\
+Epoch 0	Test (client-0):	Loss 0.5006 (0.5006)	Prec@1 82.031 (82.031)\
+Epoch 50	Test (client-0):	Loss 0.7771 (0.6729)	Prec@1 74.219 (76.103)\
+ * Prec@1 76.450  MSE 0.032303\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[130/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5322\
+log--[130/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6647\
+train_one_ep_time:12.330858945846558 s\
+feature_infer_one_ep_time:9.693301916122437 s\
+feature_clst_one_ep_time:0.3416602611541748 s\
+the mean of mutal infor is:(-6.833), the est mean of mutal infor is:(-5.903)\
+Epoch 0	Test (client-0):	Loss 0.5969 (0.5969)	Prec@1 79.688 (79.688)\
+Epoch 50	Test (client-0):	Loss 0.7306 (0.6973)	Prec@1 74.219 (76.578)\
+ * Prec@1 76.460  MSE 0.032941\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[131/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7033\
+log--[131/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6600\
+train_one_ep_time:12.686369895935059 s\
+feature_infer_one_ep_time:9.90332818031311 s\
+feature_clst_one_ep_time:0.3326570987701416 s\
+the mean of mutal infor is:(-6.826), the est mean of mutal infor is:(-5.909)\
+Epoch 0	Test (client-0):	Loss 0.5217 (0.5217)	Prec@1 82.812 (82.812)\
+Epoch 50	Test (client-0):	Loss 0.7348 (0.6776)	Prec@1 76.562 (76.700)\
+ * Prec@1 76.770  MSE 0.032423\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[132/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6311\
+log--[132/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6574\
+train_one_ep_time:13.08877968788147 s\
+feature_infer_one_ep_time:9.708765029907227 s\
+feature_clst_one_ep_time:0.46181297302246094 s\
+the mean of mutal infor is:(-6.832), the est mean of mutal infor is:(-5.912)\
+Epoch 0	Test (client-0):	Loss 0.5156 (0.5156)	Prec@1 82.031 (82.031)\
+Epoch 50	Test (client-0):	Loss 0.7339 (0.6666)	Prec@1 75.781 (77.053)\
+ * Prec@1 77.030  MSE 0.032010\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[133/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6257\
+log--[133/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6606\
+train_one_ep_time:12.301741123199463 s\
+feature_infer_one_ep_time:10.211233854293823 s\
+feature_clst_one_ep_time:0.41846227645874023 s\
+the mean of mutal infor is:(-6.855), the est mean of mutal infor is:(-5.927)\
+Epoch 0	Test (client-0):	Loss 0.5352 (0.5352)	Prec@1 82.031 (82.031)\
+Epoch 50	Test (client-0):	Loss 0.8440 (0.6976)	Prec@1 72.656 (76.026)\
+ * Prec@1 75.950  MSE 0.033442\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[134/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5456\
+log--[134/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6493\
+train_one_ep_time:12.286136150360107 s\
+feature_infer_one_ep_time:9.703210353851318 s\
+feature_clst_one_ep_time:0.4776473045349121 s\
+the mean of mutal infor is:(-6.836), the est mean of mutal infor is:(-5.908)\
+Epoch 0	Test (client-0):	Loss 0.5352 (0.5352)	Prec@1 79.688 (79.688)\
+Epoch 50	Test (client-0):	Loss 0.8413 (0.7128)	Prec@1 72.656 (74.923)\
+ * Prec@1 75.110  MSE 0.033926\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[135/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7420\
+log--[135/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6574\
+train_one_ep_time:12.895223140716553 s\
+feature_infer_one_ep_time:9.704357147216797 s\
+feature_clst_one_ep_time:0.46877384185791016 s\
+the mean of mutal infor is:(-6.838), the est mean of mutal infor is:(-5.911)\
+Epoch 0	Test (client-0):	Loss 0.5048 (0.5048)	Prec@1 79.688 (79.688)\
+Epoch 50	Test (client-0):	Loss 0.8394 (0.6766)	Prec@1 75.781 (76.517)\
+ * Prec@1 76.720  MSE 0.032371\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[136/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6562\
+log--[136/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6552\
+train_one_ep_time:12.909785747528076 s\
+feature_infer_one_ep_time:9.607059478759766 s\
+feature_clst_one_ep_time:0.4193580150604248 s\
+the mean of mutal infor is:(-6.834), the est mean of mutal infor is:(-5.894)\
+Epoch 0	Test (client-0):	Loss 0.5529 (0.5529)	Prec@1 79.688 (79.688)\
+Epoch 50	Test (client-0):	Loss 0.7763 (0.7000)	Prec@1 75.000 (75.797)\
+ * Prec@1 75.890  MSE 0.033413\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[137/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6214\
+log--[137/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6578\
+train_one_ep_time:12.605625867843628 s\
+feature_infer_one_ep_time:10.08025574684143 s\
+feature_clst_one_ep_time:0.4670109748840332 s\
+the mean of mutal infor is:(-6.841), the est mean of mutal infor is:(-5.907)\
+Epoch 0	Test (client-0):	Loss 0.5317 (0.5317)	Prec@1 80.469 (80.469)\
+Epoch 50	Test (client-0):	Loss 0.6763 (0.6732)	Prec@1 77.344 (77.068)\
+ * Prec@1 77.180  MSE 0.032026\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[138/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5971\
+log--[138/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6518\
+train_one_ep_time:12.187994480133057 s\
+feature_infer_one_ep_time:9.541667461395264 s\
+feature_clst_one_ep_time:0.36683130264282227 s\
+the mean of mutal infor is:(-6.817), the est mean of mutal infor is:(-5.869)\
+Epoch 0	Test (client-0):	Loss 0.5213 (0.5213)	Prec@1 82.812 (82.812)\
+Epoch 50	Test (client-0):	Loss 0.7855 (0.6854)	Prec@1 75.781 (76.164)\
+ * Prec@1 76.200  MSE 0.032693\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[139/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7684\
+log--[139/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6542\
+train_one_ep_time:12.58812952041626 s\
+feature_infer_one_ep_time:9.622528314590454 s\
+feature_clst_one_ep_time:0.4028916358947754 s\
+the mean of mutal infor is:(-6.877), the est mean of mutal infor is:(-5.959)\
+Epoch 0	Test (client-0):	Loss 0.5288 (0.5288)	Prec@1 82.031 (82.031)\
+Epoch 50	Test (client-0):	Loss 0.7311 (0.6776)	Prec@1 74.219 (76.256)\
+ * Prec@1 76.440  MSE 0.032501\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[140/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6666\
+log--[140/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6550\
+train_one_ep_time:12.536793947219849 s\
+feature_infer_one_ep_time:9.431478500366211 s\
+feature_clst_one_ep_time:0.41579651832580566 s\
+the mean of mutal infor is:(-6.857), the est mean of mutal infor is:(-5.925)\
+Epoch 0	Test (client-0):	Loss 0.5195 (0.5195)	Prec@1 80.469 (80.469)\
+Epoch 50	Test (client-0):	Loss 0.6981 (0.6688)	Prec@1 78.906 (76.808)\
+ * Prec@1 76.920  MSE 0.032102\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[141/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6976\
+log--[141/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6489\
+train_one_ep_time:12.308485507965088 s\
+feature_infer_one_ep_time:10.336004972457886 s\
+feature_clst_one_ep_time:0.46936702728271484 s\
+the mean of mutal infor is:(-6.857), the est mean of mutal infor is:(-5.918)\
+Epoch 0	Test (client-0):	Loss 0.5174 (0.5174)	Prec@1 82.031 (82.031)\
+Epoch 50	Test (client-0):	Loss 0.7181 (0.6679)	Prec@1 78.125 (76.915)\
+ * Prec@1 76.980  MSE 0.032043\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[142/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5797\
+log--[142/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6541\
+train_one_ep_time:12.340107440948486 s\
+feature_infer_one_ep_time:9.638081312179565 s\
+feature_clst_one_ep_time:0.46349239349365234 s\
+the mean of mutal infor is:(-6.867), the est mean of mutal infor is:(-5.953)\
+Epoch 0	Test (client-0):	Loss 0.5220 (0.5220)	Prec@1 82.812 (82.812)\
+Epoch 50	Test (client-0):	Loss 0.7557 (0.6832)	Prec@1 71.094 (75.904)\
+ * Prec@1 76.140  MSE 0.032985\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[143/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5327\
+log--[143/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6519\
+train_one_ep_time:12.568173885345459 s\
+feature_infer_one_ep_time:9.691284656524658 s\
+feature_clst_one_ep_time:0.5164029598236084 s\
+the mean of mutal infor is:(-6.874), the est mean of mutal infor is:(-5.934)\
+Epoch 0	Test (client-0):	Loss 0.5357 (0.5357)	Prec@1 79.688 (79.688)\
+Epoch 50	Test (client-0):	Loss 0.7677 (0.6826)	Prec@1 72.656 (76.409)\
+ * Prec@1 76.350  MSE 0.032702\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[144/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5816\
+log--[144/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6560\
+train_one_ep_time:13.004837274551392 s\
+feature_infer_one_ep_time:9.68603801727295 s\
+feature_clst_one_ep_time:0.35868072509765625 s\
+the mean of mutal infor is:(-6.865), the est mean of mutal infor is:(-5.915)\
+Epoch 0	Test (client-0):	Loss 0.5228 (0.5228)	Prec@1 82.031 (82.031)\
+Epoch 50	Test (client-0):	Loss 0.6882 (0.6678)	Prec@1 77.344 (76.792)\
+ * Prec@1 76.970  MSE 0.032028\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[145/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6000\
+log--[145/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6546\
+train_one_ep_time:12.244838237762451 s\
+feature_infer_one_ep_time:10.200745582580566 s\
+feature_clst_one_ep_time:0.3717639446258545 s\
+the mean of mutal infor is:(-6.836), the est mean of mutal infor is:(-5.873)\
+Epoch 0	Test (client-0):	Loss 0.5462 (0.5462)	Prec@1 79.688 (79.688)\
+Epoch 50	Test (client-0):	Loss 0.7444 (0.6683)	Prec@1 75.781 (77.129)\
+ * Prec@1 77.070  MSE 0.032119\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[146/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5175\
+log--[146/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6545\
+train_one_ep_time:12.523350954055786 s\
+feature_infer_one_ep_time:9.943790435791016 s\
+feature_clst_one_ep_time:0.337785005569458 s\
+the mean of mutal infor is:(-6.876), the est mean of mutal infor is:(-5.947)\
+Epoch 0	Test (client-0):	Loss 0.6155 (0.6155)	Prec@1 75.000 (75.000)\
+Epoch 50	Test (client-0):	Loss 0.7479 (0.6800)	Prec@1 76.562 (76.333)\
+ * Prec@1 76.380  MSE 0.032552\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[147/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6859\
+log--[147/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6433\
+train_one_ep_time:12.637107610702515 s\
+feature_infer_one_ep_time:9.622543334960938 s\
+feature_clst_one_ep_time:0.42791318893432617 s\
+the mean of mutal infor is:(-6.851), the est mean of mutal infor is:(-5.917)\
+Epoch 0	Test (client-0):	Loss 0.5224 (0.5224)	Prec@1 82.812 (82.812)\
+Epoch 50	Test (client-0):	Loss 0.6925 (0.6786)	Prec@1 76.562 (76.624)\
+ * Prec@1 76.880  MSE 0.032368\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[148/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6044\
+log--[148/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6469\
+train_one_ep_time:12.829664468765259 s\
+feature_infer_one_ep_time:9.596125841140747 s\
+feature_clst_one_ep_time:0.3563210964202881 s\
+the mean of mutal infor is:(-6.890), the est mean of mutal infor is:(-5.954)\
+Epoch 0	Test (client-0):	Loss 0.5304 (0.5304)	Prec@1 78.906 (78.906)\
+Epoch 50	Test (client-0):	Loss 0.7032 (0.6601)	Prec@1 77.344 (76.915)\
+ * Prec@1 76.900  MSE 0.031953\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[149/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5727\
+log--[149/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6491\
+train_one_ep_time:12.404033422470093 s\
+feature_infer_one_ep_time:9.976939678192139 s\
+feature_clst_one_ep_time:0.48012733459472656 s\
+the mean of mutal infor is:(-6.877), the est mean of mutal infor is:(-5.951)\
+Epoch 0	Test (client-0):	Loss 0.5609 (0.5609)	Prec@1 82.031 (82.031)\
+Epoch 50	Test (client-0):	Loss 0.7564 (0.7028)	Prec@1 75.000 (76.348)\
+ * Prec@1 76.240  MSE 0.033380\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[150/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6474\
+log--[150/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6482\
+train_one_ep_time:12.281559705734253 s\
+feature_infer_one_ep_time:9.571927070617676 s\
+feature_clst_one_ep_time:0.30739665031433105 s\
+the mean of mutal infor is:(-6.879), the est mean of mutal infor is:(-5.947)\
+Epoch 0	Test (client-0):	Loss 0.4910 (0.4910)	Prec@1 82.812 (82.812)\
+Epoch 50	Test (client-0):	Loss 0.7156 (0.6744)	Prec@1 75.781 (76.838)\
+ * Prec@1 77.060  MSE 0.032293\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[151/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7071\
+log--[151/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6504\
+train_one_ep_time:12.232242584228516 s\
+feature_infer_one_ep_time:9.694441080093384 s\
+feature_clst_one_ep_time:0.40977931022644043 s\
+the mean of mutal infor is:(-6.864), the est mean of mutal infor is:(-5.935)\
+Epoch 0	Test (client-0):	Loss 0.5634 (0.5634)	Prec@1 79.688 (79.688)\
+Epoch 50	Test (client-0):	Loss 0.7159 (0.6804)	Prec@1 75.781 (76.271)\
+ * Prec@1 76.260  MSE 0.032842\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[152/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7420\
+log--[152/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6511\
+train_one_ep_time:12.645266056060791 s\
+feature_infer_one_ep_time:9.541234016418457 s\
+feature_clst_one_ep_time:0.48908042907714844 s\
+the mean of mutal infor is:(-6.880), the est mean of mutal infor is:(-5.965)\
+Epoch 0	Test (client-0):	Loss 0.5471 (0.5471)	Prec@1 79.688 (79.688)\
+Epoch 50	Test (client-0):	Loss 0.7680 (0.6890)	Prec@1 77.344 (76.225)\
+ * Prec@1 76.110  MSE 0.033007\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[153/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5348\
+log--[153/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6458\
+train_one_ep_time:12.212023496627808 s\
+feature_infer_one_ep_time:10.142311096191406 s\
+feature_clst_one_ep_time:0.377032995223999 s\
+the mean of mutal infor is:(-6.882), the est mean of mutal infor is:(-5.938)\
+Epoch 0	Test (client-0):	Loss 0.5214 (0.5214)	Prec@1 82.812 (82.812)\
+Epoch 50	Test (client-0):	Loss 0.7266 (0.6667)	Prec@1 74.219 (77.390)\
+ * Prec@1 77.150  MSE 0.031936\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[154/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5762\
+log--[154/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6471\
+train_one_ep_time:12.286238431930542 s\
+feature_infer_one_ep_time:9.534116268157959 s\
+feature_clst_one_ep_time:0.386127233505249 s\
+the mean of mutal infor is:(-6.865), the est mean of mutal infor is:(-5.927)\
+Epoch 0	Test (client-0):	Loss 0.5304 (0.5304)	Prec@1 78.906 (78.906)\
+Epoch 50	Test (client-0):	Loss 0.7272 (0.6845)	Prec@1 78.125 (76.103)\
+ * Prec@1 76.280  MSE 0.032679\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[155/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5792\
+log--[155/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6483\
+train_one_ep_time:12.2407865524292 s\
+feature_infer_one_ep_time:9.487533330917358 s\
+feature_clst_one_ep_time:0.45482802391052246 s\
+the mean of mutal infor is:(-6.877), the est mean of mutal infor is:(-5.941)\
+Epoch 0	Test (client-0):	Loss 0.4917 (0.4917)	Prec@1 82.812 (82.812)\
+Epoch 50	Test (client-0):	Loss 0.6933 (0.6539)	Prec@1 77.344 (77.282)\
+ * Prec@1 77.310  MSE 0.031475\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[156/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6053\
+log--[156/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6488\
+train_one_ep_time:12.614106893539429 s\
+feature_infer_one_ep_time:9.493988037109375 s\
+feature_clst_one_ep_time:0.34126782417297363 s\
+the mean of mutal infor is:(-6.905), the est mean of mutal infor is:(-5.978)\
+Epoch 0	Test (client-0):	Loss 0.5200 (0.5200)	Prec@1 78.125 (78.125)\
+Epoch 50	Test (client-0):	Loss 0.7121 (0.6790)	Prec@1 75.000 (76.425)\
+ * Prec@1 76.580  MSE 0.032376\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[157/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5041\
+log--[157/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6463\
+train_one_ep_time:12.090440034866333 s\
+feature_infer_one_ep_time:9.852515935897827 s\
+feature_clst_one_ep_time:0.4597442150115967 s\
+the mean of mutal infor is:(-6.908), the est mean of mutal infor is:(-5.968)\
+Epoch 0	Test (client-0):	Loss 0.5370 (0.5370)	Prec@1 82.031 (82.031)\
+Epoch 50	Test (client-0):	Loss 0.7425 (0.6669)	Prec@1 79.688 (77.574)\
+ * Prec@1 77.450  MSE 0.031921\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[158/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6425\
+log--[158/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6507\
+train_one_ep_time:12.129011392593384 s\
+feature_infer_one_ep_time:9.28855848312378 s\
+feature_clst_one_ep_time:0.556236982345581 s\
+the mean of mutal infor is:(-6.884), the est mean of mutal infor is:(-5.938)\
+Epoch 0	Test (client-0):	Loss 0.5028 (0.5028)	Prec@1 79.688 (79.688)\
+Epoch 50	Test (client-0):	Loss 0.7172 (0.6639)	Prec@1 78.125 (77.007)\
+ * Prec@1 77.150  MSE 0.031788\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[159/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7643\
+log--[159/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6496\
+train_one_ep_time:12.55542254447937 s\
+feature_infer_one_ep_time:9.559256315231323 s\
+feature_clst_one_ep_time:0.36865949630737305 s\
+the mean of mutal infor is:(-6.899), the est mean of mutal infor is:(-5.975)\
+Epoch 0	Test (client-0):	Loss 0.5018 (0.5018)	Prec@1 79.688 (79.688)\
+Epoch 50	Test (client-0):	Loss 0.7768 (0.6878)	Prec@1 77.344 (75.858)\
+ * Prec@1 76.130  MSE 0.032987\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[160/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5579\
+log--[160/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6468\
+train_one_ep_time:12.588757753372192 s\
+feature_infer_one_ep_time:9.49816107749939 s\
+feature_clst_one_ep_time:0.483811616897583 s\
+the mean of mutal infor is:(-6.884), the est mean of mutal infor is:(-5.935)\
+Epoch 0	Test (client-0):	Loss 0.5011 (0.5011)	Prec@1 81.250 (81.250)\
+Epoch 50	Test (client-0):	Loss 0.7139 (0.6704)	Prec@1 75.781 (76.578)\
+ * Prec@1 76.880  MSE 0.032167\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[161/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5019\
+log--[161/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6473\
+train_one_ep_time:12.121869802474976 s\
+feature_infer_one_ep_time:9.971839904785156 s\
+feature_clst_one_ep_time:0.46274495124816895 s\
+the mean of mutal infor is:(-6.897), the est mean of mutal infor is:(-5.970)\
+./saves/cifar10/SCA_new_infocons_sgm_lg1_thre0.125/pretrain_False_lambd_0_noise_0.01_epoch_240_bottleneck_noRELU_C8S1_log_1_ATstrength_0.3_lr_0.05_varthres_0.125_attention//visualize/161.png\
+/usr/local/lib/python3.11/dist-packages/torch/utils/data/dataloader.py:624: UserWarning: This DataLoader will create 8 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.\
+  warnings.warn(\
+Epoch 0	Test (client-0):	Loss 0.4624 (0.4624)	Prec@1 82.812 (82.812)\
+Epoch 50	Test (client-0):	Loss 0.7102 (0.6505)	Prec@1 75.000 (77.466)\
+ * Prec@1 77.490  MSE 0.031260\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+/usr/local/lib/python3.11/dist-packages/torch/optim/lr_scheduler.py:243: UserWarning: The epoch parameter in `scheduler.step()` was not necessary and is being deprecated where possible. Please use `scheduler.step()` to step the scheduler. During the deprecation, if epoch is different from None, the closed form is used instead of the new chainable form, where available. Please open an issue if you are unable to replicate your use case: {\field{\*\fldinst{HYPERLINK "https://github.com/pytorch/pytorch/issues/new/choose"}}{\fldrslt \cf4 \strokec4 https://github.com/pytorch/pytorch/issues/new/choose}}.\
+  warnings.warn(EPOCH_DEPRECATION_WARNING, UserWarning)\
+start to adding noise\
+Train in V2_epoch style\
+/kaggle/working/attention/model_training_attention.py:1457: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).\
+  train_loss_list.append(torch.tensor(train_loss))\
+log--[162/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6455\
+log--[162/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6442\
+train_one_ep_time:12.702258348464966 s\
+feature_infer_one_ep_time:9.583769083023071 s\
+feature_clst_one_ep_time:0.39459681510925293 s\
+the mean of mutal infor is:(-6.905), the est mean of mutal infor is:(-5.997)\
+Epoch 0	Test (client-0):	Loss 0.5206 (0.5206)	Prec@1 80.469 (80.469)\
+Epoch 50	Test (client-0):	Loss 0.7177 (0.6764)	Prec@1 75.781 (76.869)\
+ * Prec@1 76.910  MSE 0.032177\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[163/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6822\
+log--[163/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6463\
+train_one_ep_time:12.221033573150635 s\
+feature_infer_one_ep_time:10.163187980651855 s\
+feature_clst_one_ep_time:0.40369272232055664 s\
+the mean of mutal infor is:(-6.885), the est mean of mutal infor is:(-5.962)\
+Epoch 0	Test (client-0):	Loss 0.5062 (0.5062)	Prec@1 80.469 (80.469)\
+Epoch 50	Test (client-0):	Loss 0.7251 (0.6973)	Prec@1 75.000 (75.705)\
+ * Prec@1 75.890  MSE 0.033203\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[164/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6578\
+log--[164/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6470\
+train_one_ep_time:12.415266513824463 s\
+feature_infer_one_ep_time:9.504723072052002 s\
+feature_clst_one_ep_time:0.4517049789428711 s\
+the mean of mutal infor is:(-6.914), the est mean of mutal infor is:(-5.979)\
+Epoch 0	Test (client-0):	Loss 0.5459 (0.5459)	Prec@1 79.688 (79.688)\
+Epoch 50	Test (client-0):	Loss 0.7430 (0.6834)	Prec@1 75.000 (76.654)\
+ * Prec@1 76.730  MSE 0.032508\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[165/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6004\
+log--[165/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6488\
+train_one_ep_time:12.884213924407959 s\
+feature_infer_one_ep_time:9.792312622070312 s\
+feature_clst_one_ep_time:0.4179086685180664 s\
+the mean of mutal infor is:(-6.880), the est mean of mutal infor is:(-5.945)\
+Epoch 0	Test (client-0):	Loss 0.5310 (0.5310)	Prec@1 82.812 (82.812)\
+Epoch 50	Test (client-0):	Loss 0.6952 (0.6615)	Prec@1 75.000 (77.053)\
+ * Prec@1 76.970  MSE 0.031968\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[166/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6634\
+log--[166/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6410\
+train_one_ep_time:13.494988203048706 s\
+feature_infer_one_ep_time:10.020772218704224 s\
+feature_clst_one_ep_time:0.4531979560852051 s\
+the mean of mutal infor is:(-6.940), the est mean of mutal infor is:(-6.006)\
+Epoch 0	Test (client-0):	Loss 0.4877 (0.4877)	Prec@1 81.250 (81.250)\
+Epoch 50	Test (client-0):	Loss 0.6832 (0.6601)	Prec@1 77.344 (77.405)\
+ * Prec@1 77.630  MSE 0.031224\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[167/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.4195\
+log--[167/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6479\
+train_one_ep_time:12.629075050354004 s\
+feature_infer_one_ep_time:10.163801908493042 s\
+feature_clst_one_ep_time:0.38449621200561523 s\
+the mean of mutal infor is:(-6.917), the est mean of mutal infor is:(-6.003)\
+Epoch 0	Test (client-0):	Loss 0.5241 (0.5241)	Prec@1 82.812 (82.812)\
+Epoch 50	Test (client-0):	Loss 0.7440 (0.6745)	Prec@1 73.438 (76.608)\
+ * Prec@1 76.860  MSE 0.032298\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[168/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7315\
+log--[168/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6395\
+train_one_ep_time:12.80292558670044 s\
+feature_infer_one_ep_time:10.27487325668335 s\
+feature_clst_one_ep_time:0.554173469543457 s\
+the mean of mutal infor is:(-6.942), the est mean of mutal infor is:(-6.012)\
+Epoch 0	Test (client-0):	Loss 0.5237 (0.5237)	Prec@1 82.812 (82.812)\
+Epoch 50	Test (client-0):	Loss 0.6585 (0.6740)	Prec@1 81.250 (76.915)\
+ * Prec@1 76.840  MSE 0.032189\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[169/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5982\
+log--[169/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6496\
+train_one_ep_time:12.709208488464355 s\
+feature_infer_one_ep_time:9.845203399658203 s\
+feature_clst_one_ep_time:0.3976418972015381 s\
+the mean of mutal infor is:(-6.940), the est mean of mutal infor is:(-6.034)\
+Epoch 0	Test (client-0):	Loss 0.4873 (0.4873)	Prec@1 82.812 (82.812)\
+Epoch 50	Test (client-0):	Loss 0.7006 (0.6765)	Prec@1 77.344 (76.808)\
+ * Prec@1 76.980  MSE 0.032246\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[170/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7857\
+log--[170/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6388\
+train_one_ep_time:12.89048719406128 s\
+feature_infer_one_ep_time:9.666189670562744 s\
+feature_clst_one_ep_time:0.4269599914550781 s\
+the mean of mutal infor is:(-6.932), the est mean of mutal infor is:(-6.011)\
+Epoch 0	Test (client-0):	Loss 0.4836 (0.4836)	Prec@1 84.375 (84.375)\
+Epoch 50	Test (client-0):	Loss 0.6972 (0.6607)	Prec@1 76.562 (77.175)\
+ * Prec@1 77.200  MSE 0.031798\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[171/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5561\
+log--[171/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6460\
+train_one_ep_time:12.778054475784302 s\
+feature_infer_one_ep_time:9.87814736366272 s\
+feature_clst_one_ep_time:0.3598768711090088 s\
+the mean of mutal infor is:(-6.898), the est mean of mutal infor is:(-5.950)\
+Epoch 0	Test (client-0):	Loss 0.5085 (0.5085)	Prec@1 83.594 (83.594)\
+Epoch 50	Test (client-0):	Loss 0.6461 (0.6786)	Prec@1 79.688 (76.501)\
+ * Prec@1 76.950  MSE 0.032169\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[172/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7131\
+log--[172/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6421\
+train_one_ep_time:12.13647198677063 s\
+feature_infer_one_ep_time:9.819288969039917 s\
+feature_clst_one_ep_time:0.48851966857910156 s\
+the mean of mutal infor is:(-6.900), the est mean of mutal infor is:(-5.940)\
+Epoch 0	Test (client-0):	Loss 0.5272 (0.5272)	Prec@1 80.469 (80.469)\
+Epoch 50	Test (client-0):	Loss 0.7169 (0.6743)	Prec@1 76.562 (76.808)\
+ * Prec@1 76.770  MSE 0.032797\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[173/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7597\
+log--[173/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6420\
+train_one_ep_time:12.205414295196533 s\
+feature_infer_one_ep_time:9.498651504516602 s\
+feature_clst_one_ep_time:0.4101066589355469 s\
+the mean of mutal infor is:(-6.967), the est mean of mutal infor is:(-6.050)\
+Epoch 0	Test (client-0):	Loss 0.5681 (0.5681)	Prec@1 81.250 (81.250)\
+Epoch 50	Test (client-0):	Loss 0.7802 (0.6966)	Prec@1 75.000 (75.980)\
+ * Prec@1 76.300  MSE 0.033306\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[174/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7091\
+log--[174/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6467\
+train_one_ep_time:12.67176604270935 s\
+feature_infer_one_ep_time:9.4645414352417 s\
+feature_clst_one_ep_time:0.3771326541900635 s\
+the mean of mutal infor is:(-6.927), the est mean of mutal infor is:(-5.993)\
+Epoch 0	Test (client-0):	Loss 0.5048 (0.5048)	Prec@1 85.156 (85.156)\
+Epoch 50	Test (client-0):	Loss 0.6786 (0.6736)	Prec@1 76.562 (76.608)\
+ * Prec@1 76.660  MSE 0.032459\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[175/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6845\
+log--[175/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6480\
+train_one_ep_time:12.342984676361084 s\
+feature_infer_one_ep_time:9.899020433425903 s\
+feature_clst_one_ep_time:0.32543420791625977 s\
+the mean of mutal infor is:(-6.910), the est mean of mutal infor is:(-5.975)\
+Epoch 0	Test (client-0):	Loss 0.5129 (0.5129)	Prec@1 82.031 (82.031)\
+Epoch 50	Test (client-0):	Loss 0.6690 (0.6680)	Prec@1 75.000 (76.930)\
+ * Prec@1 76.910  MSE 0.031990\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[176/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6309\
+log--[176/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6404\
+train_one_ep_time:12.11437201499939 s\
+feature_infer_one_ep_time:9.960446834564209 s\
+feature_clst_one_ep_time:0.4067378044128418 s\
+the mean of mutal infor is:(-6.938), the est mean of mutal infor is:(-6.016)\
+Epoch 0	Test (client-0):	Loss 0.5842 (0.5842)	Prec@1 79.688 (79.688)\
+Epoch 50	Test (client-0):	Loss 0.7088 (0.6878)	Prec@1 73.438 (75.888)\
+ * Prec@1 75.760  MSE 0.033388\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[177/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5450\
+log--[177/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6461\
+train_one_ep_time:12.336457252502441 s\
+feature_infer_one_ep_time:9.545233488082886 s\
+feature_clst_one_ep_time:0.4658222198486328 s\
+the mean of mutal infor is:(-6.946), the est mean of mutal infor is:(-6.010)\
+Epoch 0	Test (client-0):	Loss 0.6184 (0.6184)	Prec@1 78.906 (78.906)\
+Epoch 50	Test (client-0):	Loss 0.7012 (0.7194)	Prec@1 76.562 (75.843)\
+ * Prec@1 75.960  MSE 0.033689\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[178/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6193\
+log--[178/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6434\
+train_one_ep_time:12.756025791168213 s\
+feature_infer_one_ep_time:9.553463459014893 s\
+feature_clst_one_ep_time:0.3890824317932129 s\
+the mean of mutal infor is:(-6.920), the est mean of mutal infor is:(-5.977)\
+Epoch 0	Test (client-0):	Loss 0.4985 (0.4985)	Prec@1 84.375 (84.375)\
+Epoch 50	Test (client-0):	Loss 0.7208 (0.6698)	Prec@1 75.781 (76.654)\
+ * Prec@1 76.910  MSE 0.032002\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[179/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5743\
+log--[179/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6414\
+train_one_ep_time:12.258513450622559 s\
+feature_infer_one_ep_time:9.839883804321289 s\
+feature_clst_one_ep_time:0.4362070560455322 s\
+the mean of mutal infor is:(-6.909), the est mean of mutal infor is:(-5.974)\
+Epoch 0	Test (client-0):	Loss 0.5369 (0.5369)	Prec@1 83.594 (83.594)\
+Epoch 50	Test (client-0):	Loss 0.8194 (0.6816)	Prec@1 71.875 (76.471)\
+ * Prec@1 76.220  MSE 0.032975\
+lambd value is: 0.0 learning rate is: 0.0020000000000000005\
+start to adding noise\
+Train in V2_epoch style\
+log--[180/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6976\
+log--[180/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6099\
+train_one_ep_time:12.263753414154053 s\
+feature_infer_one_ep_time:10.238893032073975 s\
+feature_clst_one_ep_time:0.30820560455322266 s\
+the mean of mutal infor is:(-6.938), the est mean of mutal infor is:(-6.009)\
+Epoch 0	Test (client-0):	Loss 0.4748 (0.4748)	Prec@1 83.594 (83.594)\
+Epoch 50	Test (client-0):	Loss 0.6191 (0.6341)	Prec@1 78.906 (77.788)\
+ * Prec@1 78.050  MSE 0.030369\
+lambd value is: 0.0 learning rate is: 0.00040000000000000013\
+start to adding noise\
+Train in V2_epoch style\
+log--[181/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.4576\
+log--[181/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5981\
+train_one_ep_time:12.399993181228638 s\
+feature_infer_one_ep_time:9.636972665786743 s\
+feature_clst_one_ep_time:0.43222689628601074 s\
+the mean of mutal infor is:(-6.935), the est mean of mutal infor is:(-6.009)\
+Epoch 0	Test (client-0):	Loss 0.4890 (0.4890)	Prec@1 80.469 (80.469)\
+Epoch 50	Test (client-0):	Loss 0.6437 (0.6269)	Prec@1 78.906 (78.676)\
+ * Prec@1 78.480  MSE 0.030221\
+lambd value is: 0.0 learning rate is: 0.00040000000000000013\
+start to adding noise\
+Train in V2_epoch style\
+log--[182/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6625\
+log--[182/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5987\
+train_one_ep_time:12.824268579483032 s\
+feature_infer_one_ep_time:9.755250930786133 s\
+feature_clst_one_ep_time:0.33605289459228516 s\
+the mean of mutal infor is:(-6.942), the est mean of mutal infor is:(-6.023)\
+Epoch 0	Test (client-0):	Loss 0.4839 (0.4839)	Prec@1 80.469 (80.469)\
+Epoch 50	Test (client-0):	Loss 0.5981 (0.6241)	Prec@1 80.469 (78.355)\
+ * Prec@1 78.600  MSE 0.029981\
+lambd value is: 0.0 learning rate is: 0.00040000000000000013\
+start to adding noise\
+Train in V2_epoch style\
+log--[183/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.4583\
+log--[183/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5895\
+train_one_ep_time:12.76230001449585 s\
+feature_infer_one_ep_time:9.826319694519043 s\
+feature_clst_one_ep_time:0.401472806930542 s\
+the mean of mutal infor is:(-6.941), the est mean of mutal infor is:(-6.017)\
+Epoch 0	Test (client-0):	Loss 0.4981 (0.4981)	Prec@1 80.469 (80.469)\
+Epoch 50	Test (client-0):	Loss 0.6830 (0.6273)	Prec@1 78.125 (78.477)\
+ * Prec@1 78.700  MSE 0.029911\
+lambd value is: 0.0 learning rate is: 0.00040000000000000013\
+start to adding noise\
+Train in V2_epoch style\
+log--[184/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6201\
+log--[184/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5943\
+train_one_ep_time:12.501816511154175 s\
+feature_infer_one_ep_time:10.169920921325684 s\
+feature_clst_one_ep_time:0.36933016777038574 s\
+the mean of mutal infor is:(-6.952), the est mean of mutal infor is:(-6.039)\
+Epoch 0	Test (client-0):	Loss 0.4593 (0.4593)	Prec@1 83.594 (83.594)\
+Epoch 50	Test (client-0):	Loss 0.6919 (0.6271)	Prec@1 78.125 (78.339)\
+ * Prec@1 78.330  MSE 0.030245\
+lambd value is: 0.0 learning rate is: 0.00040000000000000013\
+start to adding noise\
+Train in V2_epoch style\
+log--[185/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5105\
+log--[185/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5937\
+train_one_ep_time:12.32023811340332 s\
+feature_infer_one_ep_time:9.536949396133423 s\
+feature_clst_one_ep_time:0.359328031539917 s\
+the mean of mutal infor is:(-6.966), the est mean of mutal infor is:(-6.057)\
+Epoch 0	Test (client-0):	Loss 0.4667 (0.4667)	Prec@1 82.031 (82.031)\
+Epoch 50	Test (client-0):	Loss 0.6961 (0.6317)	Prec@1 75.781 (78.232)\
+ * Prec@1 78.200  MSE 0.030385\
+lambd value is: 0.0 learning rate is: 0.00040000000000000013\
+start to adding noise\
+Train in V2_epoch style\
+log--[186/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5163\
+log--[186/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5862\
+train_one_ep_time:12.708677530288696 s\
+feature_infer_one_ep_time:9.557102680206299 s\
+feature_clst_one_ep_time:0.3270137310028076 s\
+the mean of mutal infor is:(-6.958), the est mean of mutal infor is:(-6.046)\
+Epoch 0	Test (client-0):	Loss 0.4552 (0.4552)	Prec@1 82.812 (82.812)\
+Epoch 50	Test (client-0):	Loss 0.6908 (0.6197)	Prec@1 78.906 (78.753)\
+ * Prec@1 78.760  MSE 0.029840\
+lambd value is: 0.0 learning rate is: 0.00040000000000000013\
+start to adding noise\
+Train in V2_epoch style\
+log--[187/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5080\
+log--[187/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5913\
+train_one_ep_time:12.671276092529297 s\
+feature_infer_one_ep_time:9.72972321510315 s\
+feature_clst_one_ep_time:0.34313511848449707 s\
+the mean of mutal infor is:(-6.955), the est mean of mutal infor is:(-6.040)\
+Epoch 0	Test (client-0):	Loss 0.4531 (0.4531)	Prec@1 82.031 (82.031)\
+Epoch 50	Test (client-0):	Loss 0.6628 (0.6278)	Prec@1 78.906 (78.156)\
+ * Prec@1 78.380  MSE 0.030134\
+lambd value is: 0.0 learning rate is: 0.00040000000000000013\
+start to adding noise\
+Train in V2_epoch style\
+log--[188/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5832\
+log--[188/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5856\
+train_one_ep_time:12.32660460472107 s\
+feature_infer_one_ep_time:10.214608192443848 s\
+feature_clst_one_ep_time:0.3245511054992676 s\
+the mean of mutal infor is:(-6.982), the est mean of mutal infor is:(-6.079)\
+Epoch 0	Test (client-0):	Loss 0.4911 (0.4911)	Prec@1 82.812 (82.812)\
+Epoch 50	Test (client-0):	Loss 0.6554 (0.6360)	Prec@1 79.688 (78.186)\
+ * Prec@1 78.190  MSE 0.030392\
+lambd value is: 0.0 learning rate is: 0.00040000000000000013\
+start to adding noise\
+Train in V2_epoch style\
+log--[189/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5882\
+log--[189/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5855\
+train_one_ep_time:12.315444946289062 s\
+feature_infer_one_ep_time:9.678669214248657 s\
+feature_clst_one_ep_time:0.2767362594604492 s\
+the mean of mutal infor is:(-6.978), the est mean of mutal infor is:(-6.072)\
+Epoch 0	Test (client-0):	Loss 0.4659 (0.4659)	Prec@1 82.031 (82.031)\
+Epoch 50	Test (client-0):	Loss 0.6555 (0.6336)	Prec@1 77.344 (78.539)\
+ * Prec@1 78.490  MSE 0.030347\
+lambd value is: 0.0 learning rate is: 0.00040000000000000013\
+start to adding noise\
+Train in V2_epoch style\
+log--[190/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6149\
+log--[190/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5827\
+train_one_ep_time:12.752577781677246 s\
+feature_infer_one_ep_time:9.698920011520386 s\
+feature_clst_one_ep_time:0.2785632610321045 s\
+the mean of mutal infor is:(-6.962), the est mean of mutal infor is:(-6.051)\
+Epoch 0	Test (client-0):	Loss 0.4911 (0.4911)	Prec@1 82.812 (82.812)\
+Epoch 50	Test (client-0):	Loss 0.6433 (0.6304)	Prec@1 81.250 (78.569)\
+ * Prec@1 78.550  MSE 0.030017\
+lambd value is: 0.0 learning rate is: 0.00040000000000000013\
+start to adding noise\
+Train in V2_epoch style\
+log--[191/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5456\
+log--[191/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5878\
+train_one_ep_time:12.949606895446777 s\
+feature_infer_one_ep_time:9.726070642471313 s\
+feature_clst_one_ep_time:0.2571084499359131 s\
+the mean of mutal infor is:(-6.984), the est mean of mutal infor is:(-6.084)\
+Epoch 0	Test (client-0):	Loss 0.4613 (0.4613)	Prec@1 81.250 (81.250)\
+Epoch 50	Test (client-0):	Loss 0.6580 (0.6244)	Prec@1 78.125 (78.370)\
+ * Prec@1 78.380  MSE 0.030016\
+lambd value is: 0.0 learning rate is: 0.00040000000000000013\
+start to adding noise\
+Train in V2_epoch style\
+log--[192/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5486\
+log--[192/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5821\
+train_one_ep_time:12.327419519424438 s\
+feature_infer_one_ep_time:10.187034606933594 s\
+feature_clst_one_ep_time:0.2674853801727295 s\
+the mean of mutal infor is:(-6.972), the est mean of mutal infor is:(-6.052)\
+Epoch 0	Test (client-0):	Loss 0.4498 (0.4498)	Prec@1 83.594 (83.594)\
+Epoch 50	Test (client-0):	Loss 0.6022 (0.6253)	Prec@1 82.031 (78.876)\
+ * Prec@1 78.760  MSE 0.030016\
+lambd value is: 0.0 learning rate is: 0.00040000000000000013\
+start to adding noise\
+Train in V2_epoch style\
+log--[193/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5235\
+log--[193/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5848\
+train_one_ep_time:12.35672903060913 s\
+feature_infer_one_ep_time:9.650272846221924 s\
+feature_clst_one_ep_time:0.24565577507019043 s\
+the mean of mutal infor is:(-6.980), the est mean of mutal infor is:(-6.076)\
+Epoch 0	Test (client-0):	Loss 0.4703 (0.4703)	Prec@1 81.250 (81.250)\
+Epoch 50	Test (client-0):	Loss 0.6492 (0.6271)	Prec@1 79.688 (78.569)\
+ * Prec@1 78.370  MSE 0.030213\
+lambd value is: 0.0 learning rate is: 0.00040000000000000013\
+start to adding noise\
+Train in V2_epoch style\
+log--[194/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5264\
+log--[194/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5857\
+train_one_ep_time:12.754211664199829 s\
+feature_infer_one_ep_time:9.610853672027588 s\
+feature_clst_one_ep_time:0.22885870933532715 s\
+the mean of mutal infor is:(-6.987), the est mean of mutal infor is:(-6.080)\
+Epoch 0	Test (client-0):	Loss 0.5152 (0.5152)	Prec@1 79.688 (79.688)\
+Epoch 50	Test (client-0):	Loss 0.6390 (0.6288)	Prec@1 78.906 (78.539)\
+ * Prec@1 78.580  MSE 0.030214\
+lambd value is: 0.0 learning rate is: 0.00040000000000000013\
+start to adding noise\
+Train in V2_epoch style\
+log--[195/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7483\
+log--[195/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5865\
+train_one_ep_time:12.732656478881836 s\
+feature_infer_one_ep_time:9.669641971588135 s\
+feature_clst_one_ep_time:0.233001708984375 s\
+the mean of mutal infor is:(-6.982), the est mean of mutal infor is:(-6.078)\
+Epoch 0	Test (client-0):	Loss 0.4558 (0.4558)	Prec@1 83.594 (83.594)\
+Epoch 50	Test (client-0):	Loss 0.6606 (0.6344)	Prec@1 78.906 (78.217)\
+ * Prec@1 78.270  MSE 0.030349\
+lambd value is: 0.0 learning rate is: 0.00040000000000000013\
+start to adding noise\
+Train in V2_epoch style\
+log--[196/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6510\
+log--[196/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5861\
+train_one_ep_time:12.871396541595459 s\
+feature_infer_one_ep_time:10.236052513122559 s\
+feature_clst_one_ep_time:0.37244248390197754 s\
+the mean of mutal infor is:(-6.987), the est mean of mutal infor is:(-6.087)\
+Epoch 0	Test (client-0):	Loss 0.4955 (0.4955)	Prec@1 81.250 (81.250)\
+Epoch 50	Test (client-0):	Loss 0.6544 (0.6384)	Prec@1 82.812 (78.523)\
+ * Prec@1 78.470  MSE 0.030205\
+lambd value is: 0.0 learning rate is: 0.00040000000000000013\
+start to adding noise\
+Train in V2_epoch style\
+log--[197/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.8364\
+log--[197/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5883\
+train_one_ep_time:12.365742444992065 s\
+feature_infer_one_ep_time:9.891455173492432 s\
+feature_clst_one_ep_time:0.4240872859954834 s\
+the mean of mutal infor is:(-6.993), the est mean of mutal infor is:(-6.093)\
+Epoch 0	Test (client-0):	Loss 0.4720 (0.4720)	Prec@1 81.250 (81.250)\
+Epoch 50	Test (client-0):	Loss 0.6623 (0.6287)	Prec@1 79.688 (78.692)\
+ * Prec@1 78.730  MSE 0.029984\
+lambd value is: 0.0 learning rate is: 0.00040000000000000013\
+start to adding noise\
+Train in V2_epoch style\
+log--[198/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5719\
+log--[198/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5809\
+train_one_ep_time:12.940001964569092 s\
+feature_infer_one_ep_time:9.677969932556152 s\
+feature_clst_one_ep_time:0.41127657890319824 s\
+the mean of mutal infor is:(-6.992), the est mean of mutal infor is:(-6.089)\
+Epoch 0	Test (client-0):	Loss 0.4607 (0.4607)	Prec@1 83.594 (83.594)\
+Epoch 50	Test (client-0):	Loss 0.6755 (0.6336)	Prec@1 78.125 (78.447)\
+ * Prec@1 78.560  MSE 0.030142\
+lambd value is: 0.0 learning rate is: 0.00040000000000000013\
+start to adding noise\
+Train in V2_epoch style\
+log--[199/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5303\
+log--[199/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5825\
+train_one_ep_time:12.949394464492798 s\
+feature_infer_one_ep_time:9.47471833229065 s\
+feature_clst_one_ep_time:0.414048433303833 s\
+the mean of mutal infor is:(-7.000), the est mean of mutal infor is:(-6.092)\
+Epoch 0	Test (client-0):	Loss 0.4864 (0.4864)	Prec@1 80.469 (80.469)\
+Epoch 50	Test (client-0):	Loss 0.6592 (0.6326)	Prec@1 77.344 (78.140)\
+ * Prec@1 78.240  MSE 0.030259\
+lambd value is: 0.0 learning rate is: 0.00040000000000000013\
+start to adding noise\
+Train in V2_epoch style\
+log--[200/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5281\
+log--[200/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5860\
+train_one_ep_time:12.405923128128052 s\
+feature_infer_one_ep_time:10.020891427993774 s\
+feature_clst_one_ep_time:0.5403852462768555 s\
+the mean of mutal infor is:(-7.005), the est mean of mutal infor is:(-6.108)\
+Epoch 0	Test (client-0):	Loss 0.4749 (0.4749)	Prec@1 81.250 (81.250)\
+Epoch 50	Test (client-0):	Loss 0.6430 (0.6264)	Prec@1 79.688 (78.355)\
+ * Prec@1 78.570  MSE 0.029960\
+lambd value is: 0.0 learning rate is: 0.00040000000000000013\
+start to adding noise\
+Train in V2_epoch style\
+log--[201/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5473\
+log--[201/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5821\
+train_one_ep_time:12.672930479049683 s\
+feature_infer_one_ep_time:9.861657857894897 s\
+feature_clst_one_ep_time:0.48447227478027344 s\
+the mean of mutal infor is:(-6.998), the est mean of mutal infor is:(-6.093)\
+./saves/cifar10/SCA_new_infocons_sgm_lg1_thre0.125/pretrain_False_lambd_0_noise_0.01_epoch_240_bottleneck_noRELU_C8S1_log_1_ATstrength_0.3_lr_0.05_varthres_0.125_attention//visualize/201.png\
+/usr/local/lib/python3.11/dist-packages/torch/utils/data/dataloader.py:624: UserWarning: This DataLoader will create 8 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.\
+  warnings.warn(\
+Epoch 0	Test (client-0):	Loss 0.5026 (0.5026)	Prec@1 79.688 (79.688)\
+Epoch 50	Test (client-0):	Loss 0.6633 (0.6265)	Prec@1 79.688 (78.217)\
+ * Prec@1 78.360  MSE 0.030157\
+lambd value is: 0.0 learning rate is: 0.00040000000000000013\
+/usr/local/lib/python3.11/dist-packages/torch/optim/lr_scheduler.py:243: UserWarning: The epoch parameter in `scheduler.step()` was not necessary and is being deprecated where possible. Please use `scheduler.step()` to step the scheduler. During the deprecation, if epoch is different from None, the closed form is used instead of the new chainable form, where available. Please open an issue if you are unable to replicate your use case: {\field{\*\fldinst{HYPERLINK "https://github.com/pytorch/pytorch/issues/new/choose"}}{\fldrslt \cf4 \strokec4 https://github.com/pytorch/pytorch/issues/new/choose}}.\
+  warnings.warn(EPOCH_DEPRECATION_WARNING, UserWarning)\
+start to adding noise\
+Train in V2_epoch style\
+/kaggle/working/attention/model_training_attention.py:1457: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).\
+  train_loss_list.append(torch.tensor(train_loss))\
+log--[202/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6929\
+log--[202/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5839\
+train_one_ep_time:12.309637308120728 s\
+feature_infer_one_ep_time:10.081373691558838 s\
+feature_clst_one_ep_time:0.3359508514404297 s\
+the mean of mutal infor is:(-6.999), the est mean of mutal infor is:(-6.102)\
+Epoch 0	Test (client-0):	Loss 0.4607 (0.4607)	Prec@1 81.250 (81.250)\
+Epoch 50	Test (client-0):	Loss 0.6405 (0.6206)	Prec@1 78.906 (78.845)\
+ * Prec@1 78.820  MSE 0.029976\
+lambd value is: 0.0 learning rate is: 0.00040000000000000013\
+start to adding noise\
+Train in V2_epoch style\
+log--[203/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5994\
+log--[203/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5841\
+train_one_ep_time:12.329662322998047 s\
+feature_infer_one_ep_time:9.683577299118042 s\
+feature_clst_one_ep_time:0.4708099365234375 s\
+the mean of mutal infor is:(-6.990), the est mean of mutal infor is:(-6.093)\
+Epoch 0	Test (client-0):	Loss 0.4918 (0.4918)	Prec@1 82.031 (82.031)\
+Epoch 50	Test (client-0):	Loss 0.6672 (0.6387)	Prec@1 78.125 (78.079)\
+ * Prec@1 78.110  MSE 0.030655\
+lambd value is: 0.0 learning rate is: 0.00040000000000000013\
+start to adding noise\
+Train in V2_epoch style\
+log--[204/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6671\
+log--[204/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5781\
+train_one_ep_time:12.513635396957397 s\
+feature_infer_one_ep_time:9.483925580978394 s\
+feature_clst_one_ep_time:0.38501596450805664 s\
+the mean of mutal infor is:(-6.984), the est mean of mutal infor is:(-6.080)\
+Epoch 0	Test (client-0):	Loss 0.4887 (0.4887)	Prec@1 81.250 (81.250)\
+Epoch 50	Test (client-0):	Loss 0.6329 (0.6306)	Prec@1 78.906 (78.477)\
+ * Prec@1 78.380  MSE 0.030263\
+lambd value is: 0.0 learning rate is: 0.00040000000000000013\
+start to adding noise\
+Train in V2_epoch style\
+log--[205/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5372\
+log--[205/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5813\
+train_one_ep_time:12.814326524734497 s\
+feature_infer_one_ep_time:9.586646556854248 s\
+feature_clst_one_ep_time:0.40477848052978516 s\
+the mean of mutal infor is:(-6.988), the est mean of mutal infor is:(-6.079)\
+Epoch 0	Test (client-0):	Loss 0.4862 (0.4862)	Prec@1 79.688 (79.688)\
+Epoch 50	Test (client-0):	Loss 0.6295 (0.6322)	Prec@1 78.906 (78.125)\
+ * Prec@1 78.070  MSE 0.030372\
+lambd value is: 0.0 learning rate is: 0.00040000000000000013\
+start to adding noise\
+Train in V2_epoch style\
+log--[206/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6130\
+log--[206/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5875\
+train_one_ep_time:12.15276312828064 s\
+feature_infer_one_ep_time:10.007447242736816 s\
+feature_clst_one_ep_time:0.4019956588745117 s\
+the mean of mutal infor is:(-7.008), the est mean of mutal infor is:(-6.105)\
+Epoch 0	Test (client-0):	Loss 0.4812 (0.4812)	Prec@1 82.812 (82.812)\
+Epoch 50	Test (client-0):	Loss 0.6686 (0.6341)	Prec@1 78.125 (78.370)\
+ * Prec@1 78.530  MSE 0.030090\
+lambd value is: 0.0 learning rate is: 0.00040000000000000013\
+start to adding noise\
+Train in V2_epoch style\
+log--[207/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6715\
+log--[207/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5838\
+train_one_ep_time:12.15480375289917 s\
+feature_infer_one_ep_time:9.351000547409058 s\
+feature_clst_one_ep_time:0.4733846187591553 s\
+the mean of mutal infor is:(-7.017), the est mean of mutal infor is:(-6.112)\
+Epoch 0	Test (client-0):	Loss 0.5070 (0.5070)	Prec@1 81.250 (81.250)\
+Epoch 50	Test (client-0):	Loss 0.6368 (0.6365)	Prec@1 81.250 (78.294)\
+ * Prec@1 78.290  MSE 0.030409\
+lambd value is: 0.0 learning rate is: 0.00040000000000000013\
+start to adding noise\
+Train in V2_epoch style\
+log--[208/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5767\
+log--[208/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5840\
+train_one_ep_time:12.482362985610962 s\
+feature_infer_one_ep_time:9.573497295379639 s\
+feature_clst_one_ep_time:0.32862019538879395 s\
+the mean of mutal infor is:(-6.996), the est mean of mutal infor is:(-6.091)\
+Epoch 0	Test (client-0):	Loss 0.4937 (0.4937)	Prec@1 81.250 (81.250)\
+Epoch 50	Test (client-0):	Loss 0.6156 (0.6291)	Prec@1 81.250 (78.539)\
+ * Prec@1 78.390  MSE 0.030161\
+lambd value is: 0.0 learning rate is: 0.00040000000000000013\
+start to adding noise\
+Train in V2_epoch style\
+log--[209/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.4854\
+log--[209/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5828\
+train_one_ep_time:12.488386392593384 s\
+feature_infer_one_ep_time:9.350676536560059 s\
+feature_clst_one_ep_time:0.3901641368865967 s\
+the mean of mutal infor is:(-7.017), the est mean of mutal infor is:(-6.112)\
+Epoch 0	Test (client-0):	Loss 0.5034 (0.5034)	Prec@1 79.688 (79.688)\
+Epoch 50	Test (client-0):	Loss 0.6285 (0.6245)	Prec@1 78.906 (78.324)\
+ * Prec@1 78.330  MSE 0.030330\
+lambd value is: 0.0 learning rate is: 0.00040000000000000013\
+start to adding noise\
+Train in V2_epoch style\
+log--[210/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5479\
+log--[210/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5686\
+train_one_ep_time:12.009164333343506 s\
+feature_infer_one_ep_time:9.825333833694458 s\
+feature_clst_one_ep_time:0.4327092170715332 s\
+the mean of mutal infor is:(-7.011), the est mean of mutal infor is:(-6.109)\
+Epoch 0	Test (client-0):	Loss 0.4590 (0.4590)	Prec@1 83.594 (83.594)\
+Epoch 50	Test (client-0):	Loss 0.6116 (0.6180)	Prec@1 78.906 (79.105)\
+ * Prec@1 78.920  MSE 0.029731\
+lambd value is: 0.0 learning rate is: 8.000000000000002e-05\
+start to adding noise\
+Train in V2_epoch style\
+log--[211/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6722\
+log--[211/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5702\
+train_one_ep_time:11.969398975372314 s\
+feature_infer_one_ep_time:9.394463300704956 s\
+feature_clst_one_ep_time:0.4222891330718994 s\
+the mean of mutal infor is:(-7.005), the est mean of mutal infor is:(-6.104)\
+Epoch 0	Test (client-0):	Loss 0.4629 (0.4629)	Prec@1 82.031 (82.031)\
+Epoch 50	Test (client-0):	Loss 0.6021 (0.6151)	Prec@1 78.906 (78.661)\
+ * Prec@1 78.780  MSE 0.029551\
+lambd value is: 0.0 learning rate is: 8.000000000000002e-05\
+start to adding noise\
+Train in V2_epoch style\
+log--[212/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5824\
+log--[212/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5701\
+train_one_ep_time:12.403996706008911 s\
+feature_infer_one_ep_time:9.366227626800537 s\
+feature_clst_one_ep_time:0.40721893310546875 s\
+the mean of mutal infor is:(-7.013), the est mean of mutal infor is:(-6.111)\
+Epoch 0	Test (client-0):	Loss 0.4814 (0.4814)	Prec@1 84.375 (84.375)\
+Epoch 50	Test (client-0):	Loss 0.5947 (0.6137)	Prec@1 80.469 (78.830)\
+ * Prec@1 78.840  MSE 0.029610\
+lambd value is: 0.0 learning rate is: 8.000000000000002e-05\
+start to adding noise\
+Train in V2_epoch style\
+log--[213/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.4751\
+log--[213/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5697\
+train_one_ep_time:12.228857040405273 s\
+feature_infer_one_ep_time:9.447740077972412 s\
+feature_clst_one_ep_time:0.382152795791626 s\
+the mean of mutal infor is:(-7.012), the est mean of mutal infor is:(-6.112)\
+Epoch 0	Test (client-0):	Loss 0.4459 (0.4459)	Prec@1 82.031 (82.031)\
+Epoch 50	Test (client-0):	Loss 0.6178 (0.6218)	Prec@1 78.906 (78.554)\
+ * Prec@1 78.820  MSE 0.029773\
+lambd value is: 0.0 learning rate is: 8.000000000000002e-05\
+start to adding noise\
+Train in V2_epoch style\
+log--[214/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5906\
+log--[214/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5736\
+train_one_ep_time:12.070827722549438 s\
+feature_infer_one_ep_time:10.016301155090332 s\
+feature_clst_one_ep_time:0.4407989978790283 s\
+the mean of mutal infor is:(-7.010), the est mean of mutal infor is:(-6.108)\
+Epoch 0	Test (client-0):	Loss 0.4245 (0.4245)	Prec@1 82.031 (82.031)\
+Epoch 50	Test (client-0):	Loss 0.6147 (0.6161)	Prec@1 78.906 (78.937)\
+ * Prec@1 78.860  MSE 0.029734\
+lambd value is: 0.0 learning rate is: 8.000000000000002e-05\
+start to adding noise\
+Train in V2_epoch style\
+log--[215/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6368\
+log--[215/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5661\
+train_one_ep_time:12.108697652816772 s\
+feature_infer_one_ep_time:9.460395336151123 s\
+feature_clst_one_ep_time:0.4348001480102539 s\
+the mean of mutal infor is:(-7.007), the est mean of mutal infor is:(-6.104)\
+Epoch 0	Test (client-0):	Loss 0.4359 (0.4359)	Prec@1 82.812 (82.812)\
+Epoch 50	Test (client-0):	Loss 0.5987 (0.6157)	Prec@1 80.469 (79.029)\
+ * Prec@1 79.300  MSE 0.029491\
+lambd value is: 0.0 learning rate is: 8.000000000000002e-05\
+start to adding noise\
+Train in V2_epoch style\
+log--[216/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.4998\
+log--[216/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5714\
+train_one_ep_time:12.779853105545044 s\
+feature_infer_one_ep_time:9.551188468933105 s\
+feature_clst_one_ep_time:0.399935245513916 s\
+the mean of mutal infor is:(-7.006), the est mean of mutal infor is:(-6.103)\
+Epoch 0	Test (client-0):	Loss 0.4597 (0.4597)	Prec@1 83.594 (83.594)\
+Epoch 50	Test (client-0):	Loss 0.6127 (0.6170)	Prec@1 81.250 (79.105)\
+ * Prec@1 78.980  MSE 0.029542\
+lambd value is: 0.0 learning rate is: 8.000000000000002e-05\
+start to adding noise\
+Train in V2_epoch style\
+log--[217/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.3648\
+log--[217/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5689\
+train_one_ep_time:13.061936855316162 s\
+feature_infer_one_ep_time:9.853363513946533 s\
+feature_clst_one_ep_time:0.4257829189300537 s\
+the mean of mutal infor is:(-7.005), the est mean of mutal infor is:(-6.105)\
+Epoch 0	Test (client-0):	Loss 0.4549 (0.4549)	Prec@1 83.594 (83.594)\
+Epoch 50	Test (client-0):	Loss 0.6108 (0.6165)	Prec@1 81.250 (78.799)\
+ * Prec@1 79.030  MSE 0.029527\
+lambd value is: 0.0 learning rate is: 8.000000000000002e-05\
+start to adding noise\
+Train in V2_epoch style\
+log--[218/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5440\
+log--[218/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5657\
+train_one_ep_time:12.27376937866211 s\
+feature_infer_one_ep_time:10.004148721694946 s\
+feature_clst_one_ep_time:0.42011356353759766 s\
+the mean of mutal infor is:(-7.010), the est mean of mutal infor is:(-6.108)\
+Epoch 0	Test (client-0):	Loss 0.4687 (0.4687)	Prec@1 80.469 (80.469)\
+Epoch 50	Test (client-0):	Loss 0.6124 (0.6176)	Prec@1 80.469 (78.569)\
+ * Prec@1 78.810  MSE 0.029668\
+lambd value is: 0.0 learning rate is: 8.000000000000002e-05\
+start to adding noise\
+Train in V2_epoch style\
+log--[219/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.4986\
+log--[219/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5661\
+train_one_ep_time:12.223454713821411 s\
+feature_infer_one_ep_time:9.50858187675476 s\
+feature_clst_one_ep_time:0.43274879455566406 s\
+the mean of mutal infor is:(-7.008), the est mean of mutal infor is:(-6.111)\
+Epoch 0	Test (client-0):	Loss 0.4300 (0.4300)	Prec@1 85.938 (85.938)\
+Epoch 50	Test (client-0):	Loss 0.6446 (0.6189)	Prec@1 79.688 (78.860)\
+ * Prec@1 78.970  MSE 0.029587\
+lambd value is: 0.0 learning rate is: 8.000000000000002e-05\
+start to adding noise\
+Train in V2_epoch style\
+log--[220/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6779\
+log--[220/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5671\
+train_one_ep_time:12.571237564086914 s\
+feature_infer_one_ep_time:9.566624164581299 s\
+feature_clst_one_ep_time:0.30677056312561035 s\
+the mean of mutal infor is:(-7.014), the est mean of mutal infor is:(-6.116)\
+Epoch 0	Test (client-0):	Loss 0.4593 (0.4593)	Prec@1 82.812 (82.812)\
+Epoch 50	Test (client-0):	Loss 0.5998 (0.6151)	Prec@1 81.250 (79.075)\
+ * Prec@1 78.890  MSE 0.029809\
+lambd value is: 0.0 learning rate is: 8.000000000000002e-05\
+start to adding noise\
+Train in V2_epoch style\
+log--[221/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5043\
+log--[221/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5651\
+train_one_ep_time:12.199649810791016 s\
+feature_infer_one_ep_time:9.70583724975586 s\
+feature_clst_one_ep_time:0.4031202793121338 s\
+the mean of mutal infor is:(-7.007), the est mean of mutal infor is:(-6.099)\
+Epoch 0	Test (client-0):	Loss 0.4768 (0.4768)	Prec@1 81.250 (81.250)\
+Epoch 50	Test (client-0):	Loss 0.6018 (0.6179)	Prec@1 81.250 (78.830)\
+ * Prec@1 78.980  MSE 0.029630\
+lambd value is: 0.0 learning rate is: 8.000000000000002e-05\
+start to adding noise\
+Train in V2_epoch style\
+log--[222/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.4937\
+log--[222/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5652\
+train_one_ep_time:12.27918267250061 s\
+feature_infer_one_ep_time:10.03152322769165 s\
+feature_clst_one_ep_time:0.3459131717681885 s\
+the mean of mutal infor is:(-7.019), the est mean of mutal infor is:(-6.116)\
+Epoch 0	Test (client-0):	Loss 0.4568 (0.4568)	Prec@1 83.594 (83.594)\
+Epoch 50	Test (client-0):	Loss 0.6089 (0.6174)	Prec@1 82.031 (78.968)\
+ * Prec@1 79.060  MSE 0.029618\
+lambd value is: 0.0 learning rate is: 8.000000000000002e-05\
+start to adding noise\
+Train in V2_epoch style\
+log--[223/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5214\
+log--[223/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5694\
+train_one_ep_time:12.254051685333252 s\
+feature_infer_one_ep_time:9.589889287948608 s\
+feature_clst_one_ep_time:0.4420182704925537 s\
+the mean of mutal infor is:(-7.014), the est mean of mutal infor is:(-6.119)\
+Epoch 0	Test (client-0):	Loss 0.4577 (0.4577)	Prec@1 81.250 (81.250)\
+Epoch 50	Test (client-0):	Loss 0.6345 (0.6192)	Prec@1 79.688 (78.508)\
+ * Prec@1 78.700  MSE 0.029729\
+lambd value is: 0.0 learning rate is: 8.000000000000002e-05\
+start to adding noise\
+Train in V2_epoch style\
+log--[224/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.4895\
+log--[224/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5688\
+train_one_ep_time:12.627686262130737 s\
+feature_infer_one_ep_time:9.70792555809021 s\
+feature_clst_one_ep_time:0.4167344570159912 s\
+the mean of mutal infor is:(-7.017), the est mean of mutal infor is:(-6.113)\
+Epoch 0	Test (client-0):	Loss 0.4441 (0.4441)	Prec@1 83.594 (83.594)\
+Epoch 50	Test (client-0):	Loss 0.6173 (0.6133)	Prec@1 79.688 (79.013)\
+ * Prec@1 79.050  MSE 0.029533\
+lambd value is: 0.0 learning rate is: 8.000000000000002e-05\
+start to adding noise\
+Train in V2_epoch style\
+log--[225/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5498\
+log--[225/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5698\
+train_one_ep_time:12.64576506614685 s\
+feature_infer_one_ep_time:9.707800388336182 s\
+feature_clst_one_ep_time:0.3760371208190918 s\
+the mean of mutal infor is:(-7.023), the est mean of mutal infor is:(-6.124)\
+Epoch 0	Test (client-0):	Loss 0.4413 (0.4413)	Prec@1 82.031 (82.031)\
+Epoch 50	Test (client-0):	Loss 0.6219 (0.6181)	Prec@1 78.906 (78.983)\
+ * Prec@1 78.940  MSE 0.029679\
+lambd value is: 0.0 learning rate is: 8.000000000000002e-05\
+start to adding noise\
+Train in V2_epoch style\
+log--[226/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6627\
+log--[226/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5686\
+train_one_ep_time:12.00002908706665 s\
+feature_infer_one_ep_time:9.823945760726929 s\
+feature_clst_one_ep_time:0.45371174812316895 s\
+the mean of mutal infor is:(-7.012), the est mean of mutal infor is:(-6.110)\
+Epoch 0	Test (client-0):	Loss 0.4345 (0.4345)	Prec@1 82.812 (82.812)\
+Epoch 50	Test (client-0):	Loss 0.6012 (0.6194)	Prec@1 80.469 (78.922)\
+ * Prec@1 79.110  MSE 0.029563\
+lambd value is: 0.0 learning rate is: 8.000000000000002e-05\
+start to adding noise\
+Train in V2_epoch style\
+log--[227/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5337\
+log--[227/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5711\
+train_one_ep_time:12.12715768814087 s\
+feature_infer_one_ep_time:9.392327070236206 s\
+feature_clst_one_ep_time:0.5150330066680908 s\
+the mean of mutal infor is:(-7.024), the est mean of mutal infor is:(-6.126)\
+Epoch 0	Test (client-0):	Loss 0.4610 (0.4610)	Prec@1 82.031 (82.031)\
+Epoch 50	Test (client-0):	Loss 0.6178 (0.6183)	Prec@1 80.469 (78.998)\
+ * Prec@1 79.120  MSE 0.029642\
+lambd value is: 0.0 learning rate is: 8.000000000000002e-05\
+start to adding noise\
+Train in V2_epoch style\
+log--[228/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5514\
+log--[228/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5659\
+train_one_ep_time:12.600817918777466 s\
+feature_infer_one_ep_time:9.491083145141602 s\
+feature_clst_one_ep_time:0.4962189197540283 s\
+the mean of mutal infor is:(-7.018), the est mean of mutal infor is:(-6.121)\
+Epoch 0	Test (client-0):	Loss 0.4587 (0.4587)	Prec@1 81.250 (81.250)\
+Epoch 50	Test (client-0):	Loss 0.6037 (0.6167)	Prec@1 82.031 (78.860)\
+ * Prec@1 78.910  MSE 0.029712\
+lambd value is: 0.0 learning rate is: 8.000000000000002e-05\
+start to adding noise\
+Train in V2_epoch style\
+log--[229/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.7489\
+log--[229/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5598\
+train_one_ep_time:12.24285340309143 s\
+feature_infer_one_ep_time:10.048757553100586 s\
+feature_clst_one_ep_time:0.3730010986328125 s\
+the mean of mutal infor is:(-7.024), the est mean of mutal infor is:(-6.124)\
+Epoch 0	Test (client-0):	Loss 0.4507 (0.4507)	Prec@1 82.812 (82.812)\
+Epoch 50	Test (client-0):	Loss 0.6014 (0.6157)	Prec@1 79.688 (79.105)\
+ * Prec@1 79.030  MSE 0.029530\
+lambd value is: 0.0 learning rate is: 8.000000000000002e-05\
+start to adding noise\
+Train in V2_epoch style\
+log--[230/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6672\
+log--[230/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5639\
+train_one_ep_time:12.248523473739624 s\
+feature_infer_one_ep_time:10.073767900466919 s\
+feature_clst_one_ep_time:0.409717321395874 s\
+the mean of mutal infor is:(-7.021), the est mean of mutal infor is:(-6.119)\
+Epoch 0	Test (client-0):	Loss 0.4716 (0.4716)	Prec@1 82.031 (82.031)\
+Epoch 50	Test (client-0):	Loss 0.6222 (0.6153)	Prec@1 79.688 (79.044)\
+ * Prec@1 79.020  MSE 0.029674\
+lambd value is: 0.0 learning rate is: 8.000000000000002e-05\
+start to adding noise\
+Train in V2_epoch style\
+log--[231/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6734\
+log--[231/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5668\
+train_one_ep_time:12.276938676834106 s\
+feature_infer_one_ep_time:9.579999923706055 s\
+feature_clst_one_ep_time:0.41269636154174805 s\
+the mean of mutal infor is:(-7.025), the est mean of mutal infor is:(-6.125)\
+Epoch 0	Test (client-0):	Loss 0.4644 (0.4644)	Prec@1 82.031 (82.031)\
+Epoch 50	Test (client-0):	Loss 0.6010 (0.6182)	Prec@1 81.250 (78.539)\
+ * Prec@1 78.590  MSE 0.029736\
+lambd value is: 0.0 learning rate is: 8.000000000000002e-05\
+start to adding noise\
+Train in V2_epoch style\
+log--[232/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5405\
+log--[232/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5667\
+train_one_ep_time:12.678911447525024 s\
+feature_infer_one_ep_time:9.571050643920898 s\
+feature_clst_one_ep_time:0.3969249725341797 s\
+the mean of mutal infor is:(-7.017), the est mean of mutal infor is:(-6.116)\
+Epoch 0	Test (client-0):	Loss 0.4490 (0.4490)	Prec@1 82.812 (82.812)\
+Epoch 50	Test (client-0):	Loss 0.6115 (0.6179)	Prec@1 79.688 (78.784)\
+ * Prec@1 78.980  MSE 0.029489\
+lambd value is: 0.0 learning rate is: 8.000000000000002e-05\
+start to adding noise\
+Train in V2_epoch style\
+log--[233/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6907\
+log--[233/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5719\
+train_one_ep_time:12.252681255340576 s\
+feature_infer_one_ep_time:9.859156131744385 s\
+feature_clst_one_ep_time:0.39240574836730957 s\
+the mean of mutal infor is:(-7.016), the est mean of mutal infor is:(-6.118)\
+Epoch 0	Test (client-0):	Loss 0.4264 (0.4264)	Prec@1 81.250 (81.250)\
+Epoch 50	Test (client-0):	Loss 0.6137 (0.6144)	Prec@1 79.688 (79.044)\
+ * Prec@1 79.180  MSE 0.029336\
+lambd value is: 0.0 learning rate is: 8.000000000000002e-05\
+start to adding noise\
+Train in V2_epoch style\
+log--[234/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6301\
+log--[234/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5674\
+train_one_ep_time:12.146546602249146 s\
+feature_infer_one_ep_time:10.209638833999634 s\
+feature_clst_one_ep_time:0.3757932186126709 s\
+the mean of mutal infor is:(-7.021), the est mean of mutal infor is:(-6.126)\
+Epoch 0	Test (client-0):	Loss 0.4733 (0.4733)	Prec@1 82.031 (82.031)\
+Epoch 50	Test (client-0):	Loss 0.6004 (0.6185)	Prec@1 80.469 (78.860)\
+ * Prec@1 79.010  MSE 0.029508\
+lambd value is: 0.0 learning rate is: 8.000000000000002e-05\
+start to adding noise\
+Train in V2_epoch style\
+log--[235/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5790\
+log--[235/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5673\
+train_one_ep_time:12.406107425689697 s\
+feature_infer_one_ep_time:9.455655813217163 s\
+feature_clst_one_ep_time:0.47009944915771484 s\
+the mean of mutal infor is:(-7.020), the est mean of mutal infor is:(-6.125)\
+Epoch 0	Test (client-0):	Loss 0.4473 (0.4473)	Prec@1 80.469 (80.469)\
+Epoch 50	Test (client-0):	Loss 0.6525 (0.6159)	Prec@1 80.469 (78.937)\
+ * Prec@1 78.960  MSE 0.029607\
+lambd value is: 0.0 learning rate is: 8.000000000000002e-05\
+start to adding noise\
+Train in V2_epoch style\
+log--[236/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6161\
+log--[236/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5591\
+train_one_ep_time:12.527398586273193 s\
+feature_infer_one_ep_time:9.523346424102783 s\
+feature_clst_one_ep_time:0.3764157295227051 s\
+the mean of mutal infor is:(-7.022), the est mean of mutal infor is:(-6.126)\
+Epoch 0	Test (client-0):	Loss 0.4334 (0.4334)	Prec@1 82.812 (82.812)\
+Epoch 50	Test (client-0):	Loss 0.6139 (0.6152)	Prec@1 80.469 (79.029)\
+ * Prec@1 79.020  MSE 0.029730\
+lambd value is: 0.0 learning rate is: 8.000000000000002e-05\
+start to adding noise\
+Train in V2_epoch style\
+log--[237/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6274\
+log--[237/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5627\
+train_one_ep_time:12.127703189849854 s\
+feature_infer_one_ep_time:10.032459259033203 s\
+feature_clst_one_ep_time:0.3270845413208008 s\
+the mean of mutal infor is:(-7.025), the est mean of mutal infor is:(-6.130)\
+Epoch 0	Test (client-0):	Loss 0.4419 (0.4419)	Prec@1 82.031 (82.031)\
+Epoch 50	Test (client-0):	Loss 0.6014 (0.6173)	Prec@1 81.250 (78.799)\
+ * Prec@1 79.030  MSE 0.029502\
+lambd value is: 0.0 learning rate is: 8.000000000000002e-05\
+start to adding noise\
+Train in V2_epoch style\
+log--[238/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5145\
+log--[238/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5662\
+train_one_ep_time:12.10740065574646 s\
+feature_infer_one_ep_time:9.737420082092285 s\
+feature_clst_one_ep_time:0.47858548164367676 s\
+the mean of mutal infor is:(-7.019), the est mean of mutal infor is:(-6.123)\
+Epoch 0	Test (client-0):	Loss 0.4465 (0.4465)	Prec@1 82.812 (82.812)\
+Epoch 50	Test (client-0):	Loss 0.6239 (0.6176)	Prec@1 78.125 (78.937)\
+ * Prec@1 79.120  MSE 0.029456\
+lambd value is: 0.0 learning rate is: 8.000000000000002e-05\
+start to adding noise\
+Train in V2_epoch style\
+log--[239/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.6044\
+log--[239/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5652\
+train_one_ep_time:12.132587432861328 s\
+feature_infer_one_ep_time:9.621737718582153 s\
+feature_clst_one_ep_time:0.5025949478149414 s\
+the mean of mutal infor is:(-7.027), the est mean of mutal infor is:(-6.134)\
+Epoch 0	Test (client-0):	Loss 0.4443 (0.4443)	Prec@1 83.594 (83.594)\
+Epoch 50	Test (client-0):	Loss 0.6129 (0.6197)	Prec@1 82.031 (78.814)\
+ * Prec@1 78.870  MSE 0.029778\
+lambd value is: 0.0 learning rate is: 8.000000000000002e-05\
+start to adding noise\
+Train in V2_epoch style\
+log--[240/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5007\
+log--[240/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 0.5664\
+train_one_ep_time:12.716976881027222 s\
+feature_infer_one_ep_time:9.566405296325684 s\
+feature_clst_one_ep_time:0.43671274185180664 s\
+the mean of mutal infor is:(-7.026), the est mean of mutal infor is:(-6.126)\
+Epoch 0	Test (client-0):	Loss 0.4357 (0.4357)	Prec@1 84.375 (84.375)\
+Epoch 50	Test (client-0):	Loss 0.6106 (0.6137)	Prec@1 81.250 (79.105)\
+ * Prec@1 79.150  MSE 0.029458\
+lambd value is: 0.0 learning rate is: 8.000000000000002e-05\
+Best Average Validation Accuracy is 79.3\
+2025-08-09 17:01:07.467935: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:477] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered\
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR\
+E0000 00:00:1754758867.489660   23252 cuda_dnn.cc:8310] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered\
+E0000 00:00:1754758867.496362   23252 cuda_blas.cc:1418] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered\
+Split Learning Scheme: Overall Cutting_layer 4/13\
+/usr/local/lib/python3.11/dist-packages/torch/utils/data/dataloader.py:624: UserWarning: This DataLoader will create 8 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.\
+  warnings.warn(\
+Total number of batches per epoch for each client is  391\
+original channel size of smashed-data is 128\
+added bottleneck, new channel size of smashed-data is 8\
+local:\
+Sequential(\
+  (0): Conv2d(3, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\
+  (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)\
+  (2): ReLU(inplace=True)\
+  (3): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)\
+  (4): Conv2d(64, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\
+  (5): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)\
+  (6): ReLU(inplace=True)\
+  (7): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)\
+  (8): Conv2d(128, 8, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\
+  (9): Sigmoid()\
+)\
+cloud:\
+Sequential(\
+  (0): Conv2d(8, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\
+  (1): Conv2d(128, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\
+  (2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)\
+  (3): ReLU(inplace=True)\
+  (4): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\
+  (5): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)\
+  (6): ReLU(inplace=True)\
+  (7): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)\
+  (8): Conv2d(256, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\
+  (9): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)\
+  (10): ReLU(inplace=True)\
+  (11): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\
+  (12): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)\
+  (13): ReLU(inplace=True)\
+  (14): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)\
+  (15): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\
+  (16): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)\
+  (17): ReLU(inplace=True)\
+  (18): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\
+  (19): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)\
+  (20): ReLU(inplace=True)\
+  (21): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)\
+)\
+classifier:\
+Sequential(\
+  (0): Dropout(p=0.5, inplace=False)\
+  (1): Linear(in_features=512, out_features=512, bias=True)\
+  (2): ReLU(inplace=True)\
+  (3): Dropout(p=0.5, inplace=False)\
+  (4): Linear(in_features=512, out_features=512, bias=True)\
+  (5): ReLU(inplace=True)\
+  (6): Linear(in_features=512, out_features=10, bias=True)\
+)\
+the test model is: best\
+load client 0's local\
+load cloud\
+load classifier\
+Traceback (most recent call last):\
+  File "/kaggle/working/attention/main_test_MIA.py", line 187, in <module>\
+    images = torch.load("./test_cifar10_image.pt")\
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+  File "/usr/local/lib/python3.11/dist-packages/torch/serialization.py", line 1425, in load\
+    with _open_file_like(f, "rb") as opened_file:\
+         ^^^^^^^^^^^^^^^^^^^^^^^^\
+  File "/usr/local/lib/python3.11/dist-packages/torch/serialization.py", line 751, in _open_file_like\
+    return _open_file(name_or_buffer, mode)\
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+  File "/usr/local/lib/python3.11/dist-packages/torch/serialization.py", line 732, in __init__\
+    super().__init__(open(name, mode))\
+                     ^^^^^^^^^^^^^^^^\
+FileNotFoundError: [Errno 2] No such file or directory: './test_cifar10_image.pt'\
+2025-08-09 17:01:20.865938: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:477] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered\
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR\
+E0000 00:00:1754758880.887505   23268 cuda_dnn.cc:8310] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered\
+E0000 00:00:1754758880.894386   23268 cuda_blas.cc:1418] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered\
+Split Learning Scheme: Overall Cutting_layer 4/13\
+/usr/local/lib/python3.11/dist-packages/torch/utils/data/dataloader.py:624: UserWarning: This DataLoader will create 8 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.\
+  warnings.warn(\
+Total number of batches per epoch for each client is  391\
+original channel size of smashed-data is 128\
+added bottleneck, new channel size of smashed-data is 8\
+local:\
+Sequential(\
+  (0): Conv2d(3, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\
+  (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)\
+  (2): ReLU(inplace=True)\
+  (3): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)\
+  (4): Conv2d(64, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\
+  (5): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)\
+  (6): ReLU(inplace=True)\
+  (7): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)\
+  (8): Conv2d(128, 8, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\
+  (9): Sigmoid()\
+)\
+cloud:\
+Sequential(\
+  (0): Conv2d(8, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\
+  (1): Conv2d(128, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\
+  (2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)\
+  (3): ReLU(inplace=True)\
+  (4): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\
+  (5): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)\
+  (6): ReLU(inplace=True)\
+  (7): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)\
+  (8): Conv2d(256, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\
+  (9): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)\
+  (10): ReLU(inplace=True)\
+  (11): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\
+  (12): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)\
+  (13): ReLU(inplace=True)\
+  (14): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)\
+  (15): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\
+  (16): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)\
+  (17): ReLU(inplace=True)\
+  (18): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))\
+  (19): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)\
+  (20): ReLU(inplace=True)\
+  (21): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)\
+)\
+classifier:\
+Sequential(\
+  (0): Dropout(p=0.5, inplace=False)\
+  (1): Linear(in_features=512, out_features=512, bias=True)\
+  (2): ReLU(inplace=True)\
+  (3): Dropout(p=0.5, inplace=False)\
+  (4): Linear(in_features=512, out_features=512, bias=True)\
+  (5): ReLU(inplace=True)\
+  (6): Linear(in_features=512, out_features=10, bias=True)\
+)\
+Namespace(arch='vgg11_bn_sgm', cutlayer=4, batch_size=128, filename='pretrain_False_lambd_0_noise_0.025_epoch_240_bottleneck_noRELU_C8S1_log_1_ATstrength_0.3_lr_0.05_varthres_0.125_attention', folder='saves/cifar10/SCA_new_infocons_sgm_lg1_thre0.125', num_client=1, num_epochs=240, learning_rate=0.05, lambd=0.0, dataset_portion=1.0, client_sample_ratio=1.0, noniid=1.0, local_lr=-1.0, dataset='cifar10', scheme='V2_epoch', regularization='Gaussian_kl', regularization_strength=0.025, var_threshold=0.125, AT_regularization='SCA_new', AT_regularization_strength=0.3, log_entropy=1.0, ssim_threshold=0.5, gan_AE_type='res_normN4C64', gan_loss_type='SSIM', bottleneck_option='noRELU_C8S1', optimize_computation=1, decoder_sync=False, load_from_checkpoint=False, load_from_checkpoint_server=False, transfer_source_task='cifar100', finetune_freeze_bn=False, save_more_checkpoints=False, initialize_different=False, use_attention_classifier=True, num_slots=8, attention_heads=8, attention_dropout=0.1, random_seed=125)\
+Model's smashed-data size is torch.Size([1, 8, 8, 8])\
+Real Train Phase: done by all clients, for total 240 epochs\
+GAN training interval N (once every N step) is set to 1!\
+Train in V2_epoch style\
+/kaggle/working/attention/model_training_attention.py:1457: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).\
+  train_loss_list.append(torch.tensor(train_loss))\
+log--[1/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 2.3259\
+log--[1/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 2.3118\
+train_one_ep_time:12.68862271308899 s\
+feature_infer_one_ep_time:10.042457580566406 s\
+randomized selected centroids\
+randomized selected centroids\
+randomized selected centroids\
+randomized selected centroids\
+randomized selected centroids\
+randomized selected centroids\
+randomized selected centroids\
+randomized selected centroids\
+randomized selected centroids\
+randomized selected centroids\
+feature_clst_one_ep_time:0.7920088768005371 s\
+the mean of mutal infor is:(-4.871), the est mean of mutal infor is:(-4.057)\
+./saves/cifar10/SCA_new_infocons_sgm_lg1_thre0.125/pretrain_False_lambd_0_noise_0.025_epoch_240_bottleneck_noRELU_C8S1_log_1_ATstrength_0.3_lr_0.05_varthres_0.125_attention//visualize/1.png\
+/usr/local/lib/python3.11/dist-packages/torch/utils/data/dataloader.py:624: UserWarning: This DataLoader will create 8 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.\
+  warnings.warn(\
+Epoch 0	Test (client-0):	Loss 2.3041 (2.3041)	Prec@1 7.812 (7.812)\
+Epoch 50	Test (client-0):	Loss 2.3246 (2.3129)	Prec@1 7.031 (9.681)\
+ * Prec@1 9.860  MSE 0.090187\
+lambd value is: 0.0 learning rate is: 0.05\
+/usr/local/lib/python3.11/dist-packages/torch/optim/lr_scheduler.py:243: UserWarning: The epoch parameter in `scheduler.step()` was not necessary and is being deprecated where possible. Please use `scheduler.step()` to step the scheduler. During the deprecation, if epoch is different from None, the closed form is used instead of the new chainable form, where available. Please open an issue if you are unable to replicate your use case: {\field{\*\fldinst{HYPERLINK "https://github.com/pytorch/pytorch/issues/new/choose"}}{\fldrslt \cf4 \strokec4 https://github.com/pytorch/pytorch/issues/new/choose}}.\
+  warnings.warn(EPOCH_DEPRECATION_WARNING, UserWarning)\
+Train in V2_epoch style\
+/kaggle/working/attention/model_training_attention.py:1457: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).\
+  train_loss_list.append(torch.tensor(train_loss))\
+log--[2/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 2.2967\
+log--[2/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 2.0081\
+train_one_ep_time:12.565107345581055 s\
+feature_infer_one_ep_time:9.599841833114624 s\
+feature_clst_one_ep_time:0.6774983406066895 s\
+the mean of mutal infor is:(-4.963), the est mean of mutal infor is:(-3.669)\
+Epoch 0	Test (client-0):	Loss 1.8823 (1.8823)	Prec@1 29.688 (29.688)\
+Epoch 50	Test (client-0):	Loss 1.8976 (1.9748)	Prec@1 25.000 (21.829)\
+ * Prec@1 21.630  MSE 0.084803\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[3/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.9287\
+log--[3/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.8663\
+train_one_ep_time:12.351794481277466 s\
+feature_infer_one_ep_time:10.06790828704834 s\
+feature_clst_one_ep_time:0.5740218162536621 s\
+the mean of mutal infor is:(-4.787), the est mean of mutal infor is:(-3.506)\
+Epoch 0	Test (client-0):	Loss 1.9549 (1.9549)	Prec@1 27.344 (27.344)\
+Epoch 50	Test (client-0):	Loss 2.0216 (1.8985)	Prec@1 25.000 (26.991)\
+ * Prec@1 26.810  MSE 0.081606\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[4/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.7825\
+log--[4/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.7614\
+train_one_ep_time:12.322676420211792 s\
+feature_infer_one_ep_time:9.618263006210327 s\
+feature_clst_one_ep_time:0.6326582431793213 s\
+the mean of mutal infor is:(-4.907), the est mean of mutal infor is:(-3.740)\
+Epoch 0	Test (client-0):	Loss 1.7254 (1.7254)	Prec@1 33.594 (33.594)\
+Epoch 50	Test (client-0):	Loss 1.7953 (1.7338)	Prec@1 31.250 (33.165)\
+ * Prec@1 32.960  MSE 0.077222\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[5/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.7211\
+log--[5/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.7019\
+train_one_ep_time:12.527179479598999 s\
+feature_infer_one_ep_time:9.755652904510498 s\
+feature_clst_one_ep_time:0.4949004650115967 s\
+the mean of mutal infor is:(-5.086), the est mean of mutal infor is:(-4.001)\
+Epoch 0	Test (client-0):	Loss 1.6106 (1.6106)	Prec@1 40.625 (40.625)\
+Epoch 50	Test (client-0):	Loss 1.6876 (1.6454)	Prec@1 34.375 (35.907)\
+ * Prec@1 35.860  MSE 0.074928\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[6/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.6252\
+log--[6/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.6505\
+train_one_ep_time:12.720561742782593 s\
+feature_infer_one_ep_time:9.551923513412476 s\
+feature_clst_one_ep_time:0.5287442207336426 s\
+the mean of mutal infor is:(-5.058), the est mean of mutal infor is:(-3.898)\
+Epoch 0	Test (client-0):	Loss 1.6465 (1.6465)	Prec@1 33.594 (33.594)\
+Epoch 50	Test (client-0):	Loss 1.8597 (1.7073)	Prec@1 24.219 (33.303)\
+ * Prec@1 33.220  MSE 0.076997\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[7/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.7297\
+log--[7/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.5991\
+train_one_ep_time:12.476759910583496 s\
+feature_infer_one_ep_time:10.274286985397339 s\
+feature_clst_one_ep_time:0.5169210433959961 s\
+the mean of mutal infor is:(-5.264), the est mean of mutal infor is:(-4.183)\
+Epoch 0	Test (client-0):	Loss 1.6842 (1.6842)	Prec@1 34.375 (34.375)\
+Epoch 50	Test (client-0):	Loss 1.8985 (1.7139)	Prec@1 30.469 (35.876)\
+ * Prec@1 35.760  MSE 0.075703\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[8/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.6461\
+log--[8/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.5244\
+train_one_ep_time:12.483787059783936 s\
+feature_infer_one_ep_time:9.68625020980835 s\
+feature_clst_one_ep_time:0.7905130386352539 s\
+the mean of mutal infor is:(-5.250), the est mean of mutal infor is:(-4.123)\
+Epoch 0	Test (client-0):	Loss 1.4575 (1.4575)	Prec@1 41.406 (41.406)\
+Epoch 50	Test (client-0):	Loss 1.5752 (1.4508)	Prec@1 37.500 (44.455)\
+ * Prec@1 44.490  MSE 0.067811\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[9/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.4297\
+log--[9/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.4762\
+train_one_ep_time:12.428150415420532 s\
+feature_infer_one_ep_time:9.780120849609375 s\
+feature_clst_one_ep_time:0.49529504776000977 s\
+the mean of mutal infor is:(-5.343), the est mean of mutal infor is:(-4.240)\
+Epoch 0	Test (client-0):	Loss 1.3926 (1.3926)	Prec@1 47.656 (47.656)\
+Epoch 50	Test (client-0):	Loss 1.4262 (1.3543)	Prec@1 40.625 (48.223)\
+ * Prec@1 47.820  MSE 0.064302\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[10/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.1442\
+log--[10/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.4418\
+train_one_ep_time:12.91257905960083 s\
+feature_infer_one_ep_time:9.807779312133789 s\
+feature_clst_one_ep_time:0.5122928619384766 s\
+the mean of mutal infor is:(-5.381), the est mean of mutal infor is:(-4.278)\
+Epoch 0	Test (client-0):	Loss 1.5542 (1.5542)	Prec@1 40.625 (40.625)\
+Epoch 50	Test (client-0):	Loss 1.8202 (1.5290)	Prec@1 30.469 (43.505)\
+ * Prec@1 43.470  MSE 0.069429\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[11/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.5116\
+log--[11/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.4013\
+train_one_ep_time:12.555722951889038 s\
+feature_infer_one_ep_time:10.070453405380249 s\
+feature_clst_one_ep_time:0.6140320301055908 s\
+the mean of mutal infor is:(-5.348), the est mean of mutal infor is:(-4.290)\
+Epoch 0	Test (client-0):	Loss 1.6557 (1.6557)	Prec@1 40.625 (40.625)\
+Epoch 50	Test (client-0):	Loss 1.5652 (1.5791)	Prec@1 39.062 (43.551)\
+ * Prec@1 43.830  MSE 0.070239\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[12/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.4027\
+log--[12/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.3846\
+train_one_ep_time:12.335377216339111 s\
+feature_infer_one_ep_time:10.077097415924072 s\
+feature_clst_one_ep_time:0.7340326309204102 s\
+the mean of mutal infor is:(-5.265), the est mean of mutal infor is:(-4.192)\
+Epoch 0	Test (client-0):	Loss 1.3698 (1.3698)	Prec@1 48.438 (48.438)\
+Epoch 50	Test (client-0):	Loss 1.4261 (1.3569)	Prec@1 49.219 (48.820)\
+ * Prec@1 49.000  MSE 0.063734\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[13/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.3358\
+log--[13/240][390/391][client-0] train loss: 0.0000 cross-entropy loss: 1.3735\
+train_one_ep_time:12.240716218948364 s\
+feature_infer_one_ep_time:9.554701566696167 s\
+feature_clst_one_ep_time:0.7570791244506836 s\
+the mean of mutal infor is:(-5.168), the est mean of mutal infor is:(-3.982)\
+Epoch 0	Test (client-0):	Loss 1.4582 (1.4582)	Prec@1 48.438 (48.438)\
+Epoch 50	Test (client-0):	Loss 1.7404 (1.4482)	Prec@1 38.281 (48.422)\
+ * Prec@1 48.140  MSE 0.065517\
+lambd value is: 0.0 learning rate is: 0.05\
+Train in V2_epoch style\
+log--[14/240][0/391][client-0] train loss: 0.0000 cross-entropy loss: 1.3846\
+}
