@@ -2,13 +2,15 @@
 """
 Quick comparison of Attention classifier vs. GMM-based classifier on CIFAR-10.
 
-Constraints:
-- Do not modify existing project files; only add this script.
-- Keep runtime short: small number of train/eval steps.
-- Try to use available device; note MIA_train prefers CUDA/CPU, not MPS.
+Default为“快速对比模式”（仅若干 step），因此运行时间短、准确率低，只适合粗略 sanity check。
+如果需要真正训练，请使用 epoch 模式：
 
-Usage:
-  python compare_attention_vs_gmm_cifar10.py --train_steps 50 --eval_batches 50 --batch_size 64
+Examples:
+  # 快速对比（默认）：
+  python compare_attention_vs_gmm_cifar10.py --mode quick --train_steps 200 --eval_batches 200
+
+  # 真实训练若干个 epoch（全量训练集 + 可选全量评估）：
+  python compare_attention_vs_gmm_cifar10.py --mode epoch --epochs 10 --full_eval
 """
 
 import argparse
@@ -155,6 +157,46 @@ def quick_eval(model: MIA_train, max_batches: int = 50) -> tuple[float, float]:
     return avg_ce, top1
 
 
+def epoch_train(model: MIA_train, n_epochs: int) -> None:
+    """Train using the model's full epoch loop over the entire train loader."""
+    # Override epochs if needed
+    model.n_epochs = int(n_epochs)
+    # Run main training loop (full dataset each epoch)
+    # Disable verbose logs and progress bar for a cleaner run here
+    model(log_frequency=100, verbose=False, progress_bar=False)
+
+
+@torch.no_grad()
+def full_eval(model: MIA_train) -> tuple[float, float]:
+    """Evaluate on the entire test/public loader; return (avg_ce, top1_acc)."""
+    device = model.device
+    model.f.eval(); model.f_tail.eval(); model.classifier.eval()
+    if getattr(model, 'attention_classifier', None) is not None:
+        model.attention_classifier.eval()
+
+    crit = nn.CrossEntropyLoss().to(device)
+    test_loader = model.pub_dataloader
+
+    ce_sum = 0.0
+    n_samples = 0
+    correct = 0
+
+    for images, labels in test_loader:
+        images = images.to(device)
+        labels = labels.to(device)
+        logits = forward_logits(model, images, labels)
+        loss = crit(logits, labels)
+
+        ce_sum += float(loss.item()) * images.size(0)
+        n_samples += int(images.size(0))
+        pred = logits.argmax(dim=1)
+        correct += int((pred == labels).sum().item())
+
+    avg_ce = ce_sum / max(1, n_samples)
+    top1 = correct / max(1, n_samples)
+    return avg_ce, top1
+
+
 def build_model(use_attention: bool, batch_size: int, save_dir_suffix: str) -> MIA_train:
     model = MIA_train(
         arch="vgg11_bn",
@@ -183,8 +225,12 @@ def build_model(use_attention: bool, batch_size: int, save_dir_suffix: str) -> M
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--train_steps", type=int, default=50)
-    parser.add_argument("--eval_batches", type=int, default=50)
+    parser.add_argument("--mode", choices=["quick", "epoch"], default="quick",
+                        help="quick: 少量step快速对比；epoch: 按epoch完整训练")
+    parser.add_argument("--train_steps", type=int, default=50, help="quick模式每个模型训练的steps数")
+    parser.add_argument("--eval_batches", type=int, default=50, help="quick模式评估时的batch数")
+    parser.add_argument("--epochs", type=int, default=1, help="epoch模式训练的epoch数")
+    parser.add_argument("--full_eval", action="store_true", help="epoch模式下对全量测试集评估")
     parser.add_argument("--batch_size", type=int, default=64)
     args = parser.parse_args()
 
@@ -209,34 +255,65 @@ def main():
     # Align initial weights for a fair start
     copy_shared_weights(attn_model, gmm_model)
 
-    # Quick train
-    print(f"Training Attention for {args.train_steps} steps...")
-    t0 = time.time()
-    attn_train_loss = quick_train(attn_model, args.train_steps)
-    t1 = time.time()
-    print(f"Attention train CE: {attn_train_loss:.4f}  (time: {t1-t0:.1f}s)")
+    if args.mode == "quick":
+        print(f"[Quick] Training Attention for {args.train_steps} steps...")
+        t0 = time.time()
+        attn_train_loss = quick_train(attn_model, args.train_steps)
+        t1 = time.time()
+        print(f"Attention train CE: {attn_train_loss:.4f}  (time: {t1-t0:.1f}s)")
 
-    print(f"Training GMM for {args.train_steps} steps...")
-    t0 = time.time()
-    gmm_train_loss = quick_train(gmm_model, args.train_steps)
-    t1 = time.time()
-    print(f"GMM train CE: {gmm_train_loss:.4f}       (time: {t1-t0:.1f}s)")
+        print(f"[Quick] Training GMM for {args.train_steps} steps...")
+        t0 = time.time()
+        gmm_train_loss = quick_train(gmm_model, args.train_steps)
+        t1 = time.time()
+        print(f"GMM train CE: {gmm_train_loss:.4f}       (time: {t1-t0:.1f}s)")
 
-    # Quick eval
-    print(f"Evaluating Attention on {args.eval_batches} batches...")
-    attn_ce, attn_top1 = quick_eval(attn_model, args.eval_batches)
-    print(f"Attention eval: CE={attn_ce:.4f}, Top1={attn_top1*100:.2f}%")
+        print(f"[Quick] Evaluating Attention on {args.eval_batches} batches...")
+        attn_ce, attn_top1 = quick_eval(attn_model, args.eval_batches)
+        print(f"Attention eval: CE={attn_ce:.4f}, Top1={attn_top1*100:.2f}%")
 
-    print(f"Evaluating GMM on {args.eval_batches} batches...")
-    gmm_ce, gmm_top1 = quick_eval(gmm_model, args.eval_batches)
-    print(f"GMM eval:       CE={gmm_ce:.4f}, Top1={gmm_top1*100:.2f}%")
+        print(f"[Quick] Evaluating GMM on {args.eval_batches} batches...")
+        gmm_ce, gmm_top1 = quick_eval(gmm_model, args.eval_batches)
+        print(f"GMM eval:       CE={gmm_ce:.4f}, Top1={gmm_top1*100:.2f}%")
 
-    # Summary
-    print("\n== Summary ==")
-    print(f"Attention: trainCE={attn_train_loss:.4f}, evalCE={attn_ce:.4f}, evalTop1={attn_top1*100:.2f}%")
-    print(f"GMM:       trainCE={gmm_train_loss:.4f}, evalCE={gmm_ce:.4f}, evalTop1={gmm_top1*100:.2f}%")
+        print("\n== Summary (Quick) ==")
+        print(f"Attention: trainCE={attn_train_loss:.4f}, evalCE={attn_ce:.4f}, evalTop1={attn_top1*100:.2f}%")
+        print(f"GMM:       trainCE={gmm_train_loss:.4f}, evalCE={gmm_ce:.4f}, evalTop1={gmm_top1*100:.2f}%")
+
+    else:  # epoch mode
+        print(f"[Epoch] Training Attention for {args.epochs} epoch(s) on full train set...")
+        t0 = time.time()
+        epoch_train(attn_model, args.epochs)
+        t1 = time.time()
+        print(f"Attention training done. (time: {t1-t0:.1f}s)")
+
+        print(f"[Epoch] Training GMM for {args.epochs} epoch(s) on full train set...")
+        t0 = time.time()
+        epoch_train(gmm_model, args.epochs)
+        t1 = time.time()
+        print(f"GMM training done.       (time: {t1-t0:.1f}s)")
+
+        if args.full_eval:
+            print("[Epoch] Full eval on entire test set (Attention)...")
+            attn_ce, attn_top1 = full_eval(attn_model)
+            print(f"Attention eval: CE={attn_ce:.4f}, Top1={attn_top1*100:.2f}%")
+
+            print("[Epoch] Full eval on entire test set (GMM)...")
+            gmm_ce, gmm_top1 = full_eval(gmm_model)
+            print(f"GMM eval:       CE={gmm_ce:.4f}, Top1={gmm_top1*100:.2f}%")
+        else:
+            print(f"[Epoch] Quick eval on {args.eval_batches} batches (Attention)...")
+            attn_ce, attn_top1 = quick_eval(attn_model, args.eval_batches)
+            print(f"Attention eval: CE={attn_ce:.4f}, Top1={attn_top1*100:.2f}%")
+
+            print(f"[Epoch] Quick eval on {args.eval_batches} batches (GMM)...")
+            gmm_ce, gmm_top1 = quick_eval(gmm_model, args.eval_batches)
+            print(f"GMM eval:       CE={gmm_ce:.4f}, Top1={gmm_top1*100:.2f}%")
+
+        print("\n== Summary (Epoch) ==")
+        print(f"Attention: evalCE={attn_ce:.4f}, evalTop1={attn_top1*100:.2f}%")
+        print(f"GMM:       evalCE={gmm_ce:.4f}, evalTop1={gmm_top1*100:.2f}%")
 
 
 if __name__ == "__main__":
     main()
-
