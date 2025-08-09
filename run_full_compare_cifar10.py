@@ -100,6 +100,10 @@ def build_model(use_attention: bool, batch_size: int, save_dir_suffix: str) -> M
         cutting_layer=4,
         batch_size=batch_size,
         n_epochs=1,
+        # Important: disable robustness term for attention to avoid
+        # rob_loss.backward on a non-grad tensor inside train_target_step
+        # (only changeable here as we restrict edits to this script)
+        lambd=0 if use_attention else 1,
         dataset="cifar10",
         scheme="V2_epoch",
         num_client=1,
@@ -168,4 +172,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
