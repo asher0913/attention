@@ -1472,6 +1472,16 @@ class MIA_train: # main class for every thing
 
 
             self.logger.debug("Real Train Phase: done by all clients, for total {} epochs".format(self.n_epochs))
+            print(f"\n=== Starting Training Phase ===")
+            print(f"Total epochs: {self.n_epochs}")
+            print(f"Batch size: {self.batch_size}")
+            print(f"Number of clients: {self.num_client}")
+            print(f"Using attention classifier: {self.use_attention_classifier}")
+            if self.use_attention_classifier:
+                print(f"Attention slots: {self.num_slots}, heads: {self.attention_heads}")
+            print(f"Lambda (conditional entropy weight): {self.lambd}")
+            print(f"Regularization strength: {self.regularization_strength}")
+            print("=" * 50)
 
             if self.save_more_checkpoints:
                 epoch_save_list = [1, 2 ,5 ,10 ,20 ,50 ,100]
@@ -1489,6 +1499,7 @@ class MIA_train: # main class for every thing
             lambd_start= self.lambd 
             lambd_end=lambd_start*2
             for epoch in range(1, self.n_epochs+1):
+                print(f"\n=== Starting Epoch {epoch}/{self.n_epochs} ===")
                 ep_start_time = time.time() 
                 if epoch > self.warm:
                     self.scheduler_step(epoch)
@@ -1511,6 +1522,7 @@ class MIA_train: # main class for every thing
                 train_loss_list=[]
                 f_loss_list= []
                 if "epoch" in self.scheme:
+                    print(f"Starting training phase for epoch {epoch}...")
                     model_train_stime= time.time()
                     for batch in range(self.num_batches):
 
@@ -1588,6 +1600,7 @@ class MIA_train: # main class for every thing
                                 label_all.append(labels.cpu()) 
                     feature_infer_etime= time.time()
                     print(f"feature_infer_one_ep_time:{feature_infer_etime - feature_infer_stime} s")
+                    print(f"Epoch {epoch} training completed. Total time: {feature_infer_etime - ep_start_time:.2f}s")
                 Z_all = torch.cat(Z_all, dim=0).to(self.device)
                 label_all = torch.cat(label_all, dim=0).to(self.device)
                 # print(Z_all.shape,label_all.shape)
@@ -1694,14 +1707,17 @@ class MIA_train: # main class for every thing
 
 
                 # Validate and get average accu among clients
+                print(f"Starting validation for epoch {epoch}...")
                 avg_accu = 0
                 val_start_time= time.time()
                 for client_id in range(self.num_client):
                     accu, loss = self.validate_target(client_id=client_id)
                     self.writer.add_scalar('valid_loss/client-{}/cross_entropy'.format(client_id), loss, epoch)
                     avg_accu += accu
+                    print(f"Client {client_id}: Accuracy = {accu:.2f}%, Loss = {loss:.4f}")
                 avg_accu = avg_accu / self.num_client
                 val_time=time.time()
+                print(f"Average validation accuracy: {avg_accu:.2f}%")
                 # print(f"val_one_ep_time:{val_time-val_start_time} s")
                 # Save the best model
                 if avg_accu > best_avg_accu:
