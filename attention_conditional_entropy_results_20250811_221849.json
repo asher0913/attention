@@ -1,0 +1,11 @@
+{
+  "test_accuracy": 10.0,
+  "test_loss": 2.3251902145944583,
+  "training_time": 426.99221444129944,
+  "epochs": 5,
+  "batch_size": 64,
+  "lambd": 1,
+  "regularization_strength": 0.1,
+  "num_slots": 8,
+  "attention_heads": 8
+}

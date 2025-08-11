@@ -812,6 +812,88 @@ class MIA_train: # main class for every thing
         # print(centroids_list)
         return loss,intra_class_mse
 
+    def compute_attention_conditional_entropy(self, features, labels, unique_labels, slot_representations):
+        """
+        Compute conditional entropy loss using attention mechanism instead of GMM
+        This function replaces the GMM-based conditional entropy calculation with attention-based approach
+        """
+        class_means = []
+        unique_labels = unique_labels.cpu().numpy()
+        labels = labels.cpu().numpy()
+        label_it = 0
+        
+        for i in unique_labels:
+            class_mask = (labels == i)
+            class_features = features[class_mask.squeeze(), :]
+            class_slot_representations = slot_representations[class_mask.squeeze(), :, :]  # (N, num_slots, d_model)
+            
+            class_mean = class_features.mean(dim=0)
+            
+            # Flatten features for variance calculation
+            N, D = class_features.shape[0], class_features.shape[1] * class_features.shape[2] * class_features.shape[3]
+            class_features_flat = class_features.reshape(N, D)
+            
+            # Use slot representations as centroids for attention-based clustering
+            # Average slot representations across the batch for this class
+            avg_slot_centroids = class_slot_representations.mean(dim=0)  # (num_slots, d_model)
+            
+            # Calculate distances between features and slot centroids
+            # We need to project slot centroids to feature space or vice versa
+            # For simplicity, we'll use the slot representations directly
+            # Ensure slot centroids have the same dimension as flattened features
+            if avg_slot_centroids.size(-1) != D:
+                # If dimensions don't match, we need to project or use a different approach
+                # For now, we'll use the first D dimensions or pad/truncate
+                if avg_slot_centroids.size(-1) > D:
+                    slot_centroids_flat = avg_slot_centroids[:, :D]  # Truncate to match feature dimension
+                else:
+                    # Pad with zeros if slot dimension is smaller
+                    padding = torch.zeros(self.num_slots, D - avg_slot_centroids.size(-1), device=self.device)
+                    slot_centroids_flat = torch.cat([avg_slot_centroids, padding], dim=1)
+            else:
+                slot_centroids_flat = avg_slot_centroids  # Use as is if dimensions match
+            
+            # Calculate distances between features and slot centroids
+            distances = torch.cdist(class_features_flat, slot_centroids_flat).detach().cpu().numpy()
+            
+            cluster_assignments = np.argmin(distances, axis=1)
+            unique_cluster_assignments = np.unique(cluster_assignments)
+            
+            num = 0
+            for j in unique_cluster_assignments:
+                indice_cluster = cluster_assignments == j
+                weight = sum(indice_cluster) / sum(class_mask)
+                
+                # Calculate variance using slot centroids instead of GMM centroids
+                cluster_centroid = slot_centroids_flat[j]
+                variances = torch.mean(((class_features_flat[indice_cluster] - cluster_centroid) ** 2), dim=0).to(self.device)
+                
+                # Apply regularization similar to GMM method
+                reg_variances = (variances + self.regularization_strength ** 2)
+                mutual_infor = torch.log(reg_variances + 0.000001)
+                mean_mutual_infor = mutual_infor.mean() * torch.tensor(weight, device=self.device)
+                
+                if num == 0:
+                    average_variance = mean_mutual_infor
+                else:
+                    average_variance += mean_mutual_infor
+                num += 1
+            
+            if label_it == 0:
+                intra_class_mse = average_variance
+            else:
+                intra_class_mse += average_variance
+            class_means.append(class_mean)
+            label_it += 1
+        
+        intra_class_mse /= len(unique_labels)
+        class_means = torch.stack(class_means)
+        class_mean_overall = class_means.mean(dim=0)
+        inter_class_mse = F.mse_loss(class_means, class_mean_overall.expand_as(class_means))
+        loss = intra_class_mse
+        
+        return loss, intra_class_mse
+
     '''Main training function, the communication between client/server is implicit to keep a fast training speed'''
     def train_target_step(self, x_private, label_private, adding_noise,random_ini_centers,centroids_list,client_id=0):
         self.f_tail.train()
@@ -832,8 +914,12 @@ class MIA_train: # main class for every thing
         if self.use_attention_classifier:
             # Use attention classifier for feature classification
             attention_logits, enhanced_features, slot_representations, attention_weights = self.attention_classify_features(z_private, label_private)
-            rob_loss = torch.tensor(0.0, device=self.device)
-            intra_class_mse = torch.tensor(0.0, device=self.device)
+            
+            # Compute conditional entropy loss using attention mechanism
+            if not random_ini_centers and self.lambd > 0:
+                rob_loss, intra_class_mse = self.compute_attention_conditional_entropy(z_private, label_private, unique_labels, slot_representations)
+            else:
+                rob_loss, intra_class_mse = torch.tensor(0.0, device=self.device), torch.tensor(0.0, device=self.device)
         else:
             # Use original GMM approach
             if not random_ini_centers and self.lambd>0:

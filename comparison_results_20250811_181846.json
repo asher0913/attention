@@ -1,0 +1,20 @@
+{
+  "attention": {
+    "training_time": 295.5956816673279,
+    "cross_entropy": 2.3238955127716063,
+    "top1_accuracy": 0.1014
+  },
+  "gmm": {
+    "training_time": 440.015887260437,
+    "cross_entropy": 2.3043645584106445,
+    "top1_accuracy": 0.0926
+  },
+  "comparison": {
+    "accuracy_difference": 0.008800000000000002,
+    "ce_difference": -0.01953095436096186,
+    "time_difference": -144.42020559310913,
+    "attention_better_accuracy": true,
+    "attention_better_ce": false,
+    "attention_faster": true
+  }
+}
