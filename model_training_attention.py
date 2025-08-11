@@ -868,10 +868,10 @@ class MIA_train: # main class for every thing
                 cluster_centroid = slot_centroids_flat[j]
                 variances = torch.mean(((class_features_flat[indice_cluster] - cluster_centroid) ** 2), dim=0).to(self.device)
                 
-                # Apply regularization similar to GMM method
+                # Apply regularization similar to GMM method - FIXED: use mean instead of log to avoid negative values
                 reg_variances = (variances + self.regularization_strength ** 2)
-                mutual_infor = torch.log(reg_variances + 0.000001)
-                mean_mutual_infor = mutual_infor.mean() * torch.tensor(weight, device=self.device)
+                mutual_infor = reg_variances.mean()  # Changed from torch.log to avoid negative values
+                mean_mutual_infor = mutual_infor * torch.tensor(weight, device=self.device)
                 
                 if num == 0:
                     average_variance = mean_mutual_infor
