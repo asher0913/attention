@@ -6,7 +6,7 @@
 # =============================================
 # 🎯 ATTENTION设置 - 修改这里来启用/禁用attention
 # =============================================
-USE_ATTENTION=false  # 改为true启用attention，false使用原始GMM
+USE_ATTENTION=true  # 改为true启用attention，false使用原始GMM
 NUM_SLOTS=8
 ATTENTION_HEADS=8
 ATTENTION_DROPOUT=0.1
