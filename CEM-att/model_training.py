@@ -815,7 +815,7 @@ class MIA_train: # main class for every thing
     def compute_attention_conditional_entropy(self, features, labels, unique_labels, slot_representations):
         """
         Compute conditional entropy loss using attention mechanism instead of GMM
-        This function replaces the GMM-based conditional entropy calculation with attention-based approach
+        This EXACTLY mirrors the original compute_class_means logic but uses slot_representations as centroids
         """
         class_means = []
         unique_labels = unique_labels.cpu().numpy()
@@ -823,35 +823,34 @@ class MIA_train: # main class for every thing
         label_it = 0
         
         for i in unique_labels:
+            # Use slot representations as centroids (replacing centroids_list[i])
             class_mask = (labels == i)
             class_features = features[class_mask.squeeze(), :]
             class_slot_representations = slot_representations[class_mask.squeeze(), :, :]  # (N, num_slots, d_model)
             
+            # Get centroids for this class (average slot representations)
+            centroids = class_slot_representations.mean(dim=0)  # (num_slots, feature_dim)
+            num_clusters = centroids.size(0)  # num_slots
+            
             class_mean = class_features.mean(dim=0)
             
-            # Flatten features for variance calculation
+            # Flatten features (exactly like original)
             N, D = class_features.shape[0], class_features.shape[1] * class_features.shape[2] * class_features.shape[3]
             class_features_flat = class_features.reshape(N, D)
             
-            # Use slot representations as centroids for attention-based clustering
-            # Average slot representations across the batch for this class
-            avg_slot_centroids = class_slot_representations.mean(dim=0)  # (num_slots, d_model)
+            # Project centroids to match feature dimension if needed
+            if centroids.size(1) != D:
+                # Create a projection layer or pad/truncate
+                if centroids.size(1) < D:
+                    # Pad centroids to match feature dimension
+                    pad_size = D - centroids.size(1)
+                    centroids = torch.cat([centroids, torch.zeros(num_clusters, pad_size, device=centroids.device)], dim=1)
+                else:
+                    # Truncate centroids
+                    centroids = centroids[:, :D]
             
-            # Project slot centroids to feature space or vice versa
-            # For simplicity, we'll project features to slot space
-            slot_centroid_dim = avg_slot_centroids.shape[1]
-            if D != slot_centroid_dim:
-                # Project features to slot dimension
-                projection = nn.Linear(D, slot_centroid_dim).to(features.device)
-                class_features_projected = projection(class_features_flat.float())
-            else:
-                class_features_projected = class_features_flat.float()
-            
-            slot_centroids_flat = avg_slot_centroids  # (num_slots, d_model)
-            
-            # Calculate distances between features and slot centroids
-            distances = torch.cdist(class_features_projected, slot_centroids_flat).detach().cpu().numpy()
-            
+            # EXACTLY mirror original compute_class_means logic from here
+            distances = torch.cdist(class_features_flat, centroids).detach().cpu().numpy()
             cluster_assignments = np.argmin(distances, axis=1)
             unique_cluster_assignments = np.unique(cluster_assignments)
             
@@ -859,24 +858,24 @@ class MIA_train: # main class for every thing
             for j in unique_cluster_assignments:
                 indice_cluster = cluster_assignments == j
                 weight = sum(indice_cluster) / sum(class_mask)
+                variances = torch.mean(((class_features_flat[indice_cluster] - centroids[j])**2), dim=0).to(features.device)
                 
-                # Calculate variance using slot centroids instead of GMM centroids
-                cluster_centroid = slot_centroids_flat[j]
-                variances = torch.mean(((class_features_projected[indice_cluster] - cluster_centroid) ** 2), dim=0).to(features.device)
+                reg_variances = (variances + 0.001)
+                mean_reg_variances = reg_variances.mean() * torch.tensor(weight, device=features.device)
                 
-                # Apply regularization similar to GMM method
-                reg_variances = (variances + self.regularization_strength ** 2)
-                
-                if self.log_entropy == 1:
-                    mutual_infor = F.relu(torch.log(reg_variances + 0.0001) - torch.log(torch.tensor(0.001)))
-                    mean_mutual_infor = mutual_infor.mean() * torch.tensor(weight, device=features.device)
-                else:
-                    mean_mutual_infor = reg_variances.mean() * torch.tensor(weight, device=features.device)
+                mutual_infor = F.relu(torch.log(reg_variances + 0.0001) - torch.log(torch.tensor(0.001, device=features.device)))
+                reg_mutual_infor = mutual_infor.mean() * torch.tensor(weight, device=features.device)
                 
                 if num == 0:
-                    average_variance = mean_mutual_infor
+                    if self.log_entropy == 1:
+                        average_variance = reg_mutual_infor
+                    else:
+                        average_variance = mean_reg_variances
                 else:
-                    average_variance += mean_mutual_infor
+                    if self.log_entropy == 1:
+                        average_variance += reg_mutual_infor
+                    else:
+                        average_variance += mean_reg_variances
                 num += 1
             
             if label_it == 0:
@@ -885,14 +884,74 @@ class MIA_train: # main class for every thing
                 intra_class_mse += average_variance
             class_means.append(class_mean)
             label_it += 1
+            
+        intra_class_mse /= len(unique_labels)
+        class_means = torch.stack(class_means)
+        class_mean_overall = class_means.mean(dim=0)
+        inter_class_mse = F.mse_loss(class_means, class_mean_overall.expand_as(class_means))
+        loss = intra_class_mse  # - 0.1*inter_class_mse
         
+        return loss, intra_class_mse
+    
+    def compute_class_means(self, features, labels, unique_labels,centroids_list):
+        """Original GMM-based conditional entropy calculation"""
+        class_means = []
+        unique_labels=unique_labels.cpu().numpy()
+        labels=labels.cpu().numpy()
+        label_it = 0
+        for i in unique_labels:
+            centroids = centroids_list[i]
+            num_clusters = centroids.size(0)
+            class_mask = (labels == i)
+            class_features = features[class_mask.squeeze(), :]
+
+            class_mean = class_features.mean(dim=0)
+            
+            N, D = class_features.shape[0], class_features.shape[1] *class_features.shape[2] * class_features.shape[3]
+            class_features_flat = class_features.reshape(N, D)
+
+            distances = torch.cdist(class_features_flat, centroids).detach().cpu().numpy()  
+            
+            cluster_assignments = np.argmin(distances, axis=1)
+            unique_cluster_assignments = np.unique(cluster_assignments)
+            cluster_variances=[]
+            num=0
+            for j in unique_cluster_assignments:
+                indice_cluster=cluster_assignments == j
+                weight=sum(indice_cluster)/sum(class_mask)
+                variances=torch.mean(((class_features_flat[indice_cluster] - centroids[j])**2),dim=0).to(features.device)
+
+                reg_variances = (variances+0.001)
+                mean_reg_variances=reg_variances.mean()*torch.tensor(weight, device=features.device)
+
+                mutual_infor= F.relu(torch.log(reg_variances+ 0.0001)-torch.log(torch.tensor(0.001, device=features.device)))
+                reg_mutual_infor=mutual_infor.mean()*torch.tensor(weight, device=features.device)
+
+                if num==0:
+                    if self.log_entropy==1:
+                        average_variance=reg_mutual_infor
+                    else:
+                        average_variance=mean_reg_variances
+                else:
+                    if self.log_entropy==1:
+                        average_variance+=reg_mutual_infor
+                    else:
+                        average_variance+=mean_reg_variances
+                num+=1
+
+            if label_it==0:
+                intra_class_mse=average_variance
+            else:
+                intra_class_mse+=average_variance
+            class_means.append(class_mean)
+            label_it+=1
         intra_class_mse /= len(unique_labels)
         class_means = torch.stack(class_means)
         class_mean_overall = class_means.mean(dim=0)
         inter_class_mse = F.mse_loss(class_means, class_mean_overall.expand_as(class_means))
         loss = intra_class_mse
-        
-        return loss, intra_class_mse
+
+        return loss,intra_class_mse
 
     '''Main training function, the communication between client/server is implicit to keep a fast training speed'''
     def train_target_step(self, x_private, label_private, adding_noise,random_ini_centers,centroids_list,client_id=0):
@@ -973,24 +1032,21 @@ class MIA_train: # main class for every thing
                 grad += torch.sign(fake_act.grad)  
             z_private = z_private - grad.detach() * epsilon
 
-        if self.use_attention_classifier and not random_ini_centers and self.lambd>0:
-            # Use attention classifier output directly
-            output = attention_logits
+        # ALWAYS use the original classification path for final prediction
+        # Attention is ONLY used for conditional entropy calculation, NOT for classification
+        output = self.f_tail(z_private_n)
+        
+        if "mobilenetv2" in self.arch:
+            output = F.avg_pool2d(output, 4)
+            output = output.view(output.size(0), -1)
+            output = self.classifier(output)
+        elif self.arch == "resnet20" or self.arch == "resnet32":
+            output = F.avg_pool2d(output, 8)
+            output = output.view(output.size(0), -1)
+            output = self.classifier(output)
         else:
-            # Use original classification path
-            output = self.f_tail(z_private_n)
-
-            if "mobilenetv2" in self.arch:
-                output = F.avg_pool2d(output, 4)
-                output = output.view(output.size(0), -1)
-                output = self.classifier(output)
-            elif self.arch == "resnet20" or self.arch == "resnet32":
-                output = F.avg_pool2d(output, 8)
-                output = output.view(output.size(0), -1)
-                output = self.classifier(output)
-            else:
-                output = output.view(output.size(0), -1)
-                output = self.classifier(output)
+            output = output.view(output.size(0), -1)
+            output = self.classifier(output)
         
         criterion = torch.nn.CrossEntropyLoss()
 
