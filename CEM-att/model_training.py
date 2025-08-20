@@ -123,6 +123,13 @@ class MIA_train: # main class for every thing
                  use_attention_classifier=False, num_slots=8, attention_heads=8, attention_dropout=0.1, var_threshold=0.1):
         torch.manual_seed(random_seed)
         np.random.seed(random_seed)
+        
+        # Attention classifier parameters
+        self.use_attention_classifier = use_attention_classifier
+        self.num_slots = num_slots
+        self.attention_heads = attention_heads
+        self.attention_dropout = attention_dropout
+        self.var_threshold = var_threshold
         self.arch = arch
         self.bhtsne = bhtsne_option
         self.batch_size = batch_size
@@ -420,9 +427,13 @@ class MIA_train: # main class for every thing
         # Initialize attention classifier if enabled
         self.attention_classifier = None
         if self.use_attention_classifier:
-            # Get feature dimension from the first layer of f_tail or classifier
-            # For VGG11_bn layer 4, it should be 128 channels
-            feature_dim = 128  # This matches VGG11_bn layer 4 output
+            # Get actual feature dimension after bottleneck
+            # VGG11_bn layer 4 outputs 128 channels, but with bottleneck it becomes 8
+            if self.adds_bottleneck and "C8" in self.bottleneck_option:
+                feature_dim = 8  # Bottleneck compresses to 8 channels
+            else:
+                feature_dim = 128  # Original VGG11_bn layer 4 output
+            
             if dataset == "cifar10":
                 num_classes = 10
             elif dataset == "cifar100":
