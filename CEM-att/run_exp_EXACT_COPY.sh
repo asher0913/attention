@@ -1,5 +1,4 @@
 #!/bin/bash
-# 完全复制CEM-main的run_exp.sh，只把GMM换成Attention
 # cd "$(dirname "$0")"
 # cd ../../
 GPU_id=0
