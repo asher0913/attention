@@ -3,7 +3,7 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 import logging
-import model_training,model_training_paral,model_training_paral_pruning
+import model_training,model_training_paral_pruning
 from datasets_torch import *
 from utils import setup_logger
 
