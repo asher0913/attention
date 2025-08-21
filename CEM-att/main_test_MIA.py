@@ -6,7 +6,7 @@ import logging
 import MIA_torch
 from datasets_torch import *
 from utils import setup_logger
-import model_training,model_training_paral_pruning
+import model_training,model_training_paral,model_training_paral_pruning
 import argparse
 
 import torch
