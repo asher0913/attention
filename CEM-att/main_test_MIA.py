@@ -229,7 +229,7 @@ for date_0 in date_list:
         for j in range(num_client):
             if num_client > 1 and j == target_client: #if j == target_client:
                 continue
-            mse_score, ssim_score, psnr_score,mse_score_I, ssim_score_I, psnr_score_I = mi.MIA_attack(args.attack_epochs, attack_option=args.attack_scheme, collude_client=j, target_client=target_client, noise_aware = noise_aware, loss_type = args.attack_loss_type, attack_from_later_layer = args.attack_from_later_layer, MIA_optimizer=args.MIA_optimizer, MIA_lr=args.MIA_lr)
+            mse_score, ssim_score, psnr_score = mi.MIA_attack(args.attack_epochs, attack_option=args.attack_scheme, collude_client=j, target_client=target_client, noise_aware = noise_aware, loss_type = args.attack_loss_type, attack_from_later_layer = args.attack_from_later_layer, MIA_optimizer=args.MIA_optimizer, MIA_lr=args.MIA_lr)
             client_mse_list.append(mse_score)
             client_ssim_list.append(ssim_score)
             client_psnr_list.append(psnr_score)
