@@ -127,6 +127,17 @@ do
             average_time=20
             test_gan_AE_type=$train_gan_AE_type
             
+            # 检查并生成测试数据
+            if [ ! -f "./test_cifar10_image.pt" ] || [ ! -f "./test_cifar10_label.pt" ]; then
+              echo "⚠️  测试数据不存在，正在生成..."
+              python generate_test_data.py
+              if [ $? -ne 0 ]; then
+                echo "❌ 测试数据生成失败"
+                exit 1
+              fi
+              echo "✅ 测试数据生成完成"
+            fi
+            
             CUDA_VISIBLE_DEVICES=$GPU_id python main_test_MIA.py \
               --arch $arch \
               --cutlayer $cutlayer \
