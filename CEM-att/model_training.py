@@ -15,6 +15,8 @@ import pytorch_ssim
 from torch.utils.tensorboard import SummaryWriter
 import torch.nn.functional as F
 import torchvision
+import matplotlib
+matplotlib.use('Agg')  # 使用无显示后端，避免Qt错误
 import matplotlib.pyplot as plt
 from torchvision.utils import save_image
 from datetime import datetime
