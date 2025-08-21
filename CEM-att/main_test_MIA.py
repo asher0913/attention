@@ -53,6 +53,13 @@ parser.add_argument('--noise_aware', action='store_true', default=False, help='i
 parser.add_argument('--new_log_folder', action='store_true', default=False, help='if True, we set separate folder to store log results name: $regularization_$regularization_strength.')
 parser.add_argument('--bhtsne_option', action='store_true', default=False, help='if True, we set bhtsne_option to visualize activation.')
 
+# Attention-related arguments (added for CEM-att compatibility)
+parser.add_argument('--lambd', default=16, type=float, help='lambda value for conditional entropy loss')
+parser.add_argument('--use_attention_classifier', action='store_true', default=False, help='use attention classifier instead of GMM')
+parser.add_argument('--num_slots', default=8, type=int, help='number of slots for slot attention')
+parser.add_argument('--attention_heads', default=8, type=int, help='number of attention heads')
+parser.add_argument('--attention_dropout', default=0.1, type=float, help='dropout rate for attention layers')
+
 args = parser.parse_args()
 
 batch_size = args.batch_size
@@ -93,7 +100,9 @@ for date_0 in date_list:
     mi = model_training.MIA_train(args.arch, cutting_layer, batch_size, n_epochs = args.num_epochs, scheme = args.scheme,
                     num_client = num_client, dataset=args.dataset, save_dir=save_dir_name,random_seed=random_seed,
                     regularization_option=args.regularization, regularization_strength = args.regularization_strength, AT_regularization_option=args.AT_regularization, AT_regularization_strength = args.AT_regularization_strength, log_entropy=args.log_entropy,
-                    gan_AE_type = args.gan_AE_type, bottleneck_option = args.bottleneck_option, gan_loss_type=args.gan_loss_type)
+                    gan_AE_type = args.gan_AE_type, bottleneck_option = args.bottleneck_option, gan_loss_type=args.gan_loss_type,
+                    use_attention_classifier=args.use_attention_classifier, num_slots=args.num_slots, 
+                    attention_heads=args.attention_heads, attention_dropout=args.attention_dropout, var_threshold=args.var_threshold)
     if args.new_log_folder:
         new_folder_dir = mi.save_dir + '/{}_{}/'.format(args.regularization, args.regularization_strength)
         new_folder_dir = os.path.abspath(new_folder_dir)
