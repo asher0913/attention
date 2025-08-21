@@ -22,13 +22,175 @@ import os
 import time
 from shutil import rmtree
 from GMM import fit_gmm_torch
-from attention_modules import FeatureClassificationModule
 from sklearn.manifold import TSNE
 from datasets_torch import get_cifar100_trainloader, get_cifar100_testloader, get_cifar10_trainloader, \
     get_cifar10_testloader, get_mnist_bothloader, get_facescrub_bothloader, get_SVHN_trainloader, get_SVHN_testloader, get_fmnist_bothloader, get_tinyimagenet_bothloader
 from sklearn.mixture import GaussianMixture
 # from cuml.mixture import GaussianMixture as cuGaussianMixture
 from sklearn.decomposition import PCA
+
+# Slot Attention + Cross Attention for CEM (replaces GMM in conditional entropy calculation)
+class SlotAttention(nn.Module):
+    def __init__(self, feature_dim, num_slots=8, num_iterations=3):
+        super().__init__()
+        self.num_slots = num_slots
+        self.num_iterations = num_iterations
+        self.feature_dim = feature_dim
+        
+        # Slot initialization
+        self.slot_mu = nn.Parameter(torch.randn(1, 1, feature_dim))
+        self.slot_log_sigma = nn.Parameter(torch.zeros(1, 1, feature_dim))
+        
+        # Attention layers
+        self.to_q = nn.Linear(feature_dim, feature_dim, bias=False)
+        self.to_k = nn.Linear(feature_dim, feature_dim, bias=False)
+        self.to_v = nn.Linear(feature_dim, feature_dim, bias=False)
+        
+        self.norm = nn.LayerNorm(feature_dim)
+        self.mlp = nn.Sequential(
+            nn.Linear(feature_dim, feature_dim),
+            nn.ReLU(),
+            nn.Linear(feature_dim, feature_dim)
+        )
+        
+    def forward(self, inputs):
+        # inputs: [batch_size, num_inputs, feature_dim]
+        batch_size, num_inputs, feature_dim = inputs.shape
+        
+        # Initialize slots
+        mu = self.slot_mu.expand(batch_size, self.num_slots, -1)
+        sigma = self.slot_log_sigma.exp().expand(batch_size, self.num_slots, -1)
+        slots = torch.normal(mu, sigma)
+        
+        for _ in range(self.num_iterations):
+            slots_prev = slots
+            
+            # Attention
+            q = self.to_q(slots)  # [batch_size, num_slots, feature_dim]
+            k = self.to_k(inputs)  # [batch_size, num_inputs, feature_dim]
+            v = self.to_v(inputs)  # [batch_size, num_inputs, feature_dim]
+            
+            # Compute attention weights
+            attn_logits = torch.einsum('bsd,bnd->bsn', q, k) / (feature_dim ** 0.5)
+            attn = F.softmax(attn_logits, dim=-1)  # [batch_size, num_slots, num_inputs]
+            
+            # Update slots
+            updates = torch.einsum('bsn,bnd->bsd', attn, v)  # [batch_size, num_slots, feature_dim]
+            
+            # Update slots (simplified without GRU)
+            slots = self.norm(slots_prev + updates)
+            
+            # MLP
+            slots = slots + self.mlp(slots)
+            
+        return slots
+
+class CrossAttention(nn.Module):
+    def __init__(self, feature_dim, num_heads=4):
+        super().__init__()
+        self.num_heads = num_heads
+        self.feature_dim = feature_dim
+        self.head_dim = feature_dim // num_heads
+        
+        self.to_q = nn.Linear(feature_dim, feature_dim, bias=False)
+        self.to_k = nn.Linear(feature_dim, feature_dim, bias=False)
+        self.to_v = nn.Linear(feature_dim, feature_dim, bias=False)
+        self.to_out = nn.Linear(feature_dim, feature_dim)
+        
+    def forward(self, query_features, slot_outputs):
+        # query_features: [batch_size, num_inputs, feature_dim] (original features)
+        # slot_outputs: [batch_size, num_slots, feature_dim] (from slot attention)
+        
+        batch_size = query_features.size(0)
+        
+        # Get Q, K, V
+        q = self.to_q(query_features)  # Q from original features
+        k = self.to_k(slot_outputs)    # K from slot outputs
+        v = self.to_v(slot_outputs)    # V from slot outputs
+        
+        # Reshape for multi-head attention
+        q = q.view(batch_size, -1, self.num_heads, self.head_dim).transpose(1, 2)
+        k = k.view(batch_size, -1, self.num_heads, self.head_dim).transpose(1, 2)
+        v = v.view(batch_size, -1, self.num_heads, self.head_dim).transpose(1, 2)
+        
+        # Attention
+        scores = torch.matmul(q, k.transpose(-2, -1)) / (self.head_dim ** 0.5)
+        attn = F.softmax(scores, dim=-1)
+        
+        out = torch.matmul(attn, v)
+        out = out.transpose(1, 2).contiguous().view(batch_size, -1, self.feature_dim)
+        
+        return self.to_out(out)
+
+class SlotCrossAttentionCEM(nn.Module):
+    def __init__(self, feature_dim=128, num_slots=8):
+        super().__init__()
+        self.num_slots = num_slots
+        self.feature_dim = feature_dim
+        
+        # Your requested architecture: Slot Attention + Cross Attention
+        self.slot_attention = SlotAttention(feature_dim, num_slots)
+        self.cross_attention = CrossAttention(feature_dim)
+        
+    def forward(self, features, labels, unique_labels):
+        """
+        Your requested architecture:
+        1. Slot Attention on features
+        2. Cross Attention (slot output as KV, original features as Q)
+        Returns: rob_loss, intra_class_mse (same interface as compute_class_means)
+        """
+        if len(features.shape) == 4:
+            N, C, H, W = features.shape
+            features_flat = features.view(N, C * H * W)
+        else:
+            features_flat = features
+            
+        device = features.device
+        total_entropy = 0.0
+        total_samples = 0
+        
+        unique_labels = unique_labels.cpu().numpy()
+        labels_np = labels.cpu().numpy()
+        
+        for class_id in unique_labels:
+            # Get features for this class
+            class_mask = (labels_np == class_id)
+            class_features = features_flat[class_mask]
+            
+            if class_features.size(0) == 0:
+                continue
+                
+            # Reshape for attention modules
+            class_features_input = class_features.unsqueeze(0)  # [1, num_samples, feature_dim]
+            
+            # Step 1: Slot Attention
+            slot_outputs = self.slot_attention(class_features_input)  # [1, num_slots, feature_dim]
+            
+            # Step 2: Cross Attention (Q=original features, KV=slot outputs)
+            enhanced_features = self.cross_attention(class_features_input, slot_outputs)  # [1, num_samples, feature_dim]
+            enhanced_features = enhanced_features.squeeze(0)  # [num_samples, feature_dim]
+            
+            # Compute entropy using enhanced features and slot representations
+            slot_centroids = slot_outputs.squeeze(0)  # [num_slots, feature_dim]
+            
+            # Compute distances to slot centroids for entropy calculation
+            distances_to_slots = torch.cdist(enhanced_features, slot_centroids)  # [num_samples, num_slots]
+            min_distances = torch.min(distances_to_slots, dim=1)[0]  # [num_samples]
+            
+            # Convert to conditional entropy (similar to original GMM approach)
+            variances = min_distances + 0.001
+            entropy = torch.log(variances + 0.0001).mean()
+            total_entropy += entropy * class_features.size(0)
+            total_samples += class_features.size(0)
+        
+        if total_samples > 0:
+            rob_loss = total_entropy / total_samples
+        else:
+            rob_loss = torch.tensor(0.0, device=device)
+            
+        intra_class_mse = torch.tensor(0.0, device=device)  # Placeholder
+        
+        return rob_loss, intra_class_mse
 from sklearn.cluster import KMeans
 from torch.optim.lr_scheduler import CosineAnnealingLR
 from joblib import Parallel, delayed
@@ -119,29 +281,14 @@ class MIA_train: # main class for every thing
                  load_from_checkpoint = False, bottleneck_option="None", measure_option=False,
                  optimize_computation=1, decoder_sync = False, bhtsne_option = False, gan_loss_type = "SSIM", attack_confidence_score = False,
                  ssim_threshold = 0.0, finetune_freeze_bn = False, load_from_checkpoint_server = False, source_task = "cifar100", 
-                 save_activation_tensor = False, save_more_checkpoints = False, dataset_portion = 1.0, noniid = 1.0,
-                 use_attention_classifier=False, num_slots=8, attention_heads=8, attention_dropout=0.1, var_threshold=0.1):
+                 save_activation_tensor = False, save_more_checkpoints = False, dataset_portion = 1.0, noniid = 1.0):
         torch.manual_seed(random_seed)
         np.random.seed(random_seed)
-        
-        # Attention classifier parameters
-        self.use_attention_classifier = use_attention_classifier
-        self.num_slots = num_slots
-        self.attention_heads = attention_heads
-        self.attention_dropout = attention_dropout
-        self.var_threshold = var_threshold
         self.arch = arch
         self.bhtsne = bhtsne_option
         self.batch_size = batch_size
         self.lr = learning_rate
         self.finetune_freeze_bn = finetune_freeze_bn
-        
-        # Attention classifier parameters
-        self.use_attention_classifier = use_attention_classifier
-        self.num_slots = num_slots
-        self.attention_heads = attention_heads
-        self.attention_dropout = attention_dropout
-        self.var_threshold = var_threshold
 
         if local_lr == -1: # if local_lr is not set
             self.local_lr = self.lr
@@ -416,42 +563,10 @@ class MIA_train: # main class for every thing
         self.f = model.local_list[0]
         self.f_tail = model.cloud
         self.classifier = model.classifier
-        
-        # Use CPU or CUDA based on availability
-        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.device = device
-        self.f.to(device)
-        self.f_tail.to(device)
-        self.classifier.to(device)
-        
-        # Initialize attention classifier if enabled
-        self.attention_classifier = None
-        if self.use_attention_classifier:
-            # Get actual feature dimension after bottleneck
-            # VGG11_bn layer 4 outputs 128 channels, but with bottleneck it becomes 8
-            if self.adds_bottleneck and "C8" in self.bottleneck_option:
-                feature_dim = 8  # Bottleneck compresses to 8 channels
-            else:
-                feature_dim = 128  # Original VGG11_bn layer 4 output
-            
-            if dataset == "cifar10":
-                num_classes = 10
-            elif dataset == "cifar100":
-                num_classes = 100
-            else:
-                num_classes = 10  # default
-                
-            self.attention_classifier = FeatureClassificationModule(
-                feature_dim=feature_dim,
-                num_slots=self.num_slots,
-                num_classes=num_classes,
-                num_heads=self.attention_heads,
-                dropout=self.attention_dropout
-            ).to(device)
-            
-            self.params = list(self.f_tail.parameters()) + list(self.classifier.parameters()) + list(self.attention_classifier.parameters())
-        else:
-            self.params = list(self.f_tail.parameters()) + list(self.classifier.parameters())
+        self.f.cuda()
+        self.f_tail.cuda()
+        self.classifier.cuda()
+        self.params = list(self.f_tail.parameters()) + list(self.classifier.parameters())
         self.local_params = []
         if cutting_layer > 0:
             self.local_params.append(self.f.parameters())
@@ -518,7 +633,7 @@ class MIA_train: # main class for every thing
                 raise ("No such GAN AE type.")
             self.gan_params.append(self.local_AE_list[i].parameters())
             self.local_AE_list[i].apply(init_weights)
-            self.local_AE_list[i].to(device)
+            self.local_AE_list[i].cuda()
             
             self.gan_optimizer_list = []
             self.gan_scheduler_list = []
@@ -737,7 +852,7 @@ class MIA_train: # main class for every thing
                 # print(j)
                 # print(indice_cluster,cluster_assignments_np)
                 weight=sum(indice_cluster)/sum(class_mask)
-                variances=torch.mean(((class_features_flat[indice_cluster] - centroids[j])**2),dim=0).to(self.device)
+                variances=torch.mean(((class_features_flat[indice_cluster] - centroids[j])**2),dim=0).cuda()
                 # sorted_indices = torch.argsort(variances, descending=True)
             #     # 取出前10个最大的值和它们的索引
             #     # top_indices = sorted_indices[:10]
@@ -803,165 +918,13 @@ class MIA_train: # main class for every thing
         # print(centroids_list)
         return loss,intra_class_mse
 
-    def attention_classify_features(self, features, labels=None):
-        """
-        Use attention classifier to process features
-        """
-        if self.attention_classifier is None:
-            raise ValueError("Attention classifier not initialized")
-            
-        return self.attention_classifier(features)
-    
-    def compute_attention_conditional_entropy(self, features, labels, unique_labels, slot_representations):
-        """
-        Compute conditional entropy loss using attention mechanism instead of GMM
-        This EXACTLY mirrors the original compute_class_means logic but uses slot_representations as centroids
-        """
-        class_means = []
-        unique_labels = unique_labels.cpu().numpy()
-        labels = labels.cpu().numpy()
-        label_it = 0
-        
-        for i in unique_labels:
-            # Use slot representations as centroids (replacing centroids_list[i])
-            class_mask = (labels == i)
-            class_features = features[class_mask.squeeze(), :]
-            class_slot_representations = slot_representations[class_mask.squeeze(), :, :]  # (N, num_slots, d_model)
-            
-            # Get centroids for this class (average slot representations)
-            centroids = class_slot_representations.mean(dim=0)  # (num_slots, feature_dim)
-            num_clusters = centroids.size(0)  # num_slots
-            
-            class_mean = class_features.mean(dim=0)
-            
-            # Flatten features (exactly like original)
-            N, D = class_features.shape[0], class_features.shape[1] * class_features.shape[2] * class_features.shape[3]
-            class_features_flat = class_features.reshape(N, D)
-            
-            # Project centroids to match feature dimension if needed
-            if centroids.size(1) != D:
-                # Create a projection layer or pad/truncate
-                if centroids.size(1) < D:
-                    # Pad centroids to match feature dimension
-                    pad_size = D - centroids.size(1)
-                    centroids = torch.cat([centroids, torch.zeros(num_clusters, pad_size, device=centroids.device)], dim=1)
-                else:
-                    # Truncate centroids
-                    centroids = centroids[:, :D]
-            
-            # EXACTLY mirror original compute_class_means logic from here
-            distances = torch.cdist(class_features_flat, centroids).detach().cpu().numpy()
-            cluster_assignments = np.argmin(distances, axis=1)
-            unique_cluster_assignments = np.unique(cluster_assignments)
-            
-            num = 0
-            for j in unique_cluster_assignments:
-                indice_cluster = cluster_assignments == j
-                weight = sum(indice_cluster) / sum(class_mask)
-                variances = torch.mean(((class_features_flat[indice_cluster] - centroids[j])**2), dim=0).to(features.device)
-                
-                reg_variances = (variances + 0.001)
-                mean_reg_variances = reg_variances.mean() * torch.tensor(weight, device=features.device)
-                
-                mutual_infor = F.relu(torch.log(reg_variances + 0.0001) - torch.log(torch.tensor(0.001, device=features.device)))
-                reg_mutual_infor = mutual_infor.mean() * torch.tensor(weight, device=features.device)
-                
-                if num == 0:
-                    if self.log_entropy == 1:
-                        average_variance = reg_mutual_infor
-                    else:
-                        average_variance = mean_reg_variances
-                else:
-                    if self.log_entropy == 1:
-                        average_variance += reg_mutual_infor
-                    else:
-                        average_variance += mean_reg_variances
-                num += 1
-            
-            if label_it == 0:
-                intra_class_mse = average_variance
-            else:
-                intra_class_mse += average_variance
-            class_means.append(class_mean)
-            label_it += 1
-            
-        intra_class_mse /= len(unique_labels)
-        class_means = torch.stack(class_means)
-        class_mean_overall = class_means.mean(dim=0)
-        inter_class_mse = F.mse_loss(class_means, class_mean_overall.expand_as(class_means))
-        loss = intra_class_mse  # - 0.1*inter_class_mse
-        
-        return loss, intra_class_mse
-    
-    def compute_class_means(self, features, labels, unique_labels,centroids_list):
-        """Original GMM-based conditional entropy calculation"""
-        class_means = []
-        unique_labels=unique_labels.cpu().numpy()
-        labels=labels.cpu().numpy()
-        label_it = 0
-        for i in unique_labels:
-            centroids = centroids_list[i]
-            num_clusters = centroids.size(0)
-            class_mask = (labels == i)
-            class_features = features[class_mask.squeeze(), :]
-
-            class_mean = class_features.mean(dim=0)
-            
-            N, D = class_features.shape[0], class_features.shape[1] *class_features.shape[2] * class_features.shape[3]
-            class_features_flat = class_features.reshape(N, D)
-
-            distances = torch.cdist(class_features_flat, centroids).detach().cpu().numpy()  
-            
-            cluster_assignments = np.argmin(distances, axis=1)
-            unique_cluster_assignments = np.unique(cluster_assignments)
-            cluster_variances=[]
-            num=0
-            for j in unique_cluster_assignments:
-                indice_cluster=cluster_assignments == j
-                weight=sum(indice_cluster)/sum(class_mask)
-                variances=torch.mean(((class_features_flat[indice_cluster] - centroids[j])**2),dim=0).to(features.device)
-
-                reg_variances = (variances+0.001)
-                mean_reg_variances=reg_variances.mean()*torch.tensor(weight, device=features.device)
-
-                mutual_infor= F.relu(torch.log(reg_variances+ 0.0001)-torch.log(torch.tensor(0.001, device=features.device)))
-                reg_mutual_infor=mutual_infor.mean()*torch.tensor(weight, device=features.device)
-
-                if num==0:
-                    if self.log_entropy==1:
-                        average_variance=reg_mutual_infor
-                    else:
-                        average_variance=mean_reg_variances
-                else:
-                    if self.log_entropy==1:
-                        average_variance+=reg_mutual_infor
-                    else:
-                        average_variance+=mean_reg_variances
-                num+=1
-
-            if label_it==0:
-                intra_class_mse=average_variance
-            else:
-                intra_class_mse+=average_variance
-            class_means.append(class_mean)
-            label_it+=1
-        intra_class_mse /= len(unique_labels)
-        class_means = torch.stack(class_means)
-        class_mean_overall = class_means.mean(dim=0)
-        inter_class_mse = F.mse_loss(class_means, class_mean_overall.expand_as(class_means))
-        loss = intra_class_mse
-
-        return loss,intra_class_mse
-
     '''Main training function, the communication between client/server is implicit to keep a fast training speed'''
     def train_target_step(self, x_private, label_private, adding_noise,random_ini_centers,centroids_list,client_id=0):
         self.f_tail.train()
         self.classifier.train()
         self.f.train()
-        if self.attention_classifier is not None:
-            self.attention_classifier.train()
-        x_private = x_private.to(self.device)
-        label_private = label_private.to(self.device)
+        x_private = x_private.cuda()
+        label_private = label_private.cuda()
 
         # Freeze batchnorm parameter of the client-side model.
         if self.load_from_checkpoint and self.finetune_freeze_bn:
@@ -972,13 +935,18 @@ class MIA_train: # main class for every thing
         unique_labels = torch.unique(label_private)
 
         if not random_ini_centers and self.lambd>0:
-            if self.use_attention_classifier:
-                # Use attention-based conditional entropy computation
-                attention_logits, enhanced_features, slot_representations, attention_weights = self.attention_classify_features(z_private, label_private)
-                rob_loss, intra_class_mse = self.compute_attention_conditional_entropy(z_private, label_private, unique_labels, slot_representations)
-            else:
-                # Use original GMM-based computation
-                rob_loss,intra_class_mse = self.compute_class_means(z_private, label_private, unique_labels, centroids_list)
+            # Use Slot + Cross Attention mechanism instead of GMM for conditional entropy calculation
+            if not hasattr(self, 'attention_cem'):
+                # Initialize attention module on first use
+                if len(z_private.shape) == 4:
+                    feature_dim = z_private.shape[1] * z_private.shape[2] * z_private.shape[3]
+                else:
+                    feature_dim = z_private.shape[1]
+                self.attention_cem = SlotCrossAttentionCEM(feature_dim=feature_dim, num_slots=8)
+                if torch.cuda.is_available():
+                    self.attention_cem = self.attention_cem.cuda()
+            
+            rob_loss, intra_class_mse = self.attention_cem(z_private, label_private, unique_labels)
         else:
             rob_loss,intra_class_mse=torch.tensor(0.0),torch.tensor(0.0)
         # assert 1==0, print(x_private.shape,label_private.shape,unique_values)
@@ -991,7 +959,7 @@ class MIA_train: # main class for every thing
                     sigma = self.regularization_strength
             else:
                 sigma = self.regularization_strength
-            noise = sigma * torch.randn_like(z_private).to(self.device)
+            noise = sigma * torch.randn_like(z_private).cuda()
             z_private_n =z_private + noise
         else:
             z_private_n=z_private
@@ -999,12 +967,12 @@ class MIA_train: # main class for every thing
         if self.local_DP:
             if "laplace" in self.AT_regularization_option:
                 noise = torch.from_numpy(
-                    np.random.laplace(loc=0, scale=1 / self.dp_epsilon, size=z_private.size())).to(self.device)
+                    np.random.laplace(loc=0, scale=1 / self.dp_epsilon, size=z_private.size())).cuda()
                 z_private = z_private + noise.detach().float()
             else:  # apply gaussian noise
                 delta = 10e-5
                 sigma = np.sqrt(2 * np.log(1.25 / delta)) * 1 / self.dp_epsilon
-                noise = sigma * torch.randn_like(z_private).to(self.device)
+                noise = sigma * torch.randn_like(z_private).cuda()
                 z_private = z_private + noise.detach().float()
         if self.dropout_defense:
             z_private = dropout_defense(z_private, self.dropout_ratio)
@@ -1032,10 +1000,8 @@ class MIA_train: # main class for every thing
                 grad += torch.sign(fake_act.grad)  
             z_private = z_private - grad.detach() * epsilon
 
-        # ALWAYS use the original classification path for final prediction
-        # Attention is ONLY used for conditional entropy calculation, NOT for classification
         output = self.f_tail(z_private_n)
-        
+
         if "mobilenetv2" in self.arch:
             output = F.avg_pool2d(output, 4)
             output = output.view(output.size(0), -1)

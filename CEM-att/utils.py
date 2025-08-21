@@ -141,9 +141,8 @@ def setup_logger(name, log_file, level=logging.INFO, console_out = True):
 
     logger = logging.getLogger(name)
     logger.setLevel(level)
-    # 安全地清除现有handlers
-    for handler in logger.handlers[:]:
-        logger.removeHandler(handler)
+    while logger.hasHandlers():
+        logger.removeHandler(logger.handlers[0])
     logger.addHandler(handler)
     if console_out:
         stdout_handler = logging.StreamHandler(sys.stdout)

@@ -550,10 +550,10 @@ def make_layers(cutting_layer,cfg, batch_norm=False, adds_bottleneck = False, bo
             if sgm:
                 # local += [nn.BatchNorm2d(bottleneck_channel_size)]
                 local += [nn.Sigmoid()]
+
             else:
-                if adds_bottleneck:
-                    local += [nn.BatchNorm2d(bottleneck_channel_size)]
-                #     local += [nn.Sigmoid()]
+                local += [nn.BatchNorm2d(bottleneck_channel_size)]
+            #     local += [nn.Sigmoid()]
         else:
             if v == 'M':
                 cloud += [nn.MaxPool2d(kernel_size=2, stride=2)]

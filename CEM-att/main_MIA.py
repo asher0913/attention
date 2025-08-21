@@ -3,7 +3,7 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 import logging
-import model_training
+import model_training,model_training_paral,model_training_paral_pruning
 from datasets_torch import *
 from utils import setup_logger
 
@@ -34,12 +34,6 @@ parser.add_argument('--regularization_strength', default=0, type=float, help='re
 parser.add_argument('--var_threshold', default=0.1, type=float, help='regularization threshold for the variance score.')
 parser.add_argument('--AT_regularization', default="None", type=str, help='apply regularization in multi-client training.')
 parser.add_argument('--AT_regularization_strength', default=0, type=float, help='regularization_strength of regularization in multi-client training.')
-
-# Attention classifier parameters
-parser.add_argument('--use_attention_classifier', action='store_true', default=False, help='use attention classifier instead of standard classifier')
-parser.add_argument('--num_slots', default=8, type=int, help='number of slots for slot attention')
-parser.add_argument('--attention_heads', default=8, type=int, help='number of attention heads')
-parser.add_argument('--attention_dropout', default=0.1, type=float, help='dropout rate for attention modules')
 parser.add_argument('--log_entropy', default=0, type=float, help='regularization_strength of regularization in multi-client training.')
 parser.add_argument('--ssim_threshold', default=0.0, type=float, help='regularization threshold for the SSIM score.')
 parser.add_argument('--gan_AE_type', default="custom", type=str, help='the name of the AE used in GAN_adv, option: custom, simple, simplest')
@@ -69,7 +63,7 @@ batch_size = args.batch_size
 cutting_layer = args.cutlayer
 num_client = args.num_client
 save_dir_name = "./{}/{}".format(args.folder, args.filename)
-mi = model_training.MIA_train(args.arch, cutting_layer, batch_size,lambd=args.lambd, n_epochs = args.num_epochs, scheme = args.scheme,
+mi = model_training_paral_pruning.MIA_train(args.arch, cutting_layer, batch_size,lambd=args.lambd, n_epochs = args.num_epochs, scheme = args.scheme,
                  num_client = num_client, dataset=args.dataset, save_dir=save_dir_name,random_seed=random_seed,
                  regularization_option=args.regularization, regularization_strength = args.regularization_strength, AT_regularization_option=args.AT_regularization, AT_regularization_strength = args.AT_regularization_strength, log_entropy=args.log_entropy,
                  initialize_different=args.initialize_different, learning_rate = args.learning_rate, local_lr = args.local_lr, gan_AE_type = args.gan_AE_type, 
@@ -77,8 +71,7 @@ mi = model_training.MIA_train(args.arch, cutting_layer, batch_size,lambd=args.la
                  optimize_computation = args.optimize_computation, decoder_sync = args.decoder_sync, 
                  finetune_freeze_bn = args.finetune_freeze_bn, gan_loss_type=args.gan_loss_type, ssim_threshold = args.ssim_threshold,var_threshold = args.var_threshold,
                  source_task = args.transfer_source_task, load_from_checkpoint_server = args.load_from_checkpoint_server, save_more_checkpoints = args.save_more_checkpoints,
-                 dataset_portion = args.dataset_portion, noniid = args.noniid, client_sample_ratio = args.client_sample_ratio,
-                 use_attention_classifier=args.use_attention_classifier, num_slots=args.num_slots, attention_heads=args.attention_heads, attention_dropout=args.attention_dropout)
+                 dataset_portion = args.dataset_portion, noniid = args.noniid, client_sample_ratio = args.client_sample_ratio)
 mi.logger.debug(str(args))
 
 log_frequency = 500

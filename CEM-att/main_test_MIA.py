@@ -6,7 +6,7 @@ import logging
 import MIA_torch
 from datasets_torch import *
 from utils import setup_logger
-import model_training
+import model_training,model_training_paral,model_training_paral_pruning
 import argparse
 
 import torch
@@ -53,13 +53,6 @@ parser.add_argument('--noise_aware', action='store_true', default=False, help='i
 parser.add_argument('--new_log_folder', action='store_true', default=False, help='if True, we set separate folder to store log results name: $regularization_$regularization_strength.')
 parser.add_argument('--bhtsne_option', action='store_true', default=False, help='if True, we set bhtsne_option to visualize activation.')
 
-# Attention-related arguments (added for CEM-att compatibility)
-parser.add_argument('--lambd', default=16, type=float, help='lambda value for conditional entropy loss')
-parser.add_argument('--use_attention_classifier', action='store_true', default=False, help='use attention classifier instead of GMM')
-parser.add_argument('--num_slots', default=8, type=int, help='number of slots for slot attention')
-parser.add_argument('--attention_heads', default=8, type=int, help='number of attention heads')
-parser.add_argument('--attention_dropout', default=0.1, type=float, help='dropout rate for attention layers')
-
 args = parser.parse_args()
 
 batch_size = args.batch_size
@@ -97,12 +90,10 @@ for date_0 in date_list:
     #                     random_seed = args.random_seed, bottleneck_option = args.bottleneck_option,
     #                     measure_option = args.measure_option, bhtsne_option = args.bhtsne_option, attack_confidence_score = args.attack_confidence_score, 
     #                     save_activation_tensor = args.save_activation_tensor, gan_loss_type = args.gan_loss_type)
-    mi = model_training.MIA_train(args.arch, cutting_layer, batch_size, n_epochs = args.num_epochs, scheme = args.scheme,
+    mi = model_training_paral_pruning.MIA_train(args.arch, cutting_layer, batch_size, n_epochs = args.num_epochs, scheme = args.scheme,
                     num_client = num_client, dataset=args.dataset, save_dir=save_dir_name,random_seed=random_seed,
                     regularization_option=args.regularization, regularization_strength = args.regularization_strength, AT_regularization_option=args.AT_regularization, AT_regularization_strength = args.AT_regularization_strength, log_entropy=args.log_entropy,
-                    gan_AE_type = args.gan_AE_type, bottleneck_option = args.bottleneck_option, gan_loss_type=args.gan_loss_type,
-                    use_attention_classifier=args.use_attention_classifier, num_slots=args.num_slots, 
-                    attention_heads=args.attention_heads, attention_dropout=args.attention_dropout, var_threshold=args.var_threshold)
+                    gan_AE_type = args.gan_AE_type, bottleneck_option = args.bottleneck_option, gan_loss_type=args.gan_loss_type)
     if args.new_log_folder:
         new_folder_dir = mi.save_dir + '/{}_{}/'.format(args.regularization, args.regularization_strength)
         new_folder_dir = os.path.abspath(new_folder_dir)
@@ -132,13 +123,10 @@ for date_0 in date_list:
     
     if "orig" not in args.scheme:
         print('the test model is:',args.num_epochs)
-        # Fixed path for CEM-att nested structure
-        checkpoint_path = "./{}/saves/cifar10/SCA_new_attention_fixed_lg1_thre0.125/{}/checkpoint_f_{}.tar".format(args.folder, date_0, args.num_epochs)
-        mi.resume(checkpoint_path)
+        mi.resume("./{}/{}/checkpoint_f_{}.tar".format(args.folder, date_0, args.num_epochs))
     else:
         print("resume orig scheme's checkpoint")
-        checkpoint_path = "./{}/saves/cifar10/SCA_new_attention_fixed_lg1_thre0.125/{}/checkpoint_{}.tar".format(args.folder, date_0, args.num_epochs)
-        mi.resume(checkpoint_path)
+        mi.resume("./{}/{}/checkpoint_{}.tar".format(args.folder, date_0, args.num_epochs))
 
 
 
@@ -229,7 +217,7 @@ for date_0 in date_list:
         for j in range(num_client):
             if num_client > 1 and j == target_client: #if j == target_client:
                 continue
-            mse_score, ssim_score, psnr_score = mi.MIA_attack(args.attack_epochs, attack_option=args.attack_scheme, collude_client=j, target_client=target_client, noise_aware = noise_aware, loss_type = args.attack_loss_type, attack_from_later_layer = args.attack_from_later_layer, MIA_optimizer=args.MIA_optimizer, MIA_lr=args.MIA_lr)
+            mse_score, ssim_score, psnr_score,mse_score_I, ssim_score_I, psnr_score_I = mi.MIA_attack(args.attack_epochs, attack_option=args.attack_scheme, collude_client=j, target_client=target_client, noise_aware = noise_aware, loss_type = args.attack_loss_type, attack_from_later_layer = args.attack_from_later_layer, MIA_optimizer=args.MIA_optimizer, MIA_lr=args.MIA_lr)
             client_mse_list.append(mse_score)
             client_ssim_list.append(ssim_score)
             client_psnr_list.append(psnr_score)
