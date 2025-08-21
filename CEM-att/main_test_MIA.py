@@ -132,10 +132,13 @@ for date_0 in date_list:
     
     if "orig" not in args.scheme:
         print('the test model is:',args.num_epochs)
-        mi.resume("./{}/{}/checkpoint_f_{}.tar".format(args.folder, date_0, args.num_epochs))
+        # Fixed path for CEM-att nested structure
+        checkpoint_path = "./{}/saves/cifar10/SCA_new_attention_fixed_lg1_thre0.125/{}/checkpoint_f_{}.tar".format(args.folder, date_0, args.num_epochs)
+        mi.resume(checkpoint_path)
     else:
         print("resume orig scheme's checkpoint")
-        mi.resume("./{}/{}/checkpoint_{}.tar".format(args.folder, date_0, args.num_epochs))
+        checkpoint_path = "./{}/saves/cifar10/SCA_new_attention_fixed_lg1_thre0.125/{}/checkpoint_{}.tar".format(args.folder, date_0, args.num_epochs)
+        mi.resume(checkpoint_path)
 
 
 
