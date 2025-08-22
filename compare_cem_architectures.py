@@ -28,7 +28,8 @@ import shutil
 
 class CEMArchitectureComparison:
     def __init__(self):
-        self.base_dir = "/Users/asher/Documents/attention"
+        # 获取当前脚本所在目录作为基础目录
+        self.base_dir = os.path.dirname(os.path.abspath(__file__))
         self.results = {
             "experiment_info": {
                 "dataset": "cifar10",
@@ -78,6 +79,11 @@ class CEMArchitectureComparison:
         # 确保两个项目都存在
         cem_main_path = os.path.join(self.base_dir, "CEM-main")
         cem_mix_path = os.path.join(self.base_dir, "CEM-mix")
+        
+        # 检查当前工作目录
+        current_dir = os.getcwd()
+        print(f"📁 当前工作目录: {current_dir}")
+        print(f"📁 脚本所在目录: {self.base_dir}")
         
         if not os.path.exists(cem_main_path):
             raise FileNotFoundError(f"CEM-main项目不存在: {cem_main_path}")

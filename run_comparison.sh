@@ -19,14 +19,23 @@ if ! command -v python &> /dev/null; then
     exit 1
 fi
 
+# 获取脚本所在目录
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+echo "📁 脚本目录: $SCRIPT_DIR"
+
+# 切换到脚本目录
+cd "$SCRIPT_DIR"
+
 # 检查必要的项目目录
 if [ ! -d "CEM-main" ]; then
-    echo "❌ CEM-main目录不存在"
+    echo "❌ CEM-main目录不存在于 $SCRIPT_DIR"
+    echo "请确保CEM-main和CEM-mix目录与脚本在同一目录下"
     exit 1
 fi
 
 if [ ! -d "CEM-mix" ]; then
-    echo "❌ CEM-mix目录不存在"
+    echo "❌ CEM-mix目录不存在于 $SCRIPT_DIR"
+    echo "请确保CEM-main和CEM-mix目录与脚本在同一目录下"
     exit 1
 fi
 
