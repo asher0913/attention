@@ -1923,7 +1923,7 @@ class MIA_train: # main class for every thing
                         Z_visual = Z_visual[mask]
                         label_visual = label_visual[mask]
 
-                        tsne = TSNE(n_components=2, perplexity=30, learning_rate=200, n_iter=1000, random_state=42)
+                        tsne = TSNE(n_components=2, perplexity=30, learning_rate=200, n_iter_=1000, random_state=42)
                         reduced_features = tsne.fit_transform(Z_visual)
                         visual_dir = self.save_dir + '/visualize'
                         os.makedirs(visual_dir, exist_ok=True)
