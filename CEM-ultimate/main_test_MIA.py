@@ -2,7 +2,7 @@
 import torch
 import numpy as np
 import matplotlib
-matplotlib.use('Agg')  # 设置无显示后端，避免Qt错误  
+matplotlib.use('Agg')  # 设置无显示后端，避免Qt错误
 import matplotlib.pyplot as plt
 import logging
 import MIA_torch

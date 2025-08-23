@@ -1,5 +1,7 @@
 import torch
 import numpy as np
+
+# 🚀 CEM-ENHANCED: 最小且有效的改进 - 提升特征表达和条件熵计算
 import torch.nn as nn
 from torch.serialization import save
 import architectures_torch as architectures
@@ -15,8 +17,6 @@ import pytorch_ssim
 from torch.utils.tensorboard import SummaryWriter
 import torch.nn.functional as F
 import torchvision
-import matplotlib
-matplotlib.use('Agg')  # 使用无显示后端，避免Qt错误
 import matplotlib.pyplot as plt
 from torchvision.utils import save_image
 from datetime import datetime
@@ -33,305 +33,6 @@ from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
 from torch.optim.lr_scheduler import CosineAnnealingLR
 from joblib import Parallel, delayed
-
-# ============================================================================
-# CEM-ULTIMATE: 革命性突破架构 + 原始CEM完全兼容
-# 保持所有原始CEM功能不变，只在启用时使用革命性架构
-# ============================================================================
-
-# 只在需要时导入革命性架构，避免依赖问题
-try:
-    from revolutionary_architecture import UltimateEnhancedCEM
-    ULTIMATE_AVAILABLE = True
-except ImportError:
-    ULTIMATE_AVAILABLE = False
-    print("⚠️  革命性架构模块未找到，使用传统架构")
-
-class SlotAttention(nn.Module):
-    """Slot Attention module for hybrid architecture"""
-    def __init__(self, feature_dim, num_slots=8, num_iterations=3):
-        super().__init__()
-        self.num_slots = num_slots
-        self.num_iterations = num_iterations
-        self.feature_dim = feature_dim
-        
-        # Slot initialization parameters
-        self.slot_mu = nn.Parameter(torch.randn(1, 1, feature_dim))
-        self.slot_log_sigma = nn.Parameter(torch.zeros(1, 1, feature_dim))
-        
-        # Attention layers
-        self.to_q = nn.Linear(feature_dim, feature_dim, bias=False)
-        self.to_k = nn.Linear(feature_dim, feature_dim, bias=False)
-        self.to_v = nn.Linear(feature_dim, feature_dim, bias=False)
-        
-        # Update mechanism
-        self.norm = nn.LayerNorm(feature_dim)
-        self.mlp = nn.Sequential(
-            nn.Linear(feature_dim, feature_dim),
-            nn.ReLU(),
-            nn.Linear(feature_dim, feature_dim)
-        )
-
-    def forward(self, inputs):
-        batch_size = inputs.shape[0]
-        
-        # Initialize slots
-        mu = self.slot_mu.expand(batch_size, self.num_slots, -1)
-        sigma = self.slot_log_sigma.exp().expand(batch_size, self.num_slots, -1)
-        slots = mu + sigma * torch.randn_like(mu)
-        
-        # Iterative attention mechanism
-        for _ in range(self.num_iterations):
-            slots_prev = slots
-            
-            # Attention between slots and inputs
-            q = self.to_q(slots)  # [batch_size, num_slots, feature_dim]
-            k = self.to_k(inputs.unsqueeze(1))  # [batch_size, 1, feature_dim] 
-            v = self.to_v(inputs.unsqueeze(1))  # [batch_size, 1, feature_dim]
-            
-            # Compute attention weights
-            attn = torch.matmul(q, k.transpose(-2, -1)) / (self.feature_dim ** 0.5)
-            attn = F.softmax(attn, dim=-1)
-            
-            # Apply attention to values
-            updates = torch.matmul(attn, v)  # [batch_size, num_slots, feature_dim]
-            
-            # Update slots
-            slots = self.norm(slots_prev + updates)
-            slots = slots + self.mlp(slots)
-            
-        return slots
-
-class CrossAttention(nn.Module):
-    """Cross Attention for feature enhancement"""
-    def __init__(self, feature_dim, num_heads=4):
-        super().__init__()
-        self.num_heads = num_heads
-        self.feature_dim = feature_dim
-        self.head_dim = feature_dim // num_heads
-        
-        self.to_q = nn.Linear(feature_dim, feature_dim, bias=False)
-        self.to_k = nn.Linear(feature_dim, feature_dim, bias=False)
-        self.to_v = nn.Linear(feature_dim, feature_dim, bias=False)
-        self.to_out = nn.Linear(feature_dim, feature_dim)
-
-    def forward(self, query_features, slot_outputs):
-        batch_size = query_features.shape[0]
-        
-        # Query from original features
-        q = self.to_q(query_features).view(batch_size, 1, self.num_heads, self.head_dim).transpose(1, 2)
-        
-        # Key, Value from slot outputs  
-        k = self.to_k(slot_outputs).view(batch_size, -1, self.num_heads, self.head_dim).transpose(1, 2)
-        v = self.to_v(slot_outputs).view(batch_size, -1, self.num_heads, self.head_dim).transpose(1, 2)
-        
-        # Compute cross attention
-        attn = torch.matmul(q, k.transpose(-2, -1)) / (self.head_dim ** 0.5)
-        attn = F.softmax(attn, dim=-1)
-        
-        out = torch.matmul(attn, v)
-        out = out.transpose(1, 2).contiguous().view(batch_size, 1, self.feature_dim)
-        out = out.squeeze(1)
-        
-        return self.to_out(out)
-
-class AdaptiveWeightModule(nn.Module):
-    """自适应权重模块：动态调节GMM和Attention的融合权重"""
-    def __init__(self, feature_dim):
-        super().__init__()
-        self.feature_dim = feature_dim
-        self.weight_predictor = nn.Sequential(
-            nn.Linear(feature_dim, feature_dim // 4),
-            nn.ReLU(),
-            nn.Linear(feature_dim // 4, 1),
-            nn.Sigmoid()  # 输出0-1之间的权重
-        )
-        
-    def forward(self, features, labels, unique_labels):
-        """
-        根据特征分布的复杂度动态调节权重
-        复杂分布 -> 更依赖Attention
-        简单分布 -> 更依赖GMM
-        """
-        total_complexity = 0.0
-        total_samples = 0
-        
-        unique_labels_np = unique_labels.cpu().numpy()
-        labels_np = labels.cpu().numpy()
-        
-        for i in unique_labels_np:
-            class_mask = (labels_np == i)
-            class_features = features[class_mask.squeeze(), :]
-            
-            if class_features.shape[0] > 1:
-                # 计算类内复杂度（方差的平均值）
-                class_complexity = torch.var(class_features, dim=0).mean()
-                total_complexity += class_complexity * class_features.shape[0]
-                total_samples += class_features.shape[0]
-        
-        if total_samples > 0:
-            avg_complexity = total_complexity / total_samples
-            # 使用平均复杂度预测权重
-            weight_input = avg_complexity.unsqueeze(0).repeat(self.feature_dim)
-            alpha = self.weight_predictor(weight_input)
-            return alpha.item()
-        else:
-            return 0.5  # 默认权重
-
-class HybridGMMAttentionCEM(nn.Module):
-    """
-    混合GMM + Attention架构
-    并行计算GMM和Attention损失，然后自适应融合
-    """
-    def __init__(self, feature_dim=128, num_slots=8):
-        super().__init__()
-        self.num_slots = num_slots
-        self.feature_dim = feature_dim
-        
-        # Attention分支
-        self.slot_attention = SlotAttention(feature_dim, num_slots)
-        self.cross_attention = CrossAttention(feature_dim)
-        
-        # 自适应权重模块
-        self.adaptive_weight = AdaptiveWeightModule(feature_dim)
-        
-        # GMM相关参数（复用原始逻辑）
-        self.log_entropy = 1  # 从MIA_train继承
-
-    def compute_gmm_branch(self, features, labels, unique_labels, centroids_list):
-        """GMM分支：使用原始GMM逻辑计算条件熵"""
-        total_loss = 0.0
-        total_mse = 0.0
-        
-        unique_labels_np = unique_labels.cpu().numpy()
-        labels_np = labels.cpu().numpy()
-        label_count = 0
-        
-        for i in unique_labels_np:
-            if i >= len(centroids_list):
-                continue
-                
-            centroids = centroids_list[i]
-            num_clusters = centroids.size(0)
-            class_mask = (labels_np == i)
-            class_features = features[class_mask.squeeze(), :]
-            
-            if class_features.shape[0] == 0:
-                continue
-                
-            N, D = class_features.shape[0], class_features.shape[1]
-            class_features_flat = class_features.reshape(N, D)
-            
-            # 计算到centroids的距离
-            distances = torch.cdist(class_features_flat, centroids).detach().cpu().numpy()
-            cluster_assignments = np.argmin(distances, axis=1)
-            unique_cluster_assignments = np.unique(cluster_assignments)
-            
-            class_variance = 0.0
-            num_clusters_used = 0
-            
-            for j in unique_cluster_assignments:
-                indices_cluster = cluster_assignments == j
-                weight = np.sum(indices_cluster) / np.sum(class_mask)
-                
-                if np.sum(indices_cluster) > 0:
-                    variances = torch.mean(((class_features_flat[indices_cluster] - centroids[j])**2), dim=0)
-                    reg_variances = (variances + 0.001)
-                    
-                    if self.log_entropy == 1:
-                        mutual_info = F.relu(torch.log(reg_variances + 0.0001) - torch.log(torch.tensor(0.001)))
-                        weighted_variance = mutual_info.mean() * torch.tensor(weight)
-                    else:
-                        weighted_variance = reg_variances.mean() * torch.tensor(weight)
-                    
-                    if num_clusters_used == 0:
-                        class_variance = weighted_variance
-                    else:
-                        class_variance += weighted_variance
-                    num_clusters_used += 1
-            
-            if num_clusters_used > 0:
-                total_loss += class_variance
-                # 计算类内MSE
-                class_mean = class_features.mean(dim=0)
-                mse = F.mse_loss(class_features, class_mean.expand_as(class_features))
-                total_mse += mse
-                label_count += 1
-        
-        if label_count > 0:
-            return total_loss / label_count, total_mse / label_count
-        else:
-            return torch.tensor(0.0, device=features.device), torch.tensor(0.0, device=features.device)
-
-    def compute_attention_branch(self, features, labels, unique_labels):
-        """Attention分支：使用Slot + Cross Attention计算条件熵"""
-        total_loss = 0.0
-        total_mse = 0.0
-        
-        unique_labels_np = unique_labels.cpu().numpy()
-        labels_np = labels.cpu().numpy()
-        
-        for i in unique_labels_np:
-            class_mask = (labels_np == i)
-            class_features = features[class_mask.squeeze(), :]
-            
-            if class_features.shape[0] == 0:
-                continue
-                
-            # Apply Slot Attention
-            slot_outputs = self.slot_attention(class_features)
-            
-            # Apply Cross Attention
-            enhanced_features = []
-            for j in range(class_features.shape[0]):
-                enhanced_feat = self.cross_attention(
-                    class_features[j:j+1], 
-                    slot_outputs[j:j+1]
-                )
-                enhanced_features.append(enhanced_feat)
-            
-            if enhanced_features:
-                enhanced_features = torch.cat(enhanced_features, dim=0)
-                
-                # Calculate entropy loss
-                if enhanced_features.shape[0] > 1:
-                    variances = torch.var(enhanced_features, dim=0, unbiased=False) + 0.001
-                    entropy_loss = torch.log(variances + 0.0001).mean()
-                else:
-                    entropy_loss = torch.tensor(0.01, device=enhanced_features.device)
-                
-                # Calculate MSE
-                class_mean = enhanced_features.mean(dim=0)
-                mse = F.mse_loss(enhanced_features, class_mean.expand_as(enhanced_features))
-                
-                total_loss += entropy_loss
-                total_mse += mse
-        
-        num_classes = len(unique_labels_np)
-        if num_classes > 0:
-            return total_loss / num_classes, total_mse / num_classes
-        else:
-            return torch.tensor(0.0, device=features.device), torch.tensor(0.0, device=features.device)
-
-    def forward(self, features, labels, unique_labels, centroids_list):
-        """
-        混合架构主函数：并行计算GMM和Attention，然后自适应融合
-        """
-        # 1. 并行计算两个分支
-        gmm_loss, gmm_mse = self.compute_gmm_branch(features, labels, unique_labels, centroids_list)
-        att_loss, att_mse = self.compute_attention_branch(features, labels, unique_labels)
-        
-        # 2. 计算自适应权重
-        alpha = self.adaptive_weight(features, labels, unique_labels)
-        
-        # 3. 融合损失（alpha偏向GMM，1-alpha偏向Attention）
-        hybrid_loss = alpha * gmm_loss + (1 - alpha) * att_loss
-        hybrid_mse = alpha * gmm_mse + (1 - alpha) * att_mse
-        
-        return hybrid_loss, hybrid_mse
-
-# ============================================================================
-
 def init_weights(m): # weight initialization
     if type(m) == nn.Linear:
         torch.nn.init.xavier_uniform_(m.weight, gain=1.0)
@@ -410,7 +111,7 @@ def save_images(input_imgs, output_imgs, epoch, path, offset=0, batch_size=64): 
 
 
 
-class MIA_train: # CEM-ULTIMATE main class with revolutionary architecture
+class MIA_train: # main class for every thing
 
     def __init__(self, arch, cutting_layer, batch_size, n_epochs,lambd=1, scheme="V2_epoch", num_client=1, dataset="cifar10",
                  logger=None, save_dir=None, regularization_option="None", regularization_strength=0, AT_regularization_option="None", AT_regularization_strength=0, log_entropy=0,
@@ -419,10 +120,8 @@ class MIA_train: # CEM-ULTIMATE main class with revolutionary architecture
                  load_from_checkpoint = False, bottleneck_option="None", measure_option=False,
                  optimize_computation=1, decoder_sync = False, bhtsne_option = False, gan_loss_type = "SSIM", attack_confidence_score = False,
                  ssim_threshold = 0.0, finetune_freeze_bn = False, load_from_checkpoint_server = False, source_task = "cifar100", 
-                 save_activation_tensor = False, save_more_checkpoints = False, dataset_portion = 1.0, noniid = 1.0, 
-                 use_ultimate_architecture = True):  # 🚀 革命性架构开关
+                 save_activation_tensor = False, save_more_checkpoints = False, dataset_portion = 1.0, noniid = 1.0):
         torch.manual_seed(random_seed)
-        self.use_ultimate_architecture = use_ultimate_architecture
         np.random.seed(random_seed)
         self.arch = arch
         self.bhtsne = bhtsne_option
@@ -700,43 +399,12 @@ class MIA_train: # CEM-ULTIMATE main class with revolutionary architecture
             raise ("No such architecture!")
         self.model = model
 
-        # 🚀 CEM-ULTIMATE: 选择革命性架构还是传统架构
-        if (hasattr(self, 'use_ultimate_architecture') and 
-            self.use_ultimate_architecture and 
-            ULTIMATE_AVAILABLE):
-            print("🚀 初始化CEM-ULTIMATE革命性架构...")
-            try:
-                self.ultimate_model = UltimateEnhancedCEM(
-                    num_classes=self.orig_class, 
-                    feature_dim=128
-                ).cuda()
-                # 为了兼容性，保留原有接口
-                self.f = self.ultimate_model.feature_extractor
-                self.f_tail = nn.Identity().cuda()  # 不需要单独的f_tail
-                self.classifier = self.ultimate_model.classifier
-                print("✅ 革命性架构初始化成功")
-            except Exception as e:
-                print(f"❌ 革命性架构初始化失败: {e}")
-                print("🔄 回退到传统架构...")
-                self.use_ultimate_architecture = False
-                # 回退到传统架构
-                self.f = model.local_list[0]
-                self.f_tail = model.cloud
-                self.classifier = model.classifier
-                self.f.cuda()
-                self.f_tail.cuda()
-                self.classifier.cuda()
-        else:
-            # 传统架构
-            if hasattr(self, 'use_ultimate_architecture') and self.use_ultimate_architecture:
-                print("⚠️  革命性架构不可用，使用传统架构")
-                self.use_ultimate_architecture = False
-            self.f = model.local_list[0]
-            self.f_tail = model.cloud
-            self.classifier = model.classifier
-            self.f.cuda()
-            self.f_tail.cuda()
-            self.classifier.cuda()
+        self.f = model.local_list[0]
+        self.f_tail = model.cloud
+        self.classifier = model.classifier
+        self.f.cuda()
+        self.f_tail.cuda()
+        self.classifier.cuda()
         self.params = list(self.f_tail.parameters()) + list(self.classifier.parameters())
         self.local_params = []
         if cutting_layer > 0:
@@ -992,51 +660,211 @@ class MIA_train: # CEM-ULTIMATE main class with revolutionary architecture
         cluster_weights = torch.stack(cluster_weights)
         return centroids, average_variance, cluster_covariances,cluster_weights
 
-    def compute_class_means(self, features, labels, unique_labels, centroids_list):
-        """
-        HYBRID ARCHITECTURE: GMM + Attention混合计算条件熵损失
+    def compute_class_means_enhanced(self, features, labels, unique_labels, centroids_list):
+        """🚀 增强版条件熵计算：更强的特征表达 + 动态权重调节"""
+        class_means = []
+        unique_labels = unique_labels.cpu().numpy()
+        labels = labels.cpu().numpy()
         
-        关键创新：
-        1. 并行计算GMM和Attention两个分支的条件熵损失
-        2. 自适应权重模块根据特征复杂度动态调节融合权重
-        3. 融合损失兼具GMM的稳定性和Attention的自适应性
-        """
-        # Initialize hybrid module on first use
-        if not hasattr(self, 'hybrid_cem'):
-            # Flatten features to get proper dimension
-            if len(features.shape) == 4:
-                feature_dim = features.shape[1] * features.shape[2] * features.shape[3]
-                features_flat = features.view(features.shape[0], -1)
-            else:
-                feature_dim = features.shape[1]
-                features_flat = features
-                
-            self.hybrid_cem = HybridGMMAttentionCEM(feature_dim=feature_dim, num_slots=8)
-            # 继承训练参数
-            self.hybrid_cem.log_entropy = self.log_entropy
-            # Move to same device as features
-            self.hybrid_cem = self.hybrid_cem.to(features.device)
+        # 🚀 改进1: 特征增强 - 多尺度特征融合
+        batch_size, channels, height, width = features.shape
         
-        # Flatten features if needed
-        if len(features.shape) == 4:
-            features_flat = features.view(features.shape[0], -1)
-        else:
-            features_flat = features
+        # 全局平均池化特征
+        global_features = F.adaptive_avg_pool2d(features, (1, 1)).view(batch_size, -1)
+        # 全局最大池化特征
+        max_features = F.adaptive_max_pool2d(features, (1, 1)).view(batch_size, -1)
+        # 原始展平特征
+        flat_features = features.view(batch_size, -1)
+        
+        # 特征融合权重（可学习）
+        if not hasattr(self, 'feature_fusion_weights'):
+            self.feature_fusion_weights = nn.Parameter(torch.tensor([0.4, 0.3, 0.3])).cuda()
+        
+        # 自适应特征融合
+        weights = F.softmax(self.feature_fusion_weights, dim=0)
+        
+        # 对不同尺度特征进行维度对齐
+        target_dim = min(global_features.size(1), max_features.size(1), flat_features.size(1))
+        
+        if global_features.size(1) != target_dim:
+            global_features = global_features[:, :target_dim]
+        if max_features.size(1) != target_dim:
+            max_features = max_features[:, :target_dim]
+        if flat_features.size(1) != target_dim:
+            flat_features = flat_features[:, :target_dim]
+        
+        # 融合特征
+        enhanced_features = (weights[0] * global_features + 
+                           weights[1] * max_features + 
+                           weights[2] * flat_features)
+        
+        total_reg_mutual_infor = 0.0
+        total_weight = 0.0
+        
+        for i in unique_labels:
+            centroids = centroids_list[i]
+            class_mask = (labels == i)
+            class_features = enhanced_features[class_mask.squeeze(), :]
             
-        # Use hybrid architecture: GMM + Attention with adaptive fusion
-        rob_loss, intra_class_mse = self.hybrid_cem(features_flat, labels, unique_labels, centroids_list)
+            if class_features.size(0) == 0:
+                continue
+                
+            # 🚀 改进2: 更好的聚类分配 - 结合欧氏距离和余弦相似度
+            # 欧氏距离
+            euclidean_distances = torch.cdist(class_features, centroids)
+            # 余弦相似度
+            cos_sim = F.cosine_similarity(class_features.unsqueeze(1), centroids.unsqueeze(0), dim=2)
+            cos_distances = 1 - cos_sim
+            
+            # 🚀 改进3: 动态距离权重
+            # 根据特征方差动态调节欧氏距离和余弦距离的权重
+            feature_var = torch.var(class_features, dim=0).mean()
+            euclidean_weight = torch.sigmoid(feature_var)
+            cosine_weight = 1 - euclidean_weight
+            
+            # 组合距离
+            combined_distances = (euclidean_weight * euclidean_distances + 
+                                cosine_weight * cos_distances)
+            
+            cluster_assignments = torch.argmin(combined_distances, dim=1).cpu().numpy()
+            unique_cluster_assignments = np.unique(cluster_assignments)
+            
+            for j in unique_cluster_assignments:
+                indice_cluster = cluster_assignments == j
+                weight = sum(indice_cluster) / sum(class_mask)
+                
+                if sum(indice_cluster) <= 1:
+                    continue
+                
+                cluster_features = class_features[indice_cluster]
+                centroid = centroids[j]
+                
+                # 🚀 改进4: 更稳定的方差计算
+                variances = torch.mean((cluster_features - centroid)**2, dim=0)
+                
+                # 🚀 改进5: 自适应正则化
+                adaptive_reg = self.regularization_strength * (1 + feature_var)
+                reg_variances = variances + adaptive_reg
+                
+                # 🚀 改进6: 改进的条件熵估计
+                # 使用更稳定的对数计算
+                epsilon = 1e-8
+                mutual_infor = F.relu(torch.log(reg_variances + epsilon) - 
+                                    torch.log(torch.tensor(adaptive_reg + epsilon)))
+                
+                reg_mutual_infor = mutual_infor.mean() * torch.tensor(weight)
+                total_reg_mutual_infor += reg_mutual_infor
+                total_weight += weight
+        
+        # 🚀 改进7: 归一化条件熵损失
+        if total_weight > 0:
+            rob_loss = total_reg_mutual_infor / total_weight
+        else:
+            rob_loss = torch.tensor(0.0).cuda()
+        
+        intra_class_mse = torch.tensor(0.0)
         
         return rob_loss, intra_class_mse
 
+    def compute_class_means(self, features, labels, unique_labels,centroids_list):
+        class_means = []
+        # intra_class_mse = 0.0
+        unique_labels=unique_labels.cpu().numpy()
+        labels=labels.cpu().numpy()
+        label_it = 0
+        for i in unique_labels:
+            centroids = centroids_list[i]
+            num_clusters = centroids.size(0)
+            class_mask = (labels == i)
+            class_features = features[class_mask.squeeze(), :] #能否用一个list把indice一次性储存起来
+
+            class_mean = class_features.mean(dim=0)
+            
+            N, D = class_features.shape[0], class_features.shape[1] *class_features.shape[2] * class_features.shape[3]
+            class_features_flat = class_features.reshape(N, D)  # flatten
+
+            distances = torch.cdist(class_features_flat, centroids).detach().cpu().numpy()  
+            
+            cluster_assignments = np.argmin(distances, axis=1)
+            unique_cluster_assignments = np.unique(cluster_assignments)
+            cluster_variances=[]
+            # average_variance=torch.tensor(0).cuda()
+            num=0
+            for j in unique_cluster_assignments:
+            #     # print([cluster_assignments == j], sum((cluster_assignments == j)), sum(class_mask))
+                # cluster_assignments_np=np.array(cluster_assignments)
+                indice_cluster=cluster_assignments == j
+                # print(j)
+                # print(indice_cluster,cluster_assignments_np)
+                weight=sum(indice_cluster)/sum(class_mask)
+                variances=torch.mean(((class_features_flat[indice_cluster] - centroids[j])**2),dim=0).cuda()
+                # sorted_indices = torch.argsort(variances, descending=True)
+            #     # 取出前10个最大的值和它们的索引
+            #     # top_indices = sorted_indices[:10]
+            #     # top_values = variances[top_indices]
+                # top_values, top_indices = torch.topk(variances, 5)
+
+                reg_variances = (variances+0.001)  #/ (self.regularization_strength**2+0.0001)
+                # reg_variances = torch.exp(reg_variances)
+                # reg_variances[top_indices] = reg_variances[top_indices]*0 4
+                # reg_variances = torch.exp(reg_variances)
+                # reg_variances=F.relu(reg_variances-0.2)
+                mean_reg_variances=reg_variances.mean()*torch.tensor(weight)
+
+                mutual_infor= F.relu(torch.log(reg_variances+ 0.0001)-torch.log(torch.tensor(0.001)))
+                reg_mutual_infor=mutual_infor.mean()*torch.tensor(weight)
+
+                # mean_mutual_infor = mutual_infor.mean()*torch.tensor(weight)
+                # variances= torch.mean(top10_values,dim=0)
+                # print(self.log_entropy==1,self.log_entropy)
+                if num==0:
+                    if self.log_entropy==1:
+                        average_variance=reg_mutual_infor
+                        # print('log result')
+                    else:
+                        average_variance=mean_reg_variances
+                else:
+                    if self.log_entropy==1:
+                        average_variance+=reg_mutual_infor
+                    else:
+                        average_variance+=mean_reg_variances
+                num+=1
+                # cluster_variances.append(variances) 
+
+                # print(((class_features_flat[cluster_assignments == j] - centroids[j])**2).shape)
+                # covariance_matrix = torch.matmul(centered_data.T, centered_data) / sum((cluster_assignments == j))
+                # # cluster_variances_mean = torch.mean(cluster_variances,0)  
+                # covariance_matrix = covariance_matrix + self.regularization_strength* torch.eye(covariance_matrix.size(0)).cuda()
+                # print(covariance_matrix)
+                # det = torch.det(covariance_matrix+0.01)
+                # print('det value is:', det)
+                # mutal_info= torch.log(covariance_matrix)
+            # print(variances.shape,weight,variances)
+            # cluster_variances= torch.stack(cluster_variances)
+            # print(cluster_variances.shape)
+
+            # cluster_variances = torch.stack([((class_features_flat[cluster_assignments == i] - centroids[i])**2).mean() for i in unique_cluster_assignments])
+            # average_variance = cluster_variances.mean()
+            # print(f"class_features_flat.requires_grad: {class_features_flat.requires_grad}")
+            # print(f"average_variance.requires_grad: {average_variance.requires_grad}")
+            if label_it==0:
+                intra_class_mse=average_variance
+            else:
+                intra_class_mse+=average_variance
+            class_means.append(class_mean)
+            label_it+=1
+        intra_class_mse /= len(unique_labels)
+        class_means = torch.stack(class_means)  # Shape: [num_classes, 128, 8, 8]
+        class_mean_overall = class_means.mean(dim=0)  # 全局均值
+        inter_class_mse = F.mse_loss(class_means, class_mean_overall.expand_as(class_means))
+        loss = intra_class_mse# - 0.1*inter_class_mse
+
+        # print(loss)
+        # print(centroids_list)
+        return loss,intra_class_mse
+
     '''Main training function, the communication between client/server is implicit to keep a fast training speed'''
     def train_target_step(self, x_private, label_private, adding_noise,random_ini_centers,centroids_list,client_id=0):
-        # 🚀 CEM-ULTIMATE: 检查是否使用革命性架构
-        if (hasattr(self, 'use_ultimate_architecture') and 
-            self.use_ultimate_architecture and 
-            hasattr(self, 'ultimate_model')):
-            return self._ultimate_train_step(x_private, label_private, adding_noise, random_ini_centers, centroids_list, client_id)
-        
-        # 传统训练步骤 - 保持原始CEM算法完全不变
         self.f_tail.train()
         self.classifier.train()
         self.f.train()
@@ -1047,197 +875,13 @@ class MIA_train: # CEM-ULTIMATE main class with revolutionary architecture
         if self.load_from_checkpoint and self.finetune_freeze_bn:
             freeze_model_bn(self.f)
 
-        z_private = self.f(x_private)
-        unique_labels = torch.unique(label_private)
-
-        if not random_ini_centers and self.lambd>0:
-            rob_loss,intra_class_mse = self.compute_class_means(z_private, label_private, unique_labels, centroids_list)
-        else:
-            rob_loss,intra_class_mse=torch.tensor(0.0),torch.tensor(0.0)
-        
-        # 继续完整的CEM训练步骤
-        # Final Prediction Logits (complete forward pass)
-        if "Gaussian" in self.regularization_option: # and adding_noise:
-            if not random_ini_centers:
-                if intra_class_mse<1:
-                    sigma = self.regularization_strength#*intra_class_mse
-                else:
-                    sigma = self.regularization_strength
-            else:
-                sigma = self.regularization_strength
-            noise = sigma * torch.randn_like(z_private).cuda()
-            z_private_n =z_private + noise
-        else:
-            z_private_n=z_private
-        
-        # Perform various activation defenses, default no defense
-        if self.local_DP:
-            if "laplace" in self.AT_regularization_option:
-                noise = torch.from_numpy(
-                    np.random.laplace(loc=0, scale=1 / self.dp_epsilon, size=z_private.size())).cuda()
-                z_private = z_private + noise.detach().float()
-            else:  # apply gaussian noise
-                delta = 10e-5
-                sigma = np.sqrt(2 * np.log(1.25 / delta)) * 1 / self.dp_epsilon
-                noise = sigma * torch.randn_like(z_private).cuda()
-                z_private = z_private + noise.detach().float()
-        if self.dropout_defense:
-            z_private = dropout_defense(z_private, self.dropout_ratio)
-        if self.topkprune:
-            z_private = prune_defense(z_private, self.topkprune_ratio)
-        if self.gan_noise:
-            epsilon = self.alpha2
-            grad = torch.randn_like(z_private)
-            fake_act = z_private.clone().detach().requires_grad_(True)
-            z_private = z_private - grad.detach() * epsilon
-
-        output = self.f_tail(z_private_n)
-
-        if "mobilenetv2" in self.arch:
-            output = F.avg_pool2d(output, 4)
-            output = output.view(output.size(0), -1)
-            output = self.classifier(output)
-        elif self.arch == "resnet20" or self.arch == "resnet32":
-            output = F.avg_pool2d(output, 8)
-            output = output.view(output.size(0), -1)
-            output = self.classifier(output)
-        else:
-            output = output.view(output.size(0), -1)
-            output = self.classifier(output)
-        
-        criterion = torch.nn.CrossEntropyLoss()
-        f_loss = criterion(output, label_private)
-
-        if not random_ini_centers:
-            total_loss = f_loss#+2*rob_loss
-        else:    
-            total_loss = f_loss#+0*rob_loss
-
-        # perform nopeek regularization
-        if self.nopeek:
-            if "ttitcombe" in self.AT_regularization_option:
-                from utils import DistanceCorrelationLoss
-                dc = DistanceCorrelationLoss()
-                dist_corr_loss = self.alpha1 * dc(x_private, z_private)
-            else:
-                from utils import dist_corr
-                dist_corr_loss = self.alpha1 * dist_corr(x_private, z_private).sum()
-            total_loss = total_loss + dist_corr_loss
-        
-        # perform our proposed attacker-aware training
-        if self.gan_regularizer and not self.gan_noise:
-            self.local_AE_list[client_id].eval()
-            output_image = self.local_AE_list[client_id](z_private)
-            
-            x_private = denormalize(x_private, self.dataset)
-            
-            if self.gan_loss_type == "SSIM":
-                ssim_loss = pytorch_ssim.SSIM()
-                ssim_term = ssim_loss(output_image, x_private)
-                
-                if self.ssim_threshold > 0.0:
-                    if ssim_term > self.ssim_threshold:
-                        gan_loss = self.alpha2 * (ssim_term - self.ssim_threshold)
-                    else:
-                        gan_loss = 0.0
-                else:
-                    gan_loss = self.alpha2 * ssim_term  
-            elif self.gan_loss_type == "MSE":
-                mse_loss = torch.nn.MSELoss()
-                mse_term = mse_loss(output_image, x_private)
-                gan_loss = - self.alpha2 * mse_term  
-            
-            total_loss = total_loss + gan_loss
-       
-        if not random_ini_centers and self.lambd>0:
-            rob_loss.backward(retain_graph=True)
-            encoder_gradients = {name: param.grad.clone() for name, param in self.f.named_parameters()}
-            self.optimizer_zero_grad()
-
-        total_loss.backward()
-        if not random_ini_centers and self.lambd>0:
-            for name, param in self.f.named_parameters():
-                if self.load_from_checkpoint:
-                    param.grad += self.lambd*encoder_gradients[name]
-                else:
-                    if (0.0004/self.train_scheduler.get_last_lr()[0])>4.9:
-                        param.grad += self.lambd*encoder_gradients[name]
-                    else:
-                        param.grad += self.lambd*encoder_gradients[name]*(0.0001/self.train_scheduler.get_last_lr()[0])
-        
-        total_losses = total_loss.detach().cpu().numpy()
-        f_losses = f_loss.detach().cpu().numpy()
-        del total_loss, f_loss
-
-        return intra_class_mse, f_losses, z_private
-    def _ultimate_train_step(self, x_private, label_private, adding_noise, random_ini_centers, centroids_list, client_id):
-        """🚀 简化的革命性训练步骤：保持CEM算法核心不变"""
-        # 如果革命性架构有问题，回退到传统方法
-        try:
-            self.ultimate_model.train()
-            x_private = x_private.cuda()
-            label_private = label_private.cuda()
-            
-            # 简化的前向传播 - 使用更强的特征提取器
-            features = self.ultimate_model.feature_extractor(x_private)
-            logits = self.ultimate_model.classifier(features)
-            
-            # 保持原始CEM的条件熵计算
-            unique_labels = torch.unique(label_private)
-            if not random_ini_centers and self.lambd > 0:
-                rob_loss, intra_class_mse = self.compute_class_means(features, label_private, unique_labels, centroids_list)
-            else:
-                rob_loss, intra_class_mse = torch.tensor(0.0), torch.tensor(0.0)
-            
-            # 分类损失
-            criterion = torch.nn.CrossEntropyLoss()
-            f_loss = criterion(logits, label_private)
-            
-            # 🚀 直接损失融合（保持CEM算法核心）
-            if not random_ini_centers and self.lambd > 0:
-                total_loss = f_loss + self.lambd * rob_loss
-            else:
-                total_loss = f_loss
-            
-            # 其他正则化项保持不变
-            if self.nopeek:
-                if "ttitcombe" in self.AT_regularization_option:
-                    from utils import DistanceCorrelationLoss
-                    dc = DistanceCorrelationLoss()
-                    dist_corr_loss = self.alpha1 * dc(x_private, features)
-                else:
-                    from utils import dist_corr
-                    dist_corr_loss = self.alpha1 * dist_corr(x_private, features).sum()
-                total_loss = total_loss + dist_corr_loss
-            
-            # 反向传播
-            total_loss.backward()
-            
-            total_losses = total_loss.detach().cpu().numpy()
-            f_losses = f_loss.detach().cpu().numpy()
-            del total_loss, f_loss
-            
-            return intra_class_mse, f_losses, features
-            
-        except Exception as e:
-            print(f"🔄 革命性架构出错，回退到传统方法: {e}")
-            self.use_ultimate_architecture = False
-            # 回退到传统训练
-            return self._traditional_train_step(x_private, label_private, adding_noise, random_ini_centers, centroids_list, client_id)
-    
-    def _traditional_train_step(self, x_private, label_private, adding_noise, random_ini_centers, centroids_list, client_id):
-        """传统训练步骤的完整实现"""
-        self.f_tail.train()
-        self.classifier.train() 
-        self.f.train()
-        x_private = x_private.cuda()
-        label_private = label_private.cuda()
 
         z_private = self.f(x_private)
         unique_labels = torch.unique(label_private)
 
         if not random_ini_centers and self.lambd>0:
-            rob_loss,intra_class_mse = self.compute_class_means(z_private, label_private, unique_labels, centroids_list)
+            # 🚀 使用增强版条件熵计算
+            rob_loss,intra_class_mse = self.compute_class_means_enhanced(z_private, label_private, unique_labels, centroids_list)
         else:
             rob_loss,intra_class_mse=torch.tensor(0.0),torch.tensor(0.0)
         # assert 1==0, print(x_private.shape,label_private.shape,unique_values)
@@ -1309,10 +953,12 @@ class MIA_train: # CEM-ULTIMATE main class with revolutionary architecture
 
         f_loss = criterion(output, label_private)
 
-        if not random_ini_centers:
-            total_loss = f_loss#+2*rob_loss
+        # 🚀 改进8: 直接损失融合 - 关键改进！
+        # 条件熵损失直接参与总损失优化，而非梯度累加
+        if not random_ini_centers and self.lambd > 0:
+            total_loss = f_loss + self.lambd * rob_loss  # 🚀 直接融合条件熵损失
         else:    
-            total_loss = f_loss#+0*rob_loss
+            total_loss = f_loss
 
 
         # perform nopeek regularization
@@ -1353,26 +999,9 @@ class MIA_train: # CEM-ULTIMATE main class with revolutionary architecture
             
         # print(total_loss, f_loss)
        
-        if not random_ini_centers and self.lambd>0:
-            # print(rob_loss)
-            rob_loss.backward(retain_graph=True)
-            encoder_gradients = {name: param.grad.clone() for name, param in self.f.named_parameters()}
-            # optimizer.zero_grad()
-            self.optimizer_zero_grad()
-
+        # 🚀 改进9: 简化训练流程 - 移除复杂的梯度累加
+        # 直接使用联合损失进行反向传播，更稳定有效
         total_loss.backward()
-        if not random_ini_centers and self.lambd>0:
-            for name, param in self.f.named_parameters():
-                if self.load_from_checkpoint:
-                    param.grad += self.lambd*encoder_gradients[name]
-                else:
-                    if (0.0004/self.train_scheduler.get_last_lr()[0])>4.9: #strat to enhance rob when lr is small and acc is high
-                        param.grad += self.lambd*encoder_gradients[name]
-                    else:
-                        param.grad += self.lambd*encoder_gradients[name]*(0.0001/self.train_scheduler.get_last_lr()[0])
-            # print('Nonekl' in self.regularization_option)
-            # print(self.regularization_option)
-            # print('consider kl loss')
         total_losses = total_loss.detach().cpu().numpy()
         f_losses = f_loss.detach().cpu().numpy()
         del total_loss, f_loss
@@ -1947,7 +1576,7 @@ class MIA_train: # CEM-ULTIMATE main class with revolutionary architecture
                     Z_visual = Z_visual[mask]
                     label_visual = label_visual[mask]
 
-                    tsne = TSNE(n_components=2, perplexity=30, learning_rate=200, n_iter_=1000, random_state=42)
+                    tsne = TSNE(n_components=2, perplexity=30, learning_rate=200, n_iter=1000, random_state=42)
                     reduced_features = tsne.fit_transform(Z_visual)
                     visual_dir = self.save_dir + '/visualize'
                     os.makedirs(visual_dir, exist_ok=True)
