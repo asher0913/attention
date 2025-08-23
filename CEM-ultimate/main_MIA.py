@@ -56,8 +56,8 @@ parser.add_argument('--initialize_different', action='store_true', default=False
 #training randomseed setting ()
 parser.add_argument('--random_seed', default=123, type=int, help='random_seed')
 
-# 🚀 CEM-ULTIMATE revolutionary architecture setting
-parser.add_argument('--use_ultimate_architecture', action='store_true', default=True, help='🚀 Enable revolutionary CEM-Ultimate architecture')
+# 🚀 CEM-ULTIMATE revolutionary architecture setting  
+parser.add_argument('--use_ultimate_architecture', action='store_true', default=False, help='🚀 Enable revolutionary CEM-Ultimate architecture (默认使用传统架构确保稳定性)')
 
 args = parser.parse_args()
 
@@ -68,14 +68,14 @@ batch_size = args.batch_size
 cutting_layer = args.cutlayer
 num_client = args.num_client
 save_dir_name = "./{}/{}".format(args.folder, args.filename)
-mi = model_training_paral_pruning.MIA_train(args.arch, cutting_layer, batch_size,lambd=args.lambd, n_epochs = args.num_epochs, scheme = args.scheme,
+mi = model_training.MIA_train(args.arch, cutting_layer, batch_size,lambd=args.lambd, n_epochs = args.num_epochs, scheme = args.scheme,
                  num_client = num_client, dataset=args.dataset, save_dir=save_dir_name,random_seed=random_seed,
                  regularization_option=args.regularization, regularization_strength = args.regularization_strength, AT_regularization_option=args.AT_regularization, AT_regularization_strength = args.AT_regularization_strength, log_entropy=args.log_entropy,
                  initialize_different=args.initialize_different, learning_rate = args.learning_rate, local_lr = args.local_lr, gan_AE_type = args.gan_AE_type, 
                  load_from_checkpoint = args.load_from_checkpoint, bottleneck_option = args.bottleneck_option, 
                  optimize_computation = args.optimize_computation, decoder_sync = args.decoder_sync, 
                  finetune_freeze_bn = args.finetune_freeze_bn, gan_loss_type=args.gan_loss_type, ssim_threshold = args.ssim_threshold,var_threshold = args.var_threshold,
-                                 source_task = args.transfer_source_task, load_from_checkpoint_server = args.load_from_checkpoint_server, save_more_checkpoints = args.save_more_checkpoints,
+                                source_task = args.transfer_source_task, load_from_checkpoint_server = args.load_from_checkpoint_server, save_more_checkpoints = args.save_more_checkpoints,
                 dataset_portion = args.dataset_portion, noniid = args.noniid, client_sample_ratio = args.client_sample_ratio,
                 use_ultimate_architecture = args.use_ultimate_architecture)  # 🚀 革命性架构参数
 mi.logger.debug(str(args))
